@@ -46,7 +46,7 @@ class TasksTest extends Specification {
    }
 
    @Unroll
-   def "tasks contains #task"() {
+   def "Executing :tasks contains :#task"() {
 
       given: "a gradle tasks execution"
 

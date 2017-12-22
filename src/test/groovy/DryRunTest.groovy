@@ -43,7 +43,7 @@ class DryRunTest extends Specification {
    }
 
    @Unroll
-   def "dry run contains #task"() {
+   def "a dry run configuration contains :#task"() {
 
       given: "a dry run task"
 
@@ -55,7 +55,7 @@ class DryRunTest extends Specification {
    }
 
    @Unroll
-   def "a dry run ensures :#firstTask runs before :#secondTask"() {
+   def "a dry run configuration ensures :#firstTask runs before :#secondTask"() {
 
       given: "a dry-run build executing :produce"
 
