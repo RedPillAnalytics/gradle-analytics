@@ -73,7 +73,7 @@ pluginBundle {
          id = 'com.redpillanalytics.gradle-analytics'
          displayName = 'com.redpillanalytics.gradle-analytics'
          description = "A plugin for publishing data from Gradle builds to a variety of cloud and on-premises data sinks."
-         tags = ['analytics','data-sinks']
+         tags = ['analytics', 'data-sinks']
          version = project.version
       }
    }
