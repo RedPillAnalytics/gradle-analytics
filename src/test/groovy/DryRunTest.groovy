@@ -29,6 +29,10 @@ class DryRunTest extends Specification {
             plugins {
                 id 'com.redpillanalytics.gradle-analytics'
             }
+            
+            analytics.sinks {
+               pubsub
+            }
         """
 
       result = GradleRunner.create()
