@@ -57,14 +57,6 @@ dependencies {
    compile 'org.spockframework:spock-core:1.1-groovy-2.4'
    compile group: 'com.h2database', name: 'h2', version: '+'
 
-   //Dependencies for additional plugins
-   compile group: 'pl.allegro.tech.build', name: 'axion-release-plugin', version: '1.8.1'
-   compile 'co.riiid:gradle-github-plugin:+'
-
-   // libraries needed for 11g
-   //compile group: 'com.oracle', name: 'wlclient-thin', version: '11.1.1.7'
-   //compile group: 'com.oracle', name: 'wlclient-thin-package', version: '11.1.1.7'
-
    // Libraries for TestKit
    testCompile('org.spockframework:spock-core:1.1-groovy-2.4') {
       exclude module: 'groovy-all'
@@ -109,14 +101,14 @@ task uploadGroovydoc {
 
          executable 'aws'
 
-         args 's3', 'sync', groovydoc.destinationDir.getPath(), "s3://gradle-analytics.documentation/$version/"
+         args 's3', 'sync', groovydoc.destinationDir.getPath(), "s3://gradle-analytics/documentation/$version/"
       }
 
       exec {
 
          executable 'aws'
 
-         args 's3', 'sync', groovydoc.destinationDir.getPath(), "s3://gradle-analytics.documentation/latest/"
+         args 's3', 'sync', groovydoc.destinationDir.getPath(), "s3://gradle-analytics/documentation/latest/"
       }
    }
 
