@@ -39,7 +39,7 @@ class S3Task extends ObjectStoreTask {
 
             } catch (Exception e) {
 
-               if (project.extensions.analytics.ignoreStreamErrors) {
+               if (project.analytics.ignoreErrors.toBoolean()) {
 
                   logger.info e.toString()
 

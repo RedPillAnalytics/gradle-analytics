@@ -42,7 +42,7 @@ class JdbcTask extends SinkTask {
    @TaskAction
    def jdbcTask() {
 
-      def stream = new Sink(project.extensions.analytics.ignoreStreamErrors)
+      def stream = new Sink(project.extensions.analytics.ignoreErrors.toBoolean())
 
       project.configurations.analytics.files { it.name =~ '.*jdbc.*' }.each {
          Sql.classLoader.addURL(it.toURI().toURL())

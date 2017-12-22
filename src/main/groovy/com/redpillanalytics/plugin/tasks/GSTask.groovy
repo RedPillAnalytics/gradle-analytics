@@ -66,7 +66,7 @@ class GSTask extends ObjectStoreTask {
       }
       catch (Exception e) {
 
-         if (project.extensions.analytics.ignoreStreamErrors) {
+         if (project.extensions.analytics.ignoreErrors.toBoolean()) {
 
             project.logger.info e.toString()
 
@@ -94,7 +94,7 @@ class GSTask extends ObjectStoreTask {
 
             } catch (Exception e) {
 
-               if (project.extensions.analytics.ignoreStreamErrors) {
+               if (project.extensions.analytics.ignoreErrors.toBoolean()) {
 
                   project.logger.info e.toString()
 
