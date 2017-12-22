@@ -7,7 +7,7 @@ import groovy.util.logging.Slf4j
 class AnalyticsPluginExtension {
 
    /**
-    * The organization name for Checkmate Analytics.
+    * The organization name for Gradle Analytics.
     * <p>
     * "organization" is added to the JSON data files to enable segmentation of data across different organizations.
     */
@@ -53,7 +53,7 @@ class AnalyticsPluginExtension {
     */
    Boolean cleanAnalytics = true
    /**
-    * The hostname of the environment executing Gradle builds. Checkmate uses Java to pull the current hostname as a default.
+    * The hostname of the environment executing Gradle builds. Java is used to pull the current hostname as a default.
     */
    String hostname = java.net.InetAddress.getLocalHost().getHostName()
 
