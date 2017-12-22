@@ -24,14 +24,18 @@ import org.gradle.api.tasks.TaskAction
 class PubSubTask extends SinkTask {
 
    @Input
-   String projectId = ServiceOptions.getDefaultProjectId()
-
-   @Input
    String getTopicName(File file) {
 
       def topicName = [prefix, Utils.getFileBase(file)].join('.')
       log.debug "Name of the topic: $topicName"
       return topicName
+
+   }
+
+   @Input
+   def getProjectId(){
+
+      return ServiceOptions.getDefaultProjectId()
 
    }
 
