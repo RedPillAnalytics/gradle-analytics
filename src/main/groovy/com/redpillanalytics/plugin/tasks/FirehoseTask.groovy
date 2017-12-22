@@ -23,7 +23,7 @@ class FirehoseTask extends SinkTask {
     @TaskAction
     def firehoseTask() {
 
-        def kinesis = new Kinesis(project.extensions.checkmate.ignoreStreamErrors)
+        def kinesis = new Kinesis(project.extensions.analytics.ignoreStreamErrors)
 
         getAnalyticsDir().eachFile (FileType.DIRECTORIES) { dir ->
 

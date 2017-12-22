@@ -39,7 +39,7 @@ class S3Task extends ObjectStoreTask {
 
             } catch (Exception e) {
 
-               if (project.extensions.checkmate.ignoreStreamErrors) {
+               if (project.extensions.analytics.ignoreStreamErrors) {
 
                   logger.info e.toString()
 

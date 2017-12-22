@@ -40,14 +40,14 @@ class DataListener implements TaskExecutionListener, BuildListener, ProjectEvalu
 
         try {
             // define the project JSON file
-            def tasksFile = task.project.extensions.checkmate.getTasksFile(task.project.buildDir)
+            def tasksFile = task.project.extensions.analytics.getTasksFile(task.project.buildDir)
             tasksFile.parentFile.mkdirs()
 
             // generate the project JSON file
-            tasksFile.append(new Stream(task.project.extensions.checkmate.ignoreStreamErrors).objectToJson(new com.redpillanalytics.sinks.records.Task(
-                    buildid: task.project.extensions.checkmate.buildId,
-                    organization: task.project.extensions.checkmate.organization,
-                    hostname: task.project.extensions.checkmate.hostname,
+            tasksFile.append(new Stream(task.project.extensions.analytics.ignoreStreamErrors).objectToJson(new com.redpillanalytics.sinks.records.Task(
+                    buildid: task.project.extensions.analytics.buildId,
+                    organization: task.project.extensions.analytics.organization,
+                    hostname: task.project.extensions.analytics.hostname,
                     commithash: CI.commitHash,
                     scmbranch: CI.getBranch(),
                     repositoryurl: CI.getRepositoryUrl(),
@@ -65,7 +65,7 @@ class DataListener implements TaskExecutionListener, BuildListener, ProjectEvalu
 
         } catch (UnknownDomainObjectException e) {
 
-            log.info "Project '${task.project.name}' not enabled for Checkmate."
+            log.info "Project '${task.project.name}' not enabled for Analytics."
         }
 
         log.debug "${task.getPath()} took ${ms}ms"

@@ -52,7 +52,7 @@ class PubSubTask extends SinkTask {
       }
       catch (Exception e) {
 
-         if (project.extensions.checkmate.ignoreStreamErrors) {
+         if (project.extensions.analytics.ignoreStreamErrors) {
 
             log.info e.toString()
 

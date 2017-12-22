@@ -16,7 +16,6 @@ class Stream {
 
     // constructor
     // default is to ignore errors
-    // delivering data shouldn't kill Checkmate jobs
     def Stream(Boolean ignoreErrors=true) {
 
         this.ignoreErrors = ignoreErrors
