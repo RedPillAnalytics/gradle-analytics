@@ -4,15 +4,13 @@
 
 package com.redpillanalytics.plugin.tasks
 
-import com.redpillanalytics.sinks.Stream
+import com.redpillanalytics.sinks.Sink
 import com.redpillanalytics.common.Utils
 import groovy.sql.Sql
 import groovy.io.FileType
 import groovy.util.logging.Slf4j
-import org.gradle.api.DefaultTask
 import org.gradle.api.internal.tasks.options.Option
 import org.gradle.api.tasks.Input
-import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.TaskAction
 
 // Annotation for a logger
@@ -44,7 +42,7 @@ class JdbcTask extends SinkTask {
    @TaskAction
    def jdbcTask() {
 
-      def stream = new Stream(project.extensions.analytics.ignoreStreamErrors)
+      def stream = new Sink(project.extensions.analytics.ignoreStreamErrors)
 
       project.configurations.analytics.files { it.name =~ '.*jdbc.*' }.each {
          Sql.classLoader.addURL(it.toURI().toURL())

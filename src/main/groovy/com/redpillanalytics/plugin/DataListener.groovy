@@ -1,7 +1,7 @@
 package com.redpillanalytics.plugin
 
 import com.redpillanalytics.common.CI
-import com.redpillanalytics.sinks.Stream
+import com.redpillanalytics.sinks.Sink
 import groovy.util.logging.Slf4j
 import org.gradle.BuildListener
 import org.gradle.BuildResult
@@ -44,7 +44,7 @@ class DataListener implements TaskExecutionListener, BuildListener, ProjectEvalu
             tasksFile.parentFile.mkdirs()
 
             // generate the project JSON file
-            tasksFile.append(new Stream(task.project.extensions.analytics.ignoreStreamErrors).objectToJson(new com.redpillanalytics.sinks.records.Task(
+            tasksFile.append(new Sink(task.project.extensions.analytics.ignoreStreamErrors).objectToJson(new com.redpillanalytics.sinks.records.Task(
                     buildid: task.project.extensions.analytics.buildId,
                     organization: task.project.extensions.analytics.organization,
                     hostname: task.project.extensions.analytics.hostname,

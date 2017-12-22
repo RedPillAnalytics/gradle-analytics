@@ -2,7 +2,7 @@ package com.redpillanalytics.plugin
 
 import com.redpillanalytics.common.CI
 import com.redpillanalytics.common.GradleUtils
-import com.redpillanalytics.sinks.Stream
+import com.redpillanalytics.sinks.Sink
 import com.redpillanalytics.sinks.records.TestOutput
 import com.redpillanalytics.plugin.tasks.FirehoseTask
 import com.redpillanalytics.plugin.tasks.GSTask
@@ -110,7 +110,7 @@ class AnalyticsPlugin implements Plugin<Project> {
             afterTest { desc, result ->
 
                // write tests to the analytics file
-               testsFile.append(new Stream(task.project.extensions.analytics.ignoreStreamErrors).objectToJson(new com.redpillanalytics.sinks.records.Test(
+               testsFile.append(new Sink(task.project.extensions.analytics.ignoreStreamErrors).objectToJson(new com.redpillanalytics.sinks.records.Test(
                        buildid: project.extensions.analytics.buildId,
                        organization: project.extensions.analytics.organization,
                        hostname: project.extensions.analytics.hostname,
@@ -146,7 +146,7 @@ class AnalyticsPlugin implements Plugin<Project> {
                String eventDestination = event.getDestination().toString()
 
                // write tests to the analytics file
-               testOutputFile.append(new Stream(task.project.extensions.analytics.ignoreStreamErrors).objectToJson(new TestOutput(
+               testOutputFile.append(new Sink(task.project.extensions.analytics.ignoreStreamErrors).objectToJson(new TestOutput(
                        buildid: project.extensions.analytics.buildId,
                        organization: project.extensions.analytics.organization,
                        hostname: project.extensions.analytics.hostname,
@@ -208,7 +208,7 @@ class AnalyticsPlugin implements Plugin<Project> {
          // configure analytic groups
          project.extensions.analytics.sinks.all { ag ->
 
-            taskName = ag.getTaskName('stream')
+            taskName = ag.getTaskName('sink')
 
             log.debug "analyticGroup name: ${ag.name}"
 
@@ -222,7 +222,7 @@ class AnalyticsPlugin implements Plugin<Project> {
 
                   description ag.getDescription()
 
-                  // add any custom prefix to stream names
+                  // add any custom prefix to sink names
                   prefix ag.getPrefix()
 
                }
@@ -239,7 +239,7 @@ class AnalyticsPlugin implements Plugin<Project> {
 
                   description ag.getDescription()
 
-                  // add any custom prefix to stream names
+                  // add any custom prefix to sink names
                   prefix ag.getPrefix()
 
                }
@@ -256,7 +256,7 @@ class AnalyticsPlugin implements Plugin<Project> {
 
                   description ag.getDescription()
 
-                  // add any custom prefix to stream names
+                  // add any custom prefix to sink names
                   prefix ag.getPrefix()
 
                }
@@ -273,7 +273,7 @@ class AnalyticsPlugin implements Plugin<Project> {
 
                   description ag.getDescription()
 
-                  // add any custom prefix to stream names
+                  // add any custom prefix to sink names
                   prefix ag.getPrefix()
 
                }
@@ -290,7 +290,7 @@ class AnalyticsPlugin implements Plugin<Project> {
 
                   description ag.getDescription()
 
-                  // add any custom prefix to stream names
+                  // add any custom prefix to sink names
                   prefix ag.getPrefix()
 
                   // connection information
@@ -313,7 +313,7 @@ class AnalyticsPlugin implements Plugin<Project> {
 
       // end of afterEvaluate
 
-      // add the custom Task Listener that streams Task records
+      // add the custom Task Listener that produces Task records
       project.gradle.addListener new DataListener()
    }
 

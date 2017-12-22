@@ -9,14 +9,14 @@ import groovy.util.logging.Slf4j
  * Created by stewartbryson on 11/20/16.
  */
 @Slf4j
-class Stream {
+class Sink {
 
     Boolean ignoreErrors
     Gson gson
 
     // constructor
     // default is to ignore errors
-    def Stream(Boolean ignoreErrors=true) {
+    Sink(Boolean ignoreErrors=true) {
 
         this.ignoreErrors = ignoreErrors
         this.gson = new GsonBuilder().serializeNulls().create()
