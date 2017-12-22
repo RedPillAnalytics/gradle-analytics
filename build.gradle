@@ -45,8 +45,8 @@ dependencies {
 
    // Java API changed significantly in the Alpha release
    // Waiting for time to refactor when docs get better
-   compile 'com.google.cloud:google-cloud-pubsub:0.26.0-beta'
-   compile 'com.google.cloud:google-cloud-storage:1.8.0'
+   compile 'com.google.cloud:google-cloud-pubsub:+'
+   compile 'com.google.cloud:google-cloud-storage:+'
    compile group: 'com.google.code.gson', name: 'gson', version: '+'
 
    //  This is the last version of jGit that support JDK 1.7
@@ -57,9 +57,7 @@ dependencies {
    compile group: 'com.h2database', name: 'h2', version: '+'
 
    // Libraries for TestKit
-   testCompile('org.spockframework:spock-core:1.1-groovy-2.4') {
-      exclude module: 'groovy-all'
-   }
+   testCompile('org.spockframework:spock-core:1.1-groovy-2.4')
 }
 
 // Default artifact naming.
