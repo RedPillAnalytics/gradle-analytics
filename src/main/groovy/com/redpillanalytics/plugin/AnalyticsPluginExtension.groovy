@@ -43,15 +43,15 @@ class AnalyticsPluginExtension {
    /**
     * Determines whether errors in producing data to sinks should be ignored.
     */
-   Boolean ignoreStreamErrors = true
+   Boolean ignoreErrors = true
    /**
     * When true, the {@code produce} task will compress all the JSON data files upon completion.
     */
-   Boolean compressAnalytics = true
+   Boolean compress = true
    /**
     * When true, the {@code produce} task will delete all the JSON data files upon completion.
     */
-   Boolean cleanAnalytics = true
+   Boolean clean = true
    /**
     * The hostname of the environment executing Gradle builds. Java is used to pull the current hostname as a default.
     */

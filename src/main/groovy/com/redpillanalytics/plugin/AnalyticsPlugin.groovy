@@ -2,7 +2,7 @@ package com.redpillanalytics.plugin
 
 import com.redpillanalytics.common.CI
 import com.redpillanalytics.common.GradleUtils
-import com.redpillanalytics.sinks.Stream
+import com.redpillanalytics.sinks.Sink
 import com.redpillanalytics.sinks.records.TestOutput
 import com.redpillanalytics.plugin.tasks.FirehoseTask
 import com.redpillanalytics.plugin.tasks.GSTask
@@ -55,7 +55,7 @@ class AnalyticsPlugin implements Plugin<Project> {
          // easy way to use the buildTag
          if (getParameter('useBuildTag').toBoolean()) {
 
-            project.extensions.analytics.buildId = CI.getBuildTag()
+            project.analytics.buildId = CI.getBuildTag()
          }
 
          log.debug "buildId: ${buildId}"
@@ -73,7 +73,7 @@ class AnalyticsPlugin implements Plugin<Project> {
          }
 
          // define the analytics tests file
-         def testsFile = project.extensions.analytics.getTestsFile(project.buildDir)
+         def testsFile = project.analytics.getTestsFile(project.buildDir)
 
          // Task configuration based on RegressionTestTask Type
          project.tasks.withType(Test).all { Test task ->
@@ -110,10 +110,10 @@ class AnalyticsPlugin implements Plugin<Project> {
             afterTest { desc, result ->
 
                // write tests to the analytics file
-               testsFile.append(new Stream(task.project.extensions.analytics.ignoreStreamErrors).objectToJson(new com.redpillanalytics.sinks.records.Test(
-                       buildid: project.extensions.analytics.buildId,
-                       organization: project.extensions.analytics.organization,
-                       hostname: project.extensions.analytics.hostname,
+               testsFile.append(new Sink(task.project.analytics.ignoreErrors).objectToJson(new com.redpillanalytics.sinks.records.Test(
+                       buildid: project.analytics.buildId,
+                       organization: project.analytics.organization,
+                       hostname: project.analytics.hostname,
                        commithash: CI.commitHash,
                        scmbranch: CI.getBranch(),
                        repositoryurl: CI.getRepositoryUrl(),
@@ -133,7 +133,7 @@ class AnalyticsPlugin implements Plugin<Project> {
 
             onOutput { desc, event ->
 
-               File testOutputFile = project.extensions.analytics.getTestOutputFile(project.buildDir)
+               File testOutputFile = project.analytics.getTestOutputFile(project.buildDir)
                testOutputFile.parentFile.mkdirs()
 
                String className = desc.getClassName().toString()
@@ -146,10 +146,10 @@ class AnalyticsPlugin implements Plugin<Project> {
                String eventDestination = event.getDestination().toString()
 
                // write tests to the analytics file
-               testOutputFile.append(new Stream(task.project.extensions.analytics.ignoreStreamErrors).objectToJson(new TestOutput(
-                       buildid: project.extensions.analytics.buildId,
-                       organization: project.extensions.analytics.organization,
-                       hostname: project.extensions.analytics.hostname,
+               testOutputFile.append(new Sink(task.project.analytics.ignoreErrors).objectToJson(new TestOutput(
+                       buildid: project.analytics.buildId,
+                       organization: project.analytics.organization,
+                       hostname: project.analytics.hostname,
                        commithash: CI.commitHash,
                        scmbranch: CI.getBranch(),
                        repositoryurl: CI.getRepositoryUrl(),
@@ -186,9 +186,9 @@ class AnalyticsPlugin implements Plugin<Project> {
             group 'analytics'
             description "Analytics workflow task for producing data to all configured sinks."
 
-            if (project.extensions.analytics.getCompressAnalytics()) {
+            if (project.analytics.compress()) {
 
-               from "${project.extensions.analytics.getAnalyticsDir(project.buildDir).parent}/"
+               from "${project.analytics.getAnalyticsDir(project.buildDir).parent}/"
 
                appendix 'analytics'
                version CI.getTimestamp()
@@ -197,18 +197,18 @@ class AnalyticsPlugin implements Plugin<Project> {
 
             doLast {
 
-               if (project.extensions.analytics.getCleanAnalytics()) {
+               if (project.analytics.clean()) {
 
-                  project.delete "${project.extensions.analytics.getAnalyticsDir(project.buildDir).parent}"
+                  project.delete "${project.analytics.getAnalyticsDir(project.buildDir).parent}"
 
                }
             }
          }
 
          // configure analytic groups
-         project.extensions.analytics.sinks.all { ag ->
+         project.analytics.sinks.all { ag ->
 
-            taskName = ag.getTaskName('stream')
+            taskName = ag.getTaskName('sink')
 
             log.debug "analyticGroup name: ${ag.name}"
 
@@ -222,7 +222,7 @@ class AnalyticsPlugin implements Plugin<Project> {
 
                   description ag.getDescription()
 
-                  // add any custom prefix to stream names
+                  // add any custom prefix to sink names
                   prefix ag.getPrefix()
 
                }
@@ -239,7 +239,7 @@ class AnalyticsPlugin implements Plugin<Project> {
 
                   description ag.getDescription()
 
-                  // add any custom prefix to stream names
+                  // add any custom prefix to sink names
                   prefix ag.getPrefix()
 
                }
@@ -256,7 +256,7 @@ class AnalyticsPlugin implements Plugin<Project> {
 
                   description ag.getDescription()
 
-                  // add any custom prefix to stream names
+                  // add any custom prefix to sink names
                   prefix ag.getPrefix()
 
                }
@@ -273,7 +273,7 @@ class AnalyticsPlugin implements Plugin<Project> {
 
                   description ag.getDescription()
 
-                  // add any custom prefix to stream names
+                  // add any custom prefix to sink names
                   prefix ag.getPrefix()
 
                }
@@ -290,7 +290,7 @@ class AnalyticsPlugin implements Plugin<Project> {
 
                   description ag.getDescription()
 
-                  // add any custom prefix to stream names
+                  // add any custom prefix to sink names
                   prefix ag.getPrefix()
 
                   // connection information
@@ -313,7 +313,7 @@ class AnalyticsPlugin implements Plugin<Project> {
 
       // end of afterEvaluate
 
-      // add the custom Task Listener that streams Task records
+      // add the custom Task Listener that produces Task records
       project.gradle.addListener new DataListener()
    }
 

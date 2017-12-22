@@ -14,7 +14,7 @@ import java.nio.ByteBuffer
 
 @Slf4j
 @groovy.transform.InheritConstructors
-class Kinesis extends Stream {
+class Kinesis extends Sink {
 
     def firehose = new AmazonKinesisFirehoseClient()
     def recordList = []

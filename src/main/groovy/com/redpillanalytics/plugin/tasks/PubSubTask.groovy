@@ -56,7 +56,7 @@ class PubSubTask extends SinkTask {
       }
       catch (Exception e) {
 
-         if (project.extensions.analytics.ignoreStreamErrors) {
+         if (project.analytics.ignoreErrors.toBoolean()) {
 
             log.info e.toString()
 
