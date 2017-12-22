@@ -1,4 +1,4 @@
-package com.redpillanalytics.common
+package common
 
 import groovy.util.logging.Slf4j
 

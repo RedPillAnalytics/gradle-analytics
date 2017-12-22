@@ -1,4 +1,4 @@
-package com.redpillanalytics.common
+package common
 
 /**
  * Created by stewartbryson on 11/18/16.
