@@ -4,6 +4,7 @@ plugins {
    id "co.riiid.gradle" version '0.4.2'
    id 'groovy'
    id 'java-gradle-plugin'
+   id 'com.redpillanalytics.gradle-analytics' version "0.1.2"
 }
 
 scmVersion {
@@ -39,24 +40,15 @@ dependencies {
    compile group: 'org.codehaus.groovy', name: 'groovy-all', version: '2.4.12'
    compile group: 'org.slf4j', name: 'slf4j-simple', version: '+'
 
-   // removed the entire aws-java-sdk in favor of just the needed bits
+   compile group: 'com.google.code.gson', name: 'gson', version: '+'
+   compile group: 'org.eclipse.jgit', name: 'org.eclipse.jgit', version: '+'
+
    compile group: 'com.amazonaws', name: 'aws-java-sdk-kinesis', version: '+'
    compile group: 'com.amazonaws', name: 'aws-java-sdk-s3', version: '+'
 
-   // Java API changed significantly in the Alpha release
-   // Waiting for time to refactor when docs get better
    compile 'com.google.cloud:google-cloud-pubsub:+'
    compile 'com.google.cloud:google-cloud-storage:+'
-   compile group: 'com.google.code.gson', name: 'gson', version: '+'
 
-   //  This is the last version of jGit that support JDK 1.7
-   compile group: 'org.eclipse.jgit', name: 'org.eclipse.jgit', version: '+'
-
-   compile group: 'com.github.groovy-wslite', name: 'groovy-wslite', version: '+'
-   compile 'org.spockframework:spock-core:1.1-groovy-2.4'
-   compile group: 'com.h2database', name: 'h2', version: '+'
-
-   // Libraries for TestKit
    testCompile('org.spockframework:spock-core:1.1-groovy-2.4')
 }
 
