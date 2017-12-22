@@ -1,0 +1,18 @@
+plugins {
+   id 'groovy'
+   id 'com.redpillanalytics.gradle-analytics'
+}
+
+group 'com.redpillanalytics'
+version '0.1.2-SNAPSHOT'
+
+repositories {
+   jcenter()
+}
+
+dependencies {
+   compile gradleApi()
+   compile 'org.codehaus.groovy:groovy-all:2.4.12'
+   compile group: 'org.eclipse.jgit', name: 'org.eclipse.jgit', version: '+'
+   testCompile('org.spockframework:spock-core:1.1-groovy-2.4')
+}

@@ -1,1 +1,3 @@
 rootProject.name = 'gradle-analytics'
+include 'analytics-examples'
+

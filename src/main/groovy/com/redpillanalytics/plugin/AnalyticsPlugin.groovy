@@ -184,7 +184,7 @@ class AnalyticsPlugin implements Plugin<Project> {
          project.task('produce', type: Zip) {
 
             group 'analytics'
-            description "Analytics workflow task for processing all configured analytics jobs."
+            description "Analytics workflow task for producing data to all configured sinks."
 
             if (project.extensions.analytics.getCompressAnalytics()) {
 

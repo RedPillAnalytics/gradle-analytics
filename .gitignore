@@ -11,6 +11,9 @@
 # Build Directories
 build/
 
+# Plugin builds
+out
+
 # Ignore Gradle GUI config
 gradle-app.setting
 
