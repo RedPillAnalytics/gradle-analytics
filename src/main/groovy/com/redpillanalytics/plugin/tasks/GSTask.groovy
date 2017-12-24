@@ -1,6 +1,5 @@
 package com.redpillanalytics.plugin.tasks
 
-import com.google.cloud.storage.Blob
 import com.google.cloud.storage.BlobId
 import com.google.cloud.storage.BlobInfo
 import com.google.cloud.storage.BucketInfo
@@ -8,35 +7,13 @@ import com.google.cloud.storage.Storage
 import com.google.cloud.storage.StorageException
 import com.google.cloud.storage.StorageOptions
 import groovy.io.FileType
-import org.gradle.api.tasks.Optional
 import static java.nio.charset.StandardCharsets.UTF_8
 import groovy.util.logging.Slf4j
-import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.TaskAction
 
 @Slf4j
 @groovy.transform.InheritConstructors
 class GSTask extends ObjectStoreTask {
-
-   /**
-    * Returns the name of the bucket to use in Google Cloud Storage.
-    * <p>
-    * Normalizes the name to ensure all characters are supported by Google Cloud Storage.
-    *
-    * @return The name of the bucket in Google Cloud Storage.
-    */
-   @Input
-   @Optional
-   @Override
-   String getBucketName() {
-
-      String bucketName = prefix.replace('.', '-')
-
-      log.debug "Name of bucket: $bucketName"
-
-      return bucketName
-
-   }
 
    /**
     * The Gradle Custom Task @TaskAction.
@@ -47,7 +24,7 @@ class GSTask extends ObjectStoreTask {
       Storage storage = StorageOptions.getDefaultInstance().getService()
 
       // first create the bucket
-      log.debug "Creating bucket: ${getBucketName()}"
+      log.info "Creating bucket: ${getBucketName()}"
       try {
 
          storage.create(BucketInfo.of(getBucketName()))
@@ -57,21 +34,34 @@ class GSTask extends ObjectStoreTask {
 
          if (se.message == 'You already own this bucket. Please select another name.') {
 
-            log.info "Bucket ${prefix} already exists."
+            log.debug "Bucket ${prefix} already exists."
 
          } else {
 
-            throw se
+            if (project.analytics.ignoreErrors.toBoolean()) {
+
+               log.warn project.analytics.ignoreErrors.toBoolean().dump()
+
+               log.warn "Exception logged"
+               project.logger.info se.toString()
+
+            } else {
+
+               log.warn "Exception thrown"
+               throw se
+            }
          }
       }
       catch (Exception e) {
 
-         if (project.extensions.analytics.ignoreErrors.toBoolean()) {
+         if (project.analytics.ignoreErrors.toBoolean()) {
 
+            log.debug "Exception logged"
             project.logger.info e.toString()
 
          } else {
 
+            log.debug "Exception thrown"
             throw e
          }
       }
@@ -90,11 +80,11 @@ class GSTask extends ObjectStoreTask {
 
                BlobId blobId = BlobId.of(getBucketName(), "${getFilePath(file, dir)}")
                BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType("text/plain").build()
-               Blob blob = storage.create(blobInfo, file.text.getBytes(UTF_8))
+               storage.create(blobInfo, file.text.getBytes(UTF_8))
 
             } catch (Exception e) {
 
-               if (project.extensions.analytics.ignoreErrors.toBoolean()) {
+               if (project.analytics.ignoreErrors.toBoolean()) {
 
                   project.logger.info e.toString()
 
@@ -103,7 +93,6 @@ class GSTask extends ObjectStoreTask {
                   throw e
                }
             }
-
          }
       }
 

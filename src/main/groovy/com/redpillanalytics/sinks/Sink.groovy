@@ -8,37 +8,39 @@ import groovy.util.logging.Slf4j
 @Slf4j
 class Sink {
 
-    Boolean ignoreErrors
-    Gson gson
+   Boolean ignoreErrors
+   Gson gson
 
-    // constructor
-    // default is to ignore errors
-    Sink(Boolean ignoreErrors=false) {
+   // constructor
+   // default is to ignore errors
+   Sink(Boolean ignoreErrors = false) {
 
-        this.ignoreErrors = ignoreErrors
-        this.gson = new GsonBuilder().serializeNulls().create()
-    }
+      this.ignoreErrors = ignoreErrors
+      this.gson = new GsonBuilder().serializeNulls().create()
 
-    def jsonToDelimited(String data, String delimiter='|') {
+      log.debug "ignoreErrors: ${ignoreErrors.toString()}"
+   }
 
-        def pipeData = gson.fromJson(data, Map).values().join(delimiter)
+   def jsonToDelimited(String data, String delimiter = '|') {
 
-        return pipeData
+      def pipeData = gson.fromJson(data, Map).values().join(delimiter)
 
-    }
+      return pipeData
 
-    def objectToJson(Object object) {
+   }
 
-        def json = gson.toJson(object)
+   def objectToJson(Object object) {
 
-        log.debug "json document: ${JsonOutput.prettyPrint(json)}"
+      def json = gson.toJson(object)
 
-        return json
-    }
+      log.debug "json document: ${JsonOutput.prettyPrint(json)}"
 
-    def getTimestamp() {
+      return json
+   }
 
-        return new Date().format('yyyy-MM-dd-HHmmssSS')
-    }
+   def getTimestamp() {
+
+      return new Date().format('yyyy-MM-dd-HHmmssSS')
+   }
 
 }

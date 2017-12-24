@@ -34,12 +34,13 @@ class ProduceTest extends Specification {
             
             analytics.sinks {
                pubsub
+               gs
             }
         """
 
       result = GradleRunner.create()
               .withProjectDir(testProjectDir.root)
-              .withArguments('-Si', 'build', 'produce')
+              .withArguments('-Si', 'build', 'produce','-Panalytics.ignoreErrors=false')
               .withPluginClasspath()
               .build()
 

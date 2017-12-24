@@ -1,7 +1,3 @@
-/**
- * Created by stewart on 4/30/15.
- */
-
 package com.redpillanalytics.plugin.tasks
 
 import com.redpillanalytics.sinks.PubSub
