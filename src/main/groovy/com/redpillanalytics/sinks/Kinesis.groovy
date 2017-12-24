@@ -8,10 +8,6 @@ import groovy.util.logging.Slf4j
 
 import java.nio.ByteBuffer
 
-/**
- * Created by stewartbryson on 11/20/16.
- */
-
 @Slf4j
 @groovy.transform.InheritConstructors
 class Kinesis extends Sink {

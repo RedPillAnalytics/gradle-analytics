@@ -24,6 +24,12 @@ pipeline {
          }
       }
 
+      stage('Integration') {
+         steps {
+            sh "$graadle integrationTest"
+         }
+      }
+
       stage('Publish') {
          when { branch "master" }
          steps {
