@@ -186,7 +186,9 @@ class AnalyticsPlugin implements Plugin<Project> {
             group 'analytics'
             description "Analytics workflow task for producing data to all configured sinks."
 
-            if (project.analytics.compress()) {
+            if (project.analytics.compressFiles.toBoolean()) {
+
+               log.debug "Analytics files will be compressed after production."
 
                from "${project.analytics.getAnalyticsDir(project.buildDir).parent}/"
 
@@ -197,7 +199,9 @@ class AnalyticsPlugin implements Plugin<Project> {
 
             doLast {
 
-               if (project.analytics.clean()) {
+               if (project.analytics.cleanFiles.toBoolean()) {
+
+                  log.debug "Analytics files will be deleted after production."
 
                   project.delete "${project.analytics.getAnalyticsDir(project.buildDir).parent}"
 

@@ -23,7 +23,7 @@ class PubSub extends Sink {
 
       def projectId = ServiceOptions.getDefaultProjectId()
 
-      log.warn "project ID: ${projectId}"
+      log.debug "project ID: ${projectId}"
 
       return projectId
 
