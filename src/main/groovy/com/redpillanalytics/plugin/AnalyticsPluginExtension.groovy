@@ -47,11 +47,11 @@ class AnalyticsPluginExtension {
    /**
     * When true, the {@code produce} task will compress all the JSON data files upon completion.
     */
-   Boolean compress = true
+   Boolean compressFiles = true
    /**
     * When true, the {@code produce} task will delete all the JSON data files upon completion.
     */
-   Boolean clean = true
+   Boolean cleanFiles = true
    /**
     * The hostname of the environment executing Gradle builds. Java is used to pull the current hostname as a default.
     */
