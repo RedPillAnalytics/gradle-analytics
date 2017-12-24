@@ -6,10 +6,17 @@ pipeline {
    agent { label 'java-compile' }
 
    environment {
-      GOOGLE_APPLICATION_CREDENTIALS = '~/.gcp/gradle-analytics.json'
+      GOOGLE_APPLICATION_CREDENTIALS = '/var/lib/jenkins/.gcp/gradle-analytics.json'
    }
 
    stages {
+
+      stage('Prepare') {
+         when { branch 'master' }
+         steps {
+            sh "$gradle clean"
+         }
+      }
 
       stage('Release') {
          when { branch "master" }
@@ -26,7 +33,7 @@ pipeline {
 
       stage('Integration') {
          steps {
-            sh "$gradle integrationTest"
+            sh "$gradle integrationTest --rerun-tasks"
          }
       }
 
