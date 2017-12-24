@@ -6,7 +6,7 @@ pipeline {
    agent { label 'java-compile' }
 
    environment {
-      ANALYTICS = credentials('services-analytics-user')
+      GOOGLE_APPLICATION_CREDENTIALS = '~/.gcp/gradle-analytics.json'
    }
 
    stages {
