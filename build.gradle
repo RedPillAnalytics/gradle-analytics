@@ -83,7 +83,7 @@ pluginBundle {
 // Options for all tests
 tasks.withType(Test) {
    ignoreFailures true
-   testLogging.showStandardStreams false
+   testLogging.showStandardStreams true
 }
 
 // send analytics

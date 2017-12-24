@@ -34,10 +34,11 @@ class ProduceTest extends Specification {
             
             analytics.sinks {
                pubsub
-               gs {
-                  prefix = 'gradle-analytics'
-               }
+               gs
             }
+            
+            analytics.ignoreErrors = true
+            
         """
 
       result = GradleRunner.create()

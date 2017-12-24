@@ -1,5 +1,6 @@
 package com.redpillanalytics.plugin.tasks
 
+import com.google.cloud.ServiceOptions
 import com.google.cloud.storage.BlobId
 import com.google.cloud.storage.BlobInfo
 import com.google.cloud.storage.BucketInfo
@@ -15,6 +16,8 @@ import org.gradle.api.tasks.TaskAction
 @groovy.transform.InheritConstructors
 class GSTask extends ObjectStoreTask {
 
+   String bucketName = [ServiceOptions.getDefaultProjectId(), prefix].join('-')
+
    /**
     * The Gradle Custom Task @TaskAction.
     */
@@ -24,10 +27,10 @@ class GSTask extends ObjectStoreTask {
       Storage storage = StorageOptions.getDefaultInstance().getService()
 
       // first create the bucket
-      log.info "Creating bucket: ${getBucketName()}"
+      log.info "Creating bucket: ${bucketName}"
       try {
 
-         storage.create(BucketInfo.of(getBucketName()))
+         storage.create(BucketInfo.of(bucketName))
 
       }
       catch (StorageException se) {
@@ -76,7 +79,7 @@ class GSTask extends ObjectStoreTask {
 
             try {
 
-               BlobId blobId = BlobId.of(getBucketName(), "${getFilePath(file, dir)}")
+               BlobId blobId = BlobId.of(bucketName, "${getFilePath(file, dir)}")
                BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType("text/plain").build()
                storage.create(blobInfo, file.text.getBytes(UTF_8))
 

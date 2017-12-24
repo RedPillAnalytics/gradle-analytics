@@ -23,12 +23,6 @@ class AnalyticsPluginExtension {
     */
    String buildId = CI.getTimestamp()
    /**
-    * Determines whether the CI Server build tag is used for the buildId instead of a timestamp.
-    * <p>
-    * Currently, both Jenkins (legacy and declarative pipeline) and Atlassian Bamboo are supported.
-    */
-   Boolean useBuildTag = false
-   /**
     * The name to use for the {@code task} JSON data file.
     */
    String tasksFileName = 'task.json'
@@ -40,6 +34,10 @@ class AnalyticsPluginExtension {
     * The name to use for the {@code testoutput} JSON data file.
     */
    String testOutputFileName = 'testoutput.json'
+   /**
+    * Determines whether errors in producing data to sinks should be ignored.
+    */
+   Boolean ignoreErrors = true
    /**
     * When true, the {@code produce} task will compress all the JSON data files upon completion.
     */

@@ -3,7 +3,7 @@ package com.redpillanalytics.plugin
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.redpillanalytics.common.CI
-import com.redpillanalytics.common.GradleUtils
+
 import com.redpillanalytics.plugin.tasks.FirehoseTask
 import com.redpillanalytics.plugin.tasks.GSTask
 import com.redpillanalytics.plugin.tasks.JdbcTask
@@ -37,10 +37,32 @@ class AnalyticsPlugin implements Plugin<Project> {
 
       project.afterEvaluate {
 
-         // define the method to get build parameters
-         def getParameter = { name, defaultValue = null ->
+         // Go look for any -P properties that have "analytics." in them
+         // If so... update the extension value
+         project.ext.properties.every { key, value ->
 
-            return GradleUtils.getParameter(project, name, 'analytics')
+            def list = key.toString().split(/\./)
+
+            def extension = list[0]
+            def property = list[1]
+
+            if (extension == 'analytics' && project.analytics.hasProperty(property)) {
+
+               log.warn "Setting configuration property for extension: $extension, property: $property, value: $value"
+
+               if (project.extensions.getByName(extension)."$property" instanceof Boolean) {
+
+                  project.extensions.getByName(extension)."$property" = value.toBoolean()
+               }
+               else if (project.extensions.getByName(extension)."$property" instanceof Integer) {
+
+                  project.extensions.getByName(extension)."$property" = value.toInteger()
+               }
+               else {
+
+                  project.extensions.getByName(extension)."$property" = value
+               }
+            }
          }
 
          def dependencyMatching = { configuration, regexp ->
@@ -51,18 +73,6 @@ class AnalyticsPlugin implements Plugin<Project> {
 
          // Get a Gson object
          Gson gson = new GsonBuilder().serializeNulls().create()
-
-         // Logic for determining Build ID
-         // first, if we pass a custom buildId, then that's the way to go
-         String buildId = getParameter('buildId')
-
-         // easy way to use the buildTag
-         if (getParameter('useBuildTag').toBoolean()) {
-
-            project.analytics.buildId = CI.getBuildTag()
-         }
-
-         log.debug "buildId: ${buildId}"
 
          // setup a few reusable parameters for task creation
          String taskName
