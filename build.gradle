@@ -35,16 +35,6 @@ github {
 
 }
 
-test {
-   ignoreFailures true
-   testLogging.showStandardStreams true
-}
-
-integrationTest {
-   ignoreFailures true
-   testLogging.showStandardStreams true
-}
-
 dependencies {
 
    compile gradleApi()
@@ -88,6 +78,12 @@ pluginBundle {
          version = project.version
       }
    }
+}
+
+// Options for all tests
+tasks.withType(Test) {
+   ignoreFailures true
+   testLogging.showStandardStreams false
 }
 
 task uploadGroovydoc {
