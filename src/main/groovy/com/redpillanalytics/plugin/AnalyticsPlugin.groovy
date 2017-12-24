@@ -195,7 +195,7 @@ class AnalyticsPlugin implements Plugin<Project> {
          }
 
          // global analytics task
-         project.task('produce', type: Zip) {
+         project.task('producer', type: Zip) {
 
             group 'analytics'
             description "Analytics workflow task for producing data to all configured sinks."
@@ -322,7 +322,7 @@ class AnalyticsPlugin implements Plugin<Project> {
 
             if (project.tasks.findByName(taskName)) {
 
-               project.tasks.produce.dependsOn project."${taskName}"
+               project.tasks.producer.dependsOn project."${taskName}"
             }
 
 

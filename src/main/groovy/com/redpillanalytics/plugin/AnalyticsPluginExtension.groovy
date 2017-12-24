@@ -39,11 +39,11 @@ class AnalyticsPluginExtension {
     */
    Boolean ignoreErrors = true
    /**
-    * When true, the {@code produce} task will compress all the JSON data files upon completion.
+    * When true, the {@code producer} task will compress all the JSON data files upon completion.
     */
    Boolean compressFiles = true
    /**
-    * When true, the {@code produce} task will delete all the JSON data files upon completion.
+    * When true, the {@code producer} task will delete all the JSON data files upon completion.
     */
    Boolean cleanFiles = true
    /**

@@ -46,7 +46,7 @@ pipeline {
          junit "build/test-results/**/*.xml"
          archiveArtifacts artifacts: 'build/libs/*.jar', fingerprint: true
          sh "$gradle uploadGroovydoc"
-         sh "$gradle produce"
+         sh "$gradle producer"
       }
    }
 
