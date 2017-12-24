@@ -38,23 +38,21 @@ class GSTask extends ObjectStoreTask {
 
          } else {
 
-            if (project.analytics.ignoreErrors.toBoolean()) {
+            if (ignoreErrors) {
 
-               log.warn project.analytics.ignoreErrors.toBoolean().dump()
-
-               log.warn "Exception logged"
+               log.debug "Exception logged"
                project.logger.info se.toString()
 
             } else {
 
-               log.warn "Exception thrown"
+               log.debug "Exception thrown"
                throw se
             }
          }
       }
       catch (Exception e) {
 
-         if (project.analytics.ignoreErrors.toBoolean()) {
+         if (ignoreErrors) {
 
             log.debug "Exception logged"
             project.logger.info e.toString()
@@ -84,7 +82,7 @@ class GSTask extends ObjectStoreTask {
 
             } catch (Exception e) {
 
-               if (project.analytics.ignoreErrors.toBoolean()) {
+               if (ignoreErrors) {
 
                   project.logger.info e.toString()
 

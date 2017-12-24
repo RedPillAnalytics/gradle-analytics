@@ -27,7 +27,7 @@ class SinkTask extends DefaultTask {
    @Option(option = "ignoreErrors",
            description = "Determines whether errors returned from the Sink are ignored.",
            order = 2)
-   Boolean ignoreErrors = false
+   Boolean ignoreErrors = project.hasProperty('analytics.ignoreErrors')
 
    /**
     * Returns the directory where JSON analytics data files are generated.

@@ -40,7 +40,7 @@ class ProduceTest extends Specification {
 
       result = GradleRunner.create()
               .withProjectDir(testProjectDir.root)
-              .withArguments('-Si', 'build', 'produce','-Panalytics.ignoreErrors=false')
+              .withArguments('-Si', 'build', 'produce')
               .withPluginClasspath()
               .build()
 

@@ -41,10 +41,6 @@ class AnalyticsPluginExtension {
     */
    String testOutputFileName = 'testoutput.json'
    /**
-    * Determines whether errors in producing data to sinks should be ignored.
-    */
-   Boolean ignoreErrors = true
-   /**
     * When true, the {@code produce} task will compress all the JSON data files upon completion.
     */
    Boolean compressFiles = true
