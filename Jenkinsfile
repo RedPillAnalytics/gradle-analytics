@@ -26,7 +26,7 @@ pipeline {
 
       stage('Integration') {
          steps {
-            sh "$graadle integrationTest"
+            sh "$gradle integrationTest"
          }
       }
 
