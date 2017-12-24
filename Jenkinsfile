@@ -6,7 +6,7 @@ pipeline {
    agent { label 'java-compile' }
 
    environment {
-      ANALYTICS = credentials('services-analytics-user')
+      GOOGLE_APPLICATION_CREDENTIALS = '/var/lib/jenkins/.gcp/gradle-analytics.json'
    }
 
    stages {
@@ -14,13 +14,19 @@ pipeline {
       stage('Release') {
          when { branch "master" }
          steps {
-            sh "$gradle ${options} release -Prelease.disableChecks -Prelease.localOnly"
+            sh "$gradle ${options} clean release -Prelease.disableChecks -Prelease.localOnly"
          }
       }
 
       stage('Build') {
          steps {
             sh "$gradle build"
+         }
+      }
+
+      stage('Integration') {
+         steps {
+            sh "$gradle integrationTest --rerun-tasks"
          }
       }
 

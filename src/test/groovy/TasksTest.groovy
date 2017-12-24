@@ -35,6 +35,10 @@ class TasksTest extends Specification {
             
             analytics.sinks {
                pubsub
+               s3
+               jdbc
+               firehose
+               gs
             }
         """
 

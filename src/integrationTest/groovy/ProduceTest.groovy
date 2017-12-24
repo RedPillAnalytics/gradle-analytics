@@ -2,7 +2,6 @@ import groovy.util.logging.Slf4j
 import org.gradle.testkit.runner.GradleRunner
 import org.junit.ClassRule
 import org.junit.rules.TemporaryFolder
-import spock.lang.Ignore
 import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Title
@@ -10,15 +9,18 @@ import spock.lang.Unroll
 
 @Slf4j
 @Title("Execute :publish task using --dry-run")
-class DryRunTest extends Specification {
+class ProduceTest extends Specification {
 
    @ClassRule
    @Shared
    TemporaryFolder testProjectDir = new TemporaryFolder()
 
-   @Shared buildFile
-   @Shared result
-   @Shared indexedResultOutput
+   @Shared
+           buildFile
+   @Shared
+           result
+   @Shared
+           indexedResultOutput
 
    // run the Gradle build
    // return regular output
@@ -32,16 +34,12 @@ class DryRunTest extends Specification {
             
             analytics.sinks {
                pubsub
-               s3
-               jdbc
-               firehose
-               gs
             }
         """
 
       result = GradleRunner.create()
               .withProjectDir(testProjectDir.root)
-              .withArguments('-Sim', 'produce')
+              .withArguments('-Si', 'build', 'produce')
               .withPluginClasspath()
               .build()
 
@@ -51,31 +49,12 @@ class DryRunTest extends Specification {
    }
 
    @Unroll
-   def "a dry run configuration contains :#task"() {
+   def "build was successful"() {
 
-      given: "a dry run task"
-
-      expect:
-      result.output.contains(":$task")
-
-      where:
-      task << ['produce']
-   }
-
-   @Unroll
-   def "a dry run configuration ensures :#firstTask runs before :#secondTask"() {
-
-      given: "a dry-run build executing :produce"
+      given: "an integration test execution"
 
       expect:
-      indexedResultOutput.findIndexOf { it =~ /(:$firstTask)( SKIPPED)/ } < indexedResultOutput.findIndexOf {
-         it =~ /(:$secondTask)( SKIPPED)/
-      }
+      result.output.contains("BUILD SUCCESSFUL")
 
-      where:
-
-      firstTask << ['s3', 'pubsub']
-      secondTask << ['produce', 'produce']
    }
-
 }

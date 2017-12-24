@@ -5,9 +5,6 @@ import com.google.gson.GsonBuilder
 import groovy.json.JsonOutput
 import groovy.util.logging.Slf4j
 
-/**
- * Created by stewartbryson on 11/20/16.
- */
 @Slf4j
 class Sink {
 
@@ -16,7 +13,7 @@ class Sink {
 
     // constructor
     // default is to ignore errors
-    Sink(Boolean ignoreErrors=true) {
+    Sink(Boolean ignoreErrors=false) {
 
         this.ignoreErrors = ignoreErrors
         this.gson = new GsonBuilder().serializeNulls().create()

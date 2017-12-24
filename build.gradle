@@ -4,7 +4,8 @@ plugins {
    id "co.riiid.gradle" version '0.4.2'
    id 'groovy'
    id 'java-gradle-plugin'
-   id 'com.redpillanalytics.gradle-analytics' version "0.1.4"
+   id 'org.unbroken-dome.test-sets' version '1.4.2'
+   id 'com.redpillanalytics.gradle-analytics' version "0.1.5"
 }
 
 scmVersion {
@@ -19,6 +20,10 @@ scmVersion {
 //set Gradle version to SCM Version
 project.version = scmVersion.version
 
+testSets {
+   integrationTest
+}
+
 // configure the upload to GitHub releases
 github {
 
@@ -28,10 +33,6 @@ github {
    tagName = "v${version}"
    assets = fileTree(dir: buildDir, includes: ["**/*${version}*", "**/*${version}*.jar"]).toList()
 
-}
-
-test {
-   ignoreFailures true
 }
 
 dependencies {
@@ -77,6 +78,12 @@ pluginBundle {
          version = project.version
       }
    }
+}
+
+// Options for all tests
+tasks.withType(Test) {
+   ignoreFailures true
+   testLogging.showStandardStreams false
 }
 
 task uploadGroovydoc {
