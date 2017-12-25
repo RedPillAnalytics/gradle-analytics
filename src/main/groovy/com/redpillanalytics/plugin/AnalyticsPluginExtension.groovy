@@ -37,7 +37,7 @@ class AnalyticsPluginExtension {
    /**
     * Determines whether errors in producing data to sinks should be ignored.
     */
-   Boolean ignoreErrors = true
+   Boolean ignoreErrors = false
    /**
     * When true, the {@code producer} task will compress all the JSON data files upon completion.
     */

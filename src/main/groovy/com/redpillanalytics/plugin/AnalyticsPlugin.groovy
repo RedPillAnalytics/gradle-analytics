@@ -41,26 +41,29 @@ class AnalyticsPlugin implements Plugin<Project> {
          // If so... update the extension value
          project.ext.properties.every { key, value ->
 
-            def list = key.toString().split(/\./)
+            log.debug "extension: " + key + ' | ' + value
 
-            def extension = list[0]
-            def property = list[1]
+            if (key =~ /analytics\./) {
 
-            if (extension == 'analytics' && project.analytics.hasProperty(property)) {
+               def list = key.toString().split(/\./)
 
-               log.warn "Setting configuration property for extension: $extension, property: $property, value: $value"
+               def extension = list[0]
+               def property = list[1]
 
-               if (project.extensions.getByName(extension)."$property" instanceof Boolean) {
+               if (extension == 'analytics' && project.analytics.hasProperty(property)) {
 
-                  project.extensions.getByName(extension)."$property" = value.toBoolean()
-               }
-               else if (project.extensions.getByName(extension)."$property" instanceof Integer) {
+                  log.warn "Setting configuration property for extension: $extension, property: $property, value: $value"
 
-                  project.extensions.getByName(extension)."$property" = value.toInteger()
-               }
-               else {
+                  if (project.extensions.getByName(extension)."$property" instanceof Boolean) {
 
-                  project.extensions.getByName(extension)."$property" = value
+                     project.extensions.getByName(extension)."$property" = value.toBoolean()
+                  } else if (project.extensions.getByName(extension)."$property" instanceof Integer) {
+
+                     project.extensions.getByName(extension)."$property" = value.toInteger()
+                  } else {
+
+                     project.extensions.getByName(extension)."$property" = value
+                  }
                }
             }
          }

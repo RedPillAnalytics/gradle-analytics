@@ -16,8 +16,6 @@ import org.gradle.api.tasks.TaskAction
 @groovy.transform.InheritConstructors
 class GSTask extends ObjectStoreTask {
 
-   String bucketName = [ServiceOptions.getDefaultProjectId(), prefix].join('-')
-
    /**
     * The Gradle Custom Task @TaskAction.
     */
@@ -27,7 +25,7 @@ class GSTask extends ObjectStoreTask {
       Storage storage = StorageOptions.getDefaultInstance().getService()
 
       // first create the bucket
-      log.info "Creating bucket: ${bucketName}"
+      log.warn "Creating bucket: ${bucketName}"
       try {
 
          storage.create(BucketInfo.of(bucketName))
