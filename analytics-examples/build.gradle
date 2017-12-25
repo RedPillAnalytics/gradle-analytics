@@ -1,6 +1,6 @@
 plugins {
    id 'groovy'
-   id 'com.redpillanalytics.gradle-analytics'
+   //id 'com.redpillanalytics.gradle-analytics'
 }
 
 group 'com.redpillanalytics'
@@ -17,6 +17,6 @@ dependencies {
    testCompile('org.spockframework:spock-core:1.1-groovy-2.4')
 }
 
-analytics.sinks {
-   pubsub
-}
+//analytics.sinks {
+//   pubsub
+//}
