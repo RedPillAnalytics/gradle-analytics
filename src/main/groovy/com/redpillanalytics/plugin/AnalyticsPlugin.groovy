@@ -3,7 +3,6 @@ package com.redpillanalytics.plugin
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.redpillanalytics.common.CI
-
 import com.redpillanalytics.plugin.tasks.FirehoseTask
 import com.redpillanalytics.plugin.tasks.GSTask
 import com.redpillanalytics.plugin.tasks.JdbcTask
@@ -30,9 +29,7 @@ class AnalyticsPlugin implements Plugin<Project> {
 
       // create configurations
       project.configurations {
-
          analytics
-
       }
 
       project.afterEvaluate {
@@ -335,7 +332,7 @@ class AnalyticsPlugin implements Plugin<Project> {
       // end of afterEvaluate
 
       // add the custom Task Listener that produces Task records
-      project.gradle.addListener new DataListener()
+      project.gradle.addListener new ExecutionListener()
    }
 
    void applyExtension(Project project) {

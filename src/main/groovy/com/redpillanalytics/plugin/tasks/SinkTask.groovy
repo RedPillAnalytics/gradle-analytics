@@ -27,7 +27,7 @@ class SinkTask extends DefaultTask {
    @Option(option = "ignoreErrors",
            description = "Determines whether errors returned from the Sink are ignored.",
            order = 2)
-   //Boolean ignoreErrors = project.hasProperty('analytics.ignoreErrors')
+
    Boolean ignoreErrors = project.analytics.ignoreErrors
 
    /**

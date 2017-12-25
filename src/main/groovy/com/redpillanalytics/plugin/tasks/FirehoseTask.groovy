@@ -5,7 +5,6 @@
 package com.redpillanalytics.plugin.tasks
 
 import com.redpillanalytics.sinks.Kinesis
-import com.redpillanalytics.common.Utils
 import groovy.io.FileType
 import groovy.util.logging.Slf4j
 import org.gradle.api.tasks.TaskAction
@@ -14,24 +13,18 @@ import org.gradle.api.tasks.TaskAction
 @Slf4j
 class FirehoseTask extends SinkTask {
 
-    def getStreamName(File file) {
+   @TaskAction
+   def firehoseTask() {
 
-        return [prefix, Utils.getFileBase(file)].join('.')
+      def kinesis = new Kinesis(project.extensions.analytics.ignoreErrors.toBoolean())
 
-    }
+      getAnalyticsDir().eachFile(FileType.DIRECTORIES) { dir ->
 
-    @TaskAction
-    def firehoseTask() {
+         dir.eachFile(FileType.FILES) { file ->
 
-        def kinesis = new Kinesis(project.extensions.analytics.ignoreErrors.toBoolean())
+            kinesis.sendRecord(getEntityName(file), file)
 
-        getAnalyticsDir().eachFile (FileType.DIRECTORIES) { dir ->
-
-            dir.eachFile(FileType.FILES) { file ->
-
-                kinesis.sendRecord(getStreamName(file), file)
-
-            }
-        }
-    }
+         }
+      }
+   }
 }
