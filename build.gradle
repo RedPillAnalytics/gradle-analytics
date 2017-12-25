@@ -5,8 +5,16 @@ plugins {
    id 'groovy'
    id 'java-gradle-plugin'
    id 'org.unbroken-dome.test-sets' version '1.4.2'
-   id 'com.redpillanalytics.gradle-analytics' version "0.1.8"
+   //id 'com.redpillanalytics.gradle-analytics' version "0.1.8"
 }
+
+// send analytics
+//analytics.sinks {
+//   pubsub
+//   gs {
+//      prefix = 'gradle-analytics'
+//   }
+//}
 
 scmVersion {
 
@@ -86,30 +94,34 @@ tasks.withType(Test) {
    testLogging.showStandardStreams true
 }
 
-// send analytics
-//analytics.sinks {
-//   pubsub
-//}
-
 task uploadGroovydoc {
 
    description = 'Upload Groovydocs to s3.'
    group = 'documentation'
 
-   doLast {
+   doFirst {
 
       exec {
-
-         executable 'aws'
-
-         args 's3', 'sync', groovydoc.destinationDir.getPath(), "s3://gradle-analytics/documentation/$version/"
+         executable 'gsutil'
+         args 'rsync', '-d', groovydoc.destinationDir.getPath(), "gs://gradle-analytics-documentation/$version/"
       }
 
       exec {
+         executable 'gsutil'
+         args 'rsync', '-d', groovydoc.destinationDir.getPath(), "gs://gradle-analytics-documentation/latest/"
+      }
+   }
 
+   doLast {
+
+      exec {
          executable 'aws'
+         args 's3', 'sync', groovydoc.destinationDir.getPath(), "s3://rpa-documentation/gradle-analytics/$version/"
+      }
 
-         args 's3', 'sync', groovydoc.destinationDir.getPath(), "s3://gradle-analytics/documentation/latest/"
+      exec {
+         executable 'aws'
+         args 's3', 'sync', groovydoc.destinationDir.getPath(), "s3://rpa-documentation/gradle-analytics/latest/"
       }
    }
 

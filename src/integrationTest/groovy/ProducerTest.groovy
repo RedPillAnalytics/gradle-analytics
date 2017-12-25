@@ -37,6 +37,9 @@ class ProducerTest extends Specification {
                gs {
                   prefix = 'gradle-analytics'
                }
+               s3 {
+                  prefix = 'gradle-analytics'
+               }
             }
             
             analytics.ignoreErrors = true     
