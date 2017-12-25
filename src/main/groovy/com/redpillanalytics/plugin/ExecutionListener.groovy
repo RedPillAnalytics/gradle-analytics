@@ -16,7 +16,7 @@ import org.gradle.api.tasks.TaskState
 import com.google.gson.GsonBuilder
 
 @Slf4j
-class DataListener implements TaskExecutionListener, BuildListener, ProjectEvaluationListener, StandardOutputListener {
+class ExecutionListener implements TaskExecutionListener, BuildListener, ProjectEvaluationListener, StandardOutputListener {
 
    long startTime
    long endTime
