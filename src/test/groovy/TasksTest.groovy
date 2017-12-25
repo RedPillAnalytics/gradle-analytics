@@ -62,7 +62,7 @@ class TasksTest extends Specification {
       result.output.contains("$task")
 
       where:
-      task << ['produce']
+      task << ['producer']
    }
 
 }

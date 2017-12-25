@@ -1,9 +1,9 @@
 package com.redpillanalytics.plugin
 
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import com.redpillanalytics.common.CI
-import com.redpillanalytics.common.GradleUtils
-import com.redpillanalytics.sinks.Sink
-import com.redpillanalytics.sinks.records.TestOutput
+
 import com.redpillanalytics.plugin.tasks.FirehoseTask
 import com.redpillanalytics.plugin.tasks.GSTask
 import com.redpillanalytics.plugin.tasks.JdbcTask
@@ -15,6 +15,7 @@ import org.gradle.api.Project
 import org.gradle.api.tasks.Delete
 import org.gradle.api.tasks.bundling.Zip
 import org.gradle.api.tasks.testing.Test
+
 
 @Slf4j
 class AnalyticsPlugin implements Plugin<Project> {
@@ -36,10 +37,35 @@ class AnalyticsPlugin implements Plugin<Project> {
 
       project.afterEvaluate {
 
-         // define the method to get build parameters
-         def getParameter = { name, defaultValue = null ->
+         // Go look for any -P properties that have "analytics." in them
+         // If so... update the extension value
+         project.ext.properties.every { key, value ->
 
-            return GradleUtils.getParameter(project, name, 'analytics')
+            log.debug "extension: " + key + ' | ' + value
+
+            if (key =~ /analytics\./) {
+
+               def list = key.toString().split(/\./)
+
+               def extension = list[0]
+               def property = list[1]
+
+               if (extension == 'analytics' && project.analytics.hasProperty(property)) {
+
+                  log.warn "Setting configuration property for extension: $extension, property: $property, value: $value"
+
+                  if (project.extensions.getByName(extension)."$property" instanceof Boolean) {
+
+                     project.extensions.getByName(extension)."$property" = value.toBoolean()
+                  } else if (project.extensions.getByName(extension)."$property" instanceof Integer) {
+
+                     project.extensions.getByName(extension)."$property" = value.toInteger()
+                  } else {
+
+                     project.extensions.getByName(extension)."$property" = value
+                  }
+               }
+            }
          }
 
          def dependencyMatching = { configuration, regexp ->
@@ -48,17 +74,8 @@ class AnalyticsPlugin implements Plugin<Project> {
 
          }
 
-         // Logic for determining Build ID
-         // first, if we pass a custom buildId, then that's the way to go
-         String buildId = getParameter('buildId')
-
-         // easy way to use the buildTag
-         if (getParameter('useBuildTag').toBoolean()) {
-
-            project.analytics.buildId = CI.getBuildTag()
-         }
-
-         log.debug "buildId: ${buildId}"
+         // Get a Gson object
+         Gson gson = new GsonBuilder().serializeNulls().create()
 
          // setup a few reusable parameters for task creation
          String taskName
@@ -110,7 +127,7 @@ class AnalyticsPlugin implements Plugin<Project> {
             afterTest { desc, result ->
 
                // write tests to the analytics file
-               testsFile.append(new Sink(task.project.analytics.ignoreErrors).objectToJson(new com.redpillanalytics.sinks.records.Test(
+               testsFile.append(gson.toJson(new com.redpillanalytics.sinks.records.Test(
                        buildid: project.analytics.buildId,
                        organization: project.analytics.organization,
                        hostname: project.analytics.hostname,
@@ -146,7 +163,7 @@ class AnalyticsPlugin implements Plugin<Project> {
                String eventDestination = event.getDestination().toString()
 
                // write tests to the analytics file
-               testOutputFile.append(new Sink(task.project.analytics.ignoreErrors).objectToJson(new TestOutput(
+               testOutputFile.append(gson.toJson(new com.redpillanalytics.sinks.records.TestOutput(
                        buildid: project.analytics.buildId,
                        organization: project.analytics.organization,
                        hostname: project.analytics.hostname,
@@ -181,7 +198,7 @@ class AnalyticsPlugin implements Plugin<Project> {
          }
 
          // global analytics task
-         project.task('produce', type: Zip) {
+         project.task('producer', type: Zip) {
 
             group 'analytics'
             description "Analytics workflow task for producing data to all configured sinks."
@@ -308,7 +325,7 @@ class AnalyticsPlugin implements Plugin<Project> {
 
             if (project.tasks.findByName(taskName)) {
 
-               project.tasks.produce.dependsOn project."${taskName}"
+               project.tasks.producer.dependsOn project."${taskName}"
             }
 
 

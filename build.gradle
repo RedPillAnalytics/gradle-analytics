@@ -5,7 +5,7 @@ plugins {
    id 'groovy'
    id 'java-gradle-plugin'
    id 'org.unbroken-dome.test-sets' version '1.4.2'
-   id 'com.redpillanalytics.gradle-analytics' version "0.1.6"
+   //id 'com.redpillanalytics.gradle-analytics' version "0.1.7"
 }
 
 scmVersion {
@@ -83,13 +83,13 @@ pluginBundle {
 // Options for all tests
 tasks.withType(Test) {
    ignoreFailures true
-   testLogging.showStandardStreams false
+   testLogging.showStandardStreams true
 }
 
 // send analytics
-analytics.sinks {
-   pubsub
-}
+//analytics.sinks {
+//   pubsub
+//}
 
 task uploadGroovydoc {
 

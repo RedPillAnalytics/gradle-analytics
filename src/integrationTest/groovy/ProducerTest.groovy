@@ -9,7 +9,7 @@ import spock.lang.Unroll
 
 @Slf4j
 @Title("Execute :publish task using --dry-run")
-class ProduceTest extends Specification {
+class ProducerTest extends Specification {
 
    @ClassRule
    @Shared
@@ -34,12 +34,17 @@ class ProduceTest extends Specification {
             
             analytics.sinks {
                pubsub
+               gs {
+                  prefix = 'gradle-analytics'
+               }
             }
+            
+            analytics.ignoreErrors = true     
         """
 
       result = GradleRunner.create()
               .withProjectDir(testProjectDir.root)
-              .withArguments('-Si', 'build', 'produce')
+              .withArguments('-Si', 'build', 'producer')
               .withPluginClasspath()
               .build()
 

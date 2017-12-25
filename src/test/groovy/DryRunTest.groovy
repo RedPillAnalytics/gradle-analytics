@@ -41,7 +41,7 @@ class DryRunTest extends Specification {
 
       result = GradleRunner.create()
               .withProjectDir(testProjectDir.root)
-              .withArguments('-Sim', 'produce')
+              .withArguments('-Sim', 'producer')
               .withPluginClasspath()
               .build()
 
@@ -59,13 +59,13 @@ class DryRunTest extends Specification {
       result.output.contains(":$task")
 
       where:
-      task << ['produce']
+      task << ['producer']
    }
 
    @Unroll
    def "a dry run configuration ensures :#firstTask runs before :#secondTask"() {
 
-      given: "a dry-run build executing :produce"
+      given: "a dry-run build executing :producer"
 
       expect:
       indexedResultOutput.findIndexOf { it =~ /(:$firstTask)( SKIPPED)/ } < indexedResultOutput.findIndexOf {
@@ -75,7 +75,7 @@ class DryRunTest extends Specification {
       where:
 
       firstTask << ['s3', 'pubsub']
-      secondTask << ['produce', 'produce']
+      secondTask << ['producer', 'producer']
    }
 
 }

@@ -1,5 +1,5 @@
 def options = '-Si'
-def properties = "-PbuildId=${env.BUILD_TAG}"
+def properties = "-Panalytics.buildId=${env.BUILD_TAG}"
 def gradle = "./gradlew ${options} ${properties}"
 
 pipeline {
@@ -45,8 +45,7 @@ pipeline {
       always {
          junit "build/test-results/**/*.xml"
          archiveArtifacts artifacts: 'build/libs/*.jar', fingerprint: true
-         sh "$gradle uploadGroovydoc"
-         sh "$gradle produce"
+         //sh "$gradle produce"
       }
    }
 

@@ -1,7 +1,6 @@
 package com.redpillanalytics.plugin
 
 import com.redpillanalytics.common.CI
-import com.redpillanalytics.sinks.Sink
 import groovy.util.logging.Slf4j
 import org.gradle.BuildListener
 import org.gradle.BuildResult
@@ -14,85 +13,82 @@ import org.gradle.api.initialization.Settings
 import org.gradle.api.invocation.Gradle
 import org.gradle.api.logging.StandardOutputListener
 import org.gradle.api.tasks.TaskState
-
-
-/**
- * Created by stewart on 3/19/16.
- */
+import com.google.gson.GsonBuilder
 
 @Slf4j
 class DataListener implements TaskExecutionListener, BuildListener, ProjectEvaluationListener, StandardOutputListener {
 
-    long startTime
-    long endTime
+   long startTime
+   long endTime
 
-    void beforeExecute(Task task) {
+   void beforeExecute(Task task) {
 
-        startTime = System.currentTimeMillis()
-    }
+      startTime = System.currentTimeMillis()
+   }
 
-    void afterExecute(Task task, TaskState taskState) {
+   void afterExecute(Task task, TaskState taskState) {
 
-        endTime = System.currentTimeMillis()
+      endTime = System.currentTimeMillis()
 
-        def ms = (endTime - startTime)
+      def ms = (endTime - startTime)
 
+      def gson = new GsonBuilder().serializeNulls().create()
 
-        try {
-            // define the project JSON file
-            def tasksFile = task.project.analytics.getTasksFile(task.project.buildDir)
-            tasksFile.parentFile.mkdirs()
+      try {
+         // define the project JSON file
+         def tasksFile = task.project.analytics.getTasksFile(task.project.buildDir)
+         tasksFile.parentFile.mkdirs()
 
-            // generate the project JSON file
-            tasksFile.append(new Sink(task.project.analytics.ignoreErrors.toBoolean()).objectToJson(new com.redpillanalytics.sinks.records.Task(
-                    buildid: task.project.extensions.analytics.buildId,
-                    organization: task.project.extensions.analytics.organization,
-                    hostname: task.project.extensions.analytics.hostname,
-                    commithash: CI.commitHash,
-                    scmbranch: CI.getBranch(),
-                    repositoryurl: CI.getRepositoryUrl(),
-                    commitemail: CI.getCommitEmail(),
-                    projectdir: task.project.name,
-                    builddir: task.project.buildDir,
-                    taskname: task.getName(),
-                    taskpath: task.getPath(),
-                    taskgroup: task.getGroup(),
-                    taskdesc: task.getDescription(),
-                    taskdate: new Date(startTime).format("yyyy-MM-dd HH:mm:ss"),
-                    duration: ms,
-                    status: taskState.failure ? 'failure' : 'success'
-            )) + '\n')
+         // generate the project JSON file
+         tasksFile.append(gson.toJson(new com.redpillanalytics.sinks.records.Task(
+                 buildid: task.project.extensions.analytics.buildId,
+                 organization: task.project.extensions.analytics.organization,
+                 hostname: task.project.extensions.analytics.hostname,
+                 commithash: CI.commitHash,
+                 scmbranch: CI.getBranch(),
+                 repositoryurl: CI.getRepositoryUrl(),
+                 commitemail: CI.getCommitEmail(),
+                 projectdir: task.project.name,
+                 builddir: task.project.buildDir,
+                 taskname: task.getName(),
+                 taskpath: task.getPath(),
+                 taskgroup: task.getGroup(),
+                 taskdesc: task.getDescription(),
+                 taskdate: new Date(startTime).format("yyyy-MM-dd HH:mm:ss"),
+                 duration: ms,
+                 status: taskState.failure ? 'failure' : 'success'
+         )) + '\n')
 
-        } catch (UnknownDomainObjectException e) {
+      } catch (UnknownDomainObjectException e) {
 
-            log.info "Project '${task.project.name}' not enabled for Analytics."
-        }
+         log.info "Project '${task.project.name}' not enabled for Analytics."
+      }
 
-        log.debug "${task.getPath()} took ${ms}ms"
+      log.debug "${task.getPath()} took ${ms}ms"
 
-    }
+   }
 
-    @Override
-    void buildFinished(BuildResult result) {}
+   @Override
+   void buildFinished(BuildResult result) {}
 
-    @Override
-    void buildStarted(Gradle gradle) {}
+   @Override
+   void buildStarted(Gradle gradle) {}
 
-    @Override
-    void projectsEvaluated(Gradle gradle) {}
+   @Override
+   void projectsEvaluated(Gradle gradle) {}
 
-    @Override
-    void projectsLoaded(Gradle gradle) {}
+   @Override
+   void projectsLoaded(Gradle gradle) {}
 
-    @Override
-    void settingsEvaluated(Settings settings) {}
+   @Override
+   void settingsEvaluated(Settings settings) {}
 
-    @Override
-    void beforeEvaluate(org.gradle.api.Project project) {}
+   @Override
+   void beforeEvaluate(org.gradle.api.Project project) {}
 
-    @Override
-    void afterEvaluate(org.gradle.api.Project project, ProjectState state) {}
+   @Override
+   void afterEvaluate(org.gradle.api.Project project, ProjectState state) {}
 
-    void onOutput(CharSequence sequence) {}
+   void onOutput(CharSequence sequence) {}
 
 }
