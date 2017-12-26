@@ -231,7 +231,7 @@ class AnalyticsPlugin implements Plugin<Project> {
             log.debug "analyticGroup name: ${ag.name}"
 
             // setup Kinesis Firehose functionality
-            if (ag.getMechanism() == 'firehose') {
+            if (ag.getSink() == 'firehose') {
 
                // Add analytics processing task
                project.task(taskName, type: FirehoseTask) {
@@ -248,7 +248,7 @@ class AnalyticsPlugin implements Plugin<Project> {
             }
 
             // use S3 API to upload files directly to S3
-            if (ag.getMechanism() == 's3') {
+            if (ag.getSink() == 's3') {
 
                // Add analytics processing task
                project.task(taskName, type: S3Task) {
@@ -265,7 +265,7 @@ class AnalyticsPlugin implements Plugin<Project> {
             }
 
             // use GS API to upload files directly to GS
-            if (ag.getMechanism() == 'gs') {
+            if (ag.getSink() == 'gs') {
 
                // Add analytics processing task
                project.task(taskName, type: GSTask) {
@@ -282,7 +282,7 @@ class AnalyticsPlugin implements Plugin<Project> {
             }
 
             // Google PubSub
-            if (ag.getMechanism() == 'pubsub') {
+            if (ag.getSink() == 'pubsub') {
 
                // Add analytics processing task
                project.task(taskName, type: PubSubTask) {
@@ -299,7 +299,7 @@ class AnalyticsPlugin implements Plugin<Project> {
             }
 
             // use JDBC and built in JSON
-            if ((ag.getMechanism() == 'jdbc') && dependencyMatching('analytics', '.*jdbc.*')) {
+            if ((ag.getSink() == 'jdbc') && dependencyMatching('analytics', '.*jdbc.*')) {
 
                // Add analytics processing task
                project.task(taskName, type: JdbcTask) {

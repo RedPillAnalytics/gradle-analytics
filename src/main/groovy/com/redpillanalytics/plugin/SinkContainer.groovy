@@ -9,7 +9,7 @@ import groovy.util.logging.Slf4j
 class SinkContainer extends DomainContainer {
 
    // naming
-   String prefix, mechanism
+   String prefix, sink
 
    // JDBC connection information
    String username, password, driverUrl, driverClass
@@ -23,15 +23,15 @@ class SinkContainer extends DomainContainer {
 
    def getDescription() {
 
-      return "Process data files using the '${getMechanism()}' delivery mechanism and '${getPrefix()}' naming prefix."
+      return "Process data files using the '${getSink()}' delivery sink and '${getPrefix()}' naming prefix."
    }
 
-   def getMechanism() {
+   def getSink() {
 
-      def mechanism = this.mechanism ?: name
-      log.debug "mechanism: ${mechanism}"
-      assert ['s3', 'firehose', 'pubsub', 'jdbc', 'gs'].contains(mechanism)
-      return mechanism
+      def sink = this.sink ?: name
+      log.debug "sink: ${sink}"
+      assert ['s3', 'firehose', 'pubsub', 'jdbc', 'gs'].contains(sink)
+      return sink
    }
 
    def getPrefix() {
