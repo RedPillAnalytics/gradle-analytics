@@ -34,6 +34,7 @@ class ProducerTest extends Specification {
             
             analytics.sinks {
                pubsub
+               firehose
                gs {
                   prefix = 'gradle-analytics'
                }

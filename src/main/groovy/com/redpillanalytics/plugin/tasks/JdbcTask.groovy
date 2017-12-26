@@ -20,14 +20,14 @@ class JdbcTask extends SinkTask {
 
    @Input
    @Option(option = "username",
-           description = "username for making the JDBC connection.",
-           order = 1)
+           description = "Username for making the JDBC connection.",
+           order = 3)
    String username
 
    @Input
    @Option(option = "password",
-           description = "password for making the JDBC connection.",
-           order = 2)
+           description = "Password for making the JDBC connection.",
+           order = 4)
    String password
 
    @Input
@@ -41,8 +41,6 @@ class JdbcTask extends SinkTask {
 
    @TaskAction
    def jdbcTask() {
-
-      def stream = new Sink(project.extensions.analytics.ignoreErrors.toBoolean())
 
       project.configurations.analytics.files { it.name =~ '.*jdbc.*' }.each {
          Sql.classLoader.addURL(it.toURI().toURL())
@@ -67,9 +65,23 @@ class JdbcTask extends SinkTask {
 
                logger.debug("Statement: $statement")
 
-               db.execute(statement)
-            }
+               try {
+                  db.execute(statement)
+               }
+               catch (Exception e) {
 
+                  if (ignoreErrors) {
+
+                     logger.debug "Exception logged"
+                     project.logger.info e.toString()
+
+                  } else {
+
+                     logger.debug "Exception thrown"
+                     throw e
+                  }
+               }
+            }
             logger.info "JDBC record(s) sent to '${table}'"
          }
       }
