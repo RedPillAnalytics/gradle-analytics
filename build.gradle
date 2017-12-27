@@ -5,14 +5,19 @@ plugins {
    id 'groovy'
    id 'java-gradle-plugin'
    id 'org.unbroken-dome.test-sets' version '1.4.2'
-   //id 'com.redpillanalytics.gradle-analytics' version "1.0.4"
+   //id "com.redpillanalytics.gradle-analytics" version "1.0.5"
 }
 
 // send analytics
-//analytics.sinks {
-//   pubsub
-//   gs {
-//      prefix = 'gradle-analytics'
+//analytics {
+//   sinks {
+//      pubsub
+//      gs {
+//         prefix = 'gradle-analytics'
+//      }
+//      s3 {
+//         prefix = 'gradle-analytics'
+//      }
 //   }
 //}
 

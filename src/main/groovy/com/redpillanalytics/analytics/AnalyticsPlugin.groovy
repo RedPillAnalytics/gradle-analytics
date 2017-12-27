@@ -185,14 +185,6 @@ class AnalyticsPlugin implements Plugin<Project> {
 
          }
 
-         // Clean Up
-         project.task('cleanTemp', type: Delete) {
-
-            description "Delete the task temporary directory."
-
-            delete project.file("${project.buildDir}/tmp")
-         }
-
          // global analytics task
          project.task('producer', type: Zip) {
 
