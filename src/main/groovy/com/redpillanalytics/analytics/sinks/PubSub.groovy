@@ -1,4 +1,4 @@
-package com.redpillanalytics.sinks
+package com.redpillanalytics.analytics.sinks
 
 import com.google.api.core.ApiFuture
 import com.google.api.gax.rpc.AlreadyExistsException
