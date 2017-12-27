@@ -1,3 +1,5 @@
+package com.redpillanalytics.analytics
+
 import groovy.util.logging.Slf4j
 import org.gradle.testkit.runner.GradleRunner
 import org.junit.ClassRule
@@ -9,16 +11,19 @@ import spock.lang.Title
 import spock.lang.Unroll
 
 @Slf4j
-@Title("Execute :publish task using --dry-run")
-class DryRunTest extends Specification {
+@Title("Execute :tasks")
+class TasksTest extends Specification {
 
    @ClassRule
    @Shared
    TemporaryFolder testProjectDir = new TemporaryFolder()
 
-   @Shared buildFile
-   @Shared result
-   @Shared indexedResultOutput
+   @Shared
+           buildFile
+   @Shared
+           result
+   @Shared
+           indexedResultOutput
 
    // run the Gradle build
    // return regular output
@@ -41,7 +46,7 @@ class DryRunTest extends Specification {
 
       result = GradleRunner.create()
               .withProjectDir(testProjectDir.root)
-              .withArguments('-Sim', 'producer')
+              .withArguments('-Si', 'tasks')
               .withPluginClasspath()
               .build()
 
@@ -51,31 +56,15 @@ class DryRunTest extends Specification {
    }
 
    @Unroll
-   def "a dry run configuration contains :#task"() {
+   def "Executing :tasks contains :#task"() {
 
-      given: "a dry run task"
+      given: "a gradle tasks execution"
 
       expect:
-      result.output.contains(":$task")
+      result.output.contains("$task")
 
       where:
       task << ['producer']
-   }
-
-   @Unroll
-   def "a dry run configuration ensures :#firstTask runs before :#secondTask"() {
-
-      given: "a dry-run build executing :producer"
-
-      expect:
-      indexedResultOutput.findIndexOf { it =~ /(:$firstTask)( SKIPPED)/ } < indexedResultOutput.findIndexOf {
-         it =~ /(:$secondTask)( SKIPPED)/
-      }
-
-      where:
-
-      firstTask << ['s3', 'pubsub']
-      secondTask << ['producer', 'producer']
    }
 
 }
