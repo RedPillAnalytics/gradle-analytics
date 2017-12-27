@@ -99,18 +99,18 @@ task uploadGroovydoc {
    description = 'Upload Groovydocs to s3.'
    group = 'documentation'
 
-   doFirst {
-
-      exec {
-         executable 'gsutil'
-         args 'rsync', '-d', groovydoc.destinationDir.getPath(), "gs://gradle-analytics-documentation/$version/"
-      }
-
-      exec {
-         executable 'gsutil'
-         args 'rsync', '-d', groovydoc.destinationDir.getPath(), "gs://gradle-analytics-documentation/latest/"
-      }
-   }
+//   doFirst {
+//
+//      exec {
+//         executable 'gsutil'
+//         args 'rsync', '-d', groovydoc.destinationDir.getPath(), "gs://gradle-analytics-documentation/$version/"
+//      }
+//
+//      exec {
+//         executable 'gsutil'
+//         args 'rsync', '-d', groovydoc.destinationDir.getPath(), "gs://gradle-analytics-documentation/latest/"
+//      }
+//   }
 
    doLast {
 
