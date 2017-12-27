@@ -1,4 +1,4 @@
-package com.redpillanalytics.analytics.sinks
+package com.redpillanalytics.sinks
 
 import com.amazonaws.services.kinesisfirehose.AmazonKinesisFirehoseClient
 import com.amazonaws.services.kinesisfirehose.model.PutRecordBatchRequest

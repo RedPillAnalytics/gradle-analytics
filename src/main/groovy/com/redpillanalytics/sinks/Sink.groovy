@@ -1,4 +1,4 @@
-package com.redpillanalytics.analytics.sinks
+package com.redpillanalytics.sinks
 
 import groovy.util.logging.Slf4j
 

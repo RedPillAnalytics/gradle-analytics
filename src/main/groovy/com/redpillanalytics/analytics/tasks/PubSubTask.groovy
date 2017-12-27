@@ -1,6 +1,6 @@
 package com.redpillanalytics.analytics.tasks
 
-import com.redpillanalytics.analytics.sinks.PubSub
+import com.redpillanalytics.sinks.PubSub
 import groovy.io.FileType
 import groovy.util.logging.Slf4j
 import org.gradle.api.tasks.TaskAction
