@@ -40,7 +40,7 @@ class ExecutionListener implements TaskExecutionListener, BuildListener, Project
          tasksFile.parentFile.mkdirs()
 
          // generate the project JSON file
-         tasksFile.append(gson.toJson(new com.redpillanalytics.sinks.records.Task(
+         tasksFile.append(gson.toJson([
                  buildid: task.project.extensions.analytics.buildId,
                  organization: task.project.extensions.analytics.organization,
                  hostname: task.project.extensions.analytics.hostname,
@@ -49,7 +49,7 @@ class ExecutionListener implements TaskExecutionListener, BuildListener, Project
                  repositoryurl: CI.getRepositoryUrl(),
                  commitemail: CI.getCommitEmail(),
                  projectdir: task.project.name,
-                 builddir: task.project.buildDir,
+                 builddir: task.project.buildDir.canonicalPath,
                  taskname: task.getName(),
                  taskpath: task.getPath(),
                  taskgroup: task.getGroup(),
@@ -57,7 +57,7 @@ class ExecutionListener implements TaskExecutionListener, BuildListener, Project
                  taskdate: new Date(startTime).format("yyyy-MM-dd HH:mm:ss"),
                  duration: ms,
                  status: taskState.failure ? 'failure' : 'success'
-         )) + '\n')
+         ]) + '\n')
 
       } catch (UnknownDomainObjectException e) {
 
