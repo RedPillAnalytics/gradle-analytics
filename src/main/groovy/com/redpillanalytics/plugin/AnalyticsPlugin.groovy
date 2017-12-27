@@ -124,7 +124,7 @@ class AnalyticsPlugin implements Plugin<Project> {
             afterTest { desc, result ->
 
                // write tests to the analytics file
-               testsFile.append(gson.toJson(new com.redpillanalytics.sinks.records.Test(
+               testsFile.append(gson.toJson([
                        buildid: project.analytics.buildId,
                        organization: project.analytics.organization,
                        hostname: project.analytics.hostname,
@@ -141,8 +141,7 @@ class AnalyticsPlugin implements Plugin<Project> {
                        successcount: result.getSuccessfulTestCount(),
                        failcount: result.getFailedTestCount(),
                        skipcount: result.getSkippedTestCount()
-               )) + '\n')
-
+               ]) + '\n')
             }
 
             onOutput { desc, event ->
@@ -160,7 +159,7 @@ class AnalyticsPlugin implements Plugin<Project> {
                String eventDestination = event.getDestination().toString()
 
                // write tests to the analytics file
-               testOutputFile.append(gson.toJson(new com.redpillanalytics.sinks.records.TestOutput(
+               testOutputFile.append(gson.toJson([
                        buildid: project.analytics.buildId,
                        organization: project.analytics.organization,
                        hostname: project.analytics.hostname,
@@ -175,7 +174,7 @@ class AnalyticsPlugin implements Plugin<Project> {
                        processtype: type,
                        destination: eventDestination,
                        message: eventMessage
-               )) + '\n')
+               ]) + '\n')
             }
 
             afterSuite { desc, result ->
