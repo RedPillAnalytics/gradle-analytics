@@ -1,13 +1,13 @@
-package com.redpillanalytics.plugin
+package com.redpillanalytics.analytics
 
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.redpillanalytics.common.CI
-import com.redpillanalytics.plugin.tasks.FirehoseTask
-import com.redpillanalytics.plugin.tasks.GSTask
-import com.redpillanalytics.plugin.tasks.JdbcTask
-import com.redpillanalytics.plugin.tasks.PubSubTask
-import com.redpillanalytics.plugin.tasks.S3Task
+import com.redpillanalytics.analytics.tasks.FirehoseTask
+import com.redpillanalytics.analytics.tasks.GSTask
+import com.redpillanalytics.analytics.tasks.JdbcTask
+import com.redpillanalytics.analytics.tasks.PubSubTask
+import com.redpillanalytics.analytics.tasks.S3Task
 import groovy.util.logging.Slf4j
 import org.gradle.api.Plugin
 import org.gradle.api.Project

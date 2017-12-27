@@ -1,4 +1,4 @@
-package com.redpillanalytics.plugin.tasks
+package com.redpillanalytics.analytics.tasks
 
 import com.redpillanalytics.sinks.PubSub
 import groovy.io.FileType

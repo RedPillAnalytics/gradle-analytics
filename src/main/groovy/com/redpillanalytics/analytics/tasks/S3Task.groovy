@@ -1,4 +1,4 @@
-package com.redpillanalytics.plugin.tasks
+package com.redpillanalytics.analytics.tasks
 
 import com.amazonaws.services.s3.AmazonS3Client
 import com.amazonaws.services.s3.model.CreateBucketRequest

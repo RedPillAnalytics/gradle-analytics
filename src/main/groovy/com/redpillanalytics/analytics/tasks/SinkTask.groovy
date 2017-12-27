@@ -1,4 +1,4 @@
-package com.redpillanalytics.plugin.tasks
+package com.redpillanalytics.analytics.tasks
 
 import com.redpillanalytics.common.Utils
 import groovy.util.logging.Slf4j
@@ -12,7 +12,7 @@ import org.gradle.api.tasks.InputDirectory
 class SinkTask extends DefaultTask {
 
    /**
-    * Configured using {@link com.redpillanalytics.plugin.SinkContainer#prefix}
+    * Configured using {@link com.redpillanalytics.analytics.SinkContainer#prefix}
     */
    @Input
    @Option(option = "prefix",
@@ -21,7 +21,7 @@ class SinkTask extends DefaultTask {
    String prefix
 
    /**
-    * Configured using {@link com.redpillanalytics.plugin.SinkContainer#ignoreErrors}
+    * Configured using {@link com.redpillanalytics.analytics.SinkContainer#ignoreErrors}
     */
    @Input
    @Option(option = "ignoreErrors",
@@ -35,7 +35,7 @@ class SinkTask extends DefaultTask {
     * <p>
     * The analytics directory is in the Gradle build directory, and is dependent on the buildId used.
     *
-    * @return {@link com.redpillanalytics.plugin.AnalyticsPluginExtension#getAnalyticsDir(java.io.File)}
+    * @return {@link com.redpillanalytics.analytics.AnalyticsPluginExtension#getAnalyticsDir(java.io.File)}
     */
    @InputDirectory
    File getAnalyticsDir() {

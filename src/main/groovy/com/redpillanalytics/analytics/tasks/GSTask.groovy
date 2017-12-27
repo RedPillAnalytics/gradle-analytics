@@ -1,6 +1,5 @@
-package com.redpillanalytics.plugin.tasks
+package com.redpillanalytics.analytics.tasks
 
-import com.google.cloud.ServiceOptions
 import com.google.cloud.storage.BlobId
 import com.google.cloud.storage.BlobInfo
 import com.google.cloud.storage.BucketInfo

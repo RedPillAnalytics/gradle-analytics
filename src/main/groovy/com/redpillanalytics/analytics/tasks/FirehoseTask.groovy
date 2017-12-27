@@ -2,7 +2,7 @@
  * Created by stewart on 4/30/15.
  */
 
-package com.redpillanalytics.plugin.tasks
+package com.redpillanalytics.analytics.tasks
 
 import com.redpillanalytics.sinks.Kinesis
 import groovy.io.FileType

@@ -1,4 +1,4 @@
-package com.redpillanalytics.plugin.tasks
+package com.redpillanalytics.analytics.tasks
 
 import com.redpillanalytics.common.Utils
 import groovy.util.logging.Slf4j

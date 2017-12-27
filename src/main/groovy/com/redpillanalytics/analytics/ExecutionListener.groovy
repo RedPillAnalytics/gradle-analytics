@@ -1,4 +1,4 @@
-package com.redpillanalytics.plugin
+package com.redpillanalytics.analytics
 
 import com.redpillanalytics.common.CI
 import groovy.util.logging.Slf4j

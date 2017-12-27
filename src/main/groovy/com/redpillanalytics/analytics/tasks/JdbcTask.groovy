@@ -2,9 +2,8 @@
  * Created by stewart on 4/30/15.
  */
 
-package com.redpillanalytics.plugin.tasks
+package com.redpillanalytics.analytics.tasks
 
-import com.redpillanalytics.sinks.Sink
 import com.redpillanalytics.common.Utils
 import groovy.sql.Sql
 import groovy.io.FileType
