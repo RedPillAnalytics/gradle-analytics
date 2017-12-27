@@ -37,7 +37,7 @@ github {
 
    token = githubToken
    owner = 'RedPillAnalytics'
-   repo = 'gradle-analytics'
+   repo = 'gradle-plugins'
    tagName = "v${version}"
    assets = fileTree(dir: buildDir, includes: ["**/*${version}*", "**/*${version}*.jar"]).toList()
 
@@ -74,13 +74,13 @@ repositories {
 pluginBundle {
 
    website = 'http://redpillanalytics.com/'
-   vcsUrl = 'https://github.com/RedPillAnalytics/gradle-analytics/'
+   vcsUrl = 'https://github.com/RedPillAnalytics/gradle-plugins/'
 
    plugins {
 
       gradleAnalytics {
          id = 'com.redpillanalytics.gradle-analytics'
-         displayName = 'com.redpillanalytics.gradle-analytics'
+         displayName = 'gradle-analytics'
          description = "A plugin for publishing data from Gradle builds to a variety of cloud and on-premises data sinks."
          tags = ['analytics', 'data-sinks']
          version = project.version
