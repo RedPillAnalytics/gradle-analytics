@@ -36,7 +36,7 @@ class ExecutionListener implements TaskExecutionListener, BuildListener, Project
 
       try {
          // define the project JSON file
-         def tasksFile = task.project.analytics.getTasksFile(task.project.buildDir)
+         def tasksFile = task.project.extensions.analytics.getTasksFile(task.project.buildDir)
          tasksFile.parentFile.mkdirs()
 
          // generate the project JSON file
@@ -61,7 +61,7 @@ class ExecutionListener implements TaskExecutionListener, BuildListener, Project
 
       } catch (UnknownDomainObjectException e) {
 
-         log.info "Project '${task.project.name}' not enabled for Analytics."
+         log.info "Project '${task.project.name}' is not enabled for Gradle Analytics."
       }
 
       log.debug "${task.getPath()} took ${ms}ms"
