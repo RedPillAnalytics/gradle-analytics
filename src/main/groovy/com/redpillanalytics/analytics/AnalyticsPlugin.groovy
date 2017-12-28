@@ -124,24 +124,19 @@ class AnalyticsPlugin implements Plugin<Project> {
             afterTest { desc, result ->
 
                // write tests to the analytics file
-               testsFile.append(gson.toJson([
-                       buildid      : project.analytics.buildId,
-                       organization : project.analytics.organization,
-                       hostname     : project.analytics.hostname,
-                       commithash   : CI.commitHash,
-                       scmbranch    : CI.getBranch(),
-                       repositoryurl: CI.getRepositoryUrl(),
-                       commitemail  : CI.getCommitEmail(),
-                       projectdir   : project.name,
-                       testname     : desc.getName(),
-                       classname    : desc.getClassName(),
-                       starttime    : new Date(result.getStartTime()).format("yyyy-MM-dd HH:mm:ss"),
-                       endtime      : new Date(result.getEndTime()).format("yyyy-MM-dd HH:mm:ss"),
-                       executecount : result.getTestCount(),
-                       successcount : result.getSuccessfulTestCount(),
-                       failcount    : result.getFailedTestCount(),
-                       skipcount    : result.getSkippedTestCount()
-               ]) + '\n')
+               testsFile.append(gson.toJson(task.project.extensions.analytics.getBasicFields() <<
+                       [projectname : task.project.project.name,
+                        projectdir  : task.project.projectDir.path,
+                        builddir    : task.project.buildDir.path,
+                        testname    : desc.getName(),
+                        classname   : desc.getClassName(),
+                        starttime   : new Date(result.getStartTime()).format("yyyy-MM-dd HH:mm:ss"),
+                        endtime     : new Date(result.getEndTime()).format("yyyy-MM-dd HH:mm:ss"),
+                        executecount: result.getTestCount(),
+                        successcount: result.getSuccessfulTestCount(),
+                        failcount   : result.getFailedTestCount(),
+                        skipcount   : result.getSkippedTestCount()
+                       ]) + '\n')
             }
 
             onOutput { desc, event ->
@@ -159,22 +154,17 @@ class AnalyticsPlugin implements Plugin<Project> {
                String eventDestination = event.getDestination().toString()
 
                // write tests to the analytics file
-               testOutputFile.append(gson.toJson([
-                       buildid      : project.analytics.buildId,
-                       organization : project.analytics.organization,
-                       hostname     : project.analytics.hostname,
-                       commithash   : CI.commitHash,
-                       scmbranch    : CI.getBranch(),
-                       repositoryurl: CI.getRepositoryUrl(),
-                       commitemail  : CI.getCommitEmail(),
-                       projectdir   : project.name,
-                       classname    : className,
-                       testname     : testName,
-                       parentname   : parentName,
-                       processtype  : type,
-                       destination  : eventDestination,
-                       message      : eventMessage
-               ]) + '\n')
+               testOutputFile.append(gson.toJson(task.project.extensions.analytics.getBasicFields() <<
+                       [projectname: task.project.project.name,
+                        projectdir : task.project.projectDir.path,
+                        builddir   : task.project.buildDir.path,
+                        classname  : className,
+                        testname   : testName,
+                        parentname : parentName,
+                        processtype: type,
+                        destination: eventDestination,
+                        message    : eventMessage
+                       ]) + '\n')
             }
 
             afterSuite { desc, result ->
