@@ -50,7 +50,22 @@ class AnalyticsPluginExtension {
     * The hostname of the environment executing Gradle builds. Java is used to pull the current hostname as a default.
     */
    String hostname = java.net.InetAddress.getLocalHost().getHostName()
-
+   /**
+    * The commit hash of the Git repository for the Gradle build.
+    */
+   String gitCommitHash = CI.commitHash
+   /**
+    * The branch of the Git repository for the Gradle build.
+    */
+   String gitBranch = CI.getBranch()
+   /**
+    * The URL of the remote Git repository, as we can best determine it.
+    */
+   String gitRepositoryUrl = CI.getRepositoryUrl()
+   /**
+    * The email address associated with the commit for the Git repository.
+    */
+   String gitCommitEmail = CI.getCommitEmail()
    /**
     * Returns the base directory where JSON analytic data files are generated.
     * <p>
@@ -111,6 +126,19 @@ class AnalyticsPluginExtension {
    File getTestOutputFile(File buildDir) {
 
       return new File(getAnalyticsDir(buildDir), testOutputFileName)
+   }
+
+   def getBasicFields() {
+
+      return [
+              buildid      : buildId,
+              organization : organization,
+              hostname     : hostname,
+              commithash   : gitCommitHash,
+              scmbranch    : gitBranch,
+              repositoryurl: gitRepositoryUrl,
+              commitemail  : gitCommitEmail
+      ]
    }
 
 }

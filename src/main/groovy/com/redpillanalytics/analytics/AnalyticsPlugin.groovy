@@ -124,216 +124,205 @@ class AnalyticsPlugin implements Plugin<Project> {
             afterTest { desc, result ->
 
                // write tests to the analytics file
-               testsFile.append(gson.toJson([
-                       buildid      : project.analytics.buildId,
-                       organization : project.analytics.organization,
-                       hostname     : project.analytics.hostname,
-                       commithash   : CI.commitHash,
-                       scmbranch    : CI.getBranch(),
-                       repositoryurl: CI.getRepositoryUrl(),
-                       commitemail  : CI.getCommitEmail(),
-                       projectdir   : project.name,
-                       testname     : desc.getName(),
-                       classname    : desc.getClassName(),
-                       starttime    : new Date(result.getStartTime()).format("yyyy-MM-dd HH:mm:ss"),
-                       endtime      : new Date(result.getEndTime()).format("yyyy-MM-dd HH:mm:ss"),
-                       executecount : result.getTestCount(),
-                       successcount : result.getSuccessfulTestCount(),
-                       failcount    : result.getFailedTestCount(),
-                       skipcount    : result.getSkippedTestCount()
-               ]) + '\n')
+               testsFile.append(gson.toJson(task.project.extensions.analytics.getBasicFields() <<
+                       [projectname : task.project.project.name,
+                        projectdir  : task.project.projectDir.path,
+                        builddir    : task.project.buildDir.path,
+                        testname    : desc.getName(),
+                        classname   : desc.getClassName(),
+                        starttime   : new Date(result.getStartTime()).format("yyyy-MM-dd HH:mm:ss"),
+                        endtime     : new Date(result.getEndTime()).format("yyyy-MM-dd HH:mm:ss"),
+                        executecount: result.getTestCount(),
+                        successcount: result.getSuccessfulTestCount(),
+                        failcount   : result.getFailedTestCount(),
+                        skipcount   : result.getSkippedTestCount()
+                       ]) + '\n')
+
+               onOutput { desc, event ->
+
+                  File testOutputFile = project.analytics.getTestOutputFile(project.buildDir)
+                  testOutputFile.parentFile.mkdirs()
+
+                  String className = desc.getClassName().toString()
+                  String testName = desc.getName().toString()
+                  String parentName = desc.getParent().toString()
+
+                  String type = ((className == testName) ? 'executor' : 'test')
+
+                  String eventMessage = event.getMessage().toString()
+                  String eventDestination = event.getDestination().toString()
+
+                  // write tests to the analytics file
+                  testOutputFile.append(gson.toJson(task.project.extensions.analytics.getBasicFields() <<
+                          [projectname: task.project.project.name,
+                           projectdir : task.project.projectDir.path,
+                           builddir   : task.project.buildDir.path,
+                           classname  : className,
+                           testname   : testName,
+                           parentname : parentName,
+                           processtype: type,
+                           destination: eventDestination,
+                           message    : eventMessage
+                          ]) + '\n')
+               }
+
+               afterSuite { desc, result ->
+                  if (!desc.parent) { // will match the outermost suite
+                     log.warn "Results: ${result.resultType} (${result.testCount} tests, ${result.successfulTestCount} successes, ${result.failedTestCount} failures, ${result.skippedTestCount} skipped)"
+                  }
+               }
+
             }
 
-            onOutput { desc, event ->
+            // global analytics task
+            project.task('producer', type: Zip) {
 
-               File testOutputFile = project.analytics.getTestOutputFile(project.buildDir)
-               testOutputFile.parentFile.mkdirs()
+               group 'analytics'
+               description "Analytics workflow task for producing data to all configured sinks."
 
-               String className = desc.getClassName().toString()
-               String testName = desc.getName().toString()
-               String parentName = desc.getParent().toString()
+               if (project.analytics.compressFiles.toBoolean()) {
 
-               String type = ((className == testName) ? 'executor' : 'test')
+                  log.debug "Analytics files will be compressed after production."
 
-               String eventMessage = event.getMessage().toString()
-               String eventDestination = event.getDestination().toString()
+                  from "${project.analytics.getAnalyticsDir(project.buildDir).parent}/"
 
-               // write tests to the analytics file
-               testOutputFile.append(gson.toJson([
-                       buildid      : project.analytics.buildId,
-                       organization : project.analytics.organization,
-                       hostname     : project.analytics.hostname,
-                       commithash   : CI.commitHash,
-                       scmbranch    : CI.getBranch(),
-                       repositoryurl: CI.getRepositoryUrl(),
-                       commitemail  : CI.getCommitEmail(),
-                       projectdir   : project.name,
-                       classname    : className,
-                       testname     : testName,
-                       parentname   : parentName,
-                       processtype  : type,
-                       destination  : eventDestination,
-                       message      : eventMessage
-               ]) + '\n')
-            }
+                  appendix 'analytics'
+                  version CI.getTimestamp()
 
-            afterSuite { desc, result ->
-               if (!desc.parent) { // will match the outermost suite
-                  log.warn "Results: ${result.resultType} (${result.testCount} tests, ${result.successfulTestCount} successes, ${result.failedTestCount} failures, ${result.skippedTestCount} skipped)"
+               }
+
+               doLast {
+
+                  if (project.analytics.cleanFiles.toBoolean()) {
+
+                     log.debug "Analytics files will be deleted after production."
+
+                     project.delete "${project.analytics.getAnalyticsDir(project.buildDir).parent}"
+
+                  }
                }
             }
 
+            // configure analytic groups
+            project.analytics.sinks.all { ag ->
+
+               taskName = ag.getTaskName('sink')
+
+               log.debug "analyticGroup name: ${ag.name}"
+
+               // setup Kinesis Firehose functionality
+               if (ag.getSink() == 'firehose') {
+
+                  // Add analytics processing task
+                  project.task(taskName, type: FirehoseTask) {
+
+                     group 'analytics'
+
+                     description ag.getDescription()
+
+                     // add any custom prefix to sink names
+                     prefix ag.getPrefix()
+
+                  }
+
+               }
+
+               // use S3 API to upload files directly to S3
+               if (ag.getSink() == 's3') {
+
+                  // Add analytics processing task
+                  project.task(taskName, type: S3Task) {
+
+                     group "analytics"
+
+                     description ag.getDescription()
+
+                     // add any custom prefix to sink names
+                     prefix ag.getPrefix()
+
+                  }
+
+               }
+
+               // use GS API to upload files directly to GS
+               if (ag.getSink() == 'gs') {
+
+                  // Add analytics processing task
+                  project.task(taskName, type: GSTask) {
+
+                     group "analytics"
+
+                     description ag.getDescription()
+
+                     // add any custom prefix to sink names
+                     prefix ag.getPrefix()
+
+                  }
+
+               }
+
+               // Google PubSub
+               if (ag.getSink() == 'pubsub') {
+
+                  // Add analytics processing task
+                  project.task(taskName, type: PubSubTask) {
+
+                     group "analytics"
+
+                     description ag.getDescription()
+
+                     // add any custom prefix to sink names
+                     prefix ag.getPrefix()
+
+                  }
+
+               }
+
+               // use JDBC and built in JSON
+               if ((ag.getSink() == 'jdbc') && dependencyMatching('analytics', '.*jdbc.*')) {
+
+                  // Add analytics processing task
+                  project.task(taskName, type: JdbcTask) {
+
+                     group "analytics"
+
+                     description ag.getDescription()
+
+                     // add any custom prefix to sink names
+                     prefix ag.getPrefix()
+
+                     // connection information
+                     username ag.username
+                     password ag.password
+                     driverUrl ag.driverUrl
+                     driverClass ag.driverClass
+
+                  }
+               }
+
+               if (project.tasks.findByName(taskName)) {
+
+                  project.tasks.producer.dependsOn project."${taskName}"
+               }
+
+
+            }
          }
 
-         // global analytics task
-         project.task('producer', type: Zip) {
+         // end of afterEvaluate
 
-            group 'analytics'
-            description "Analytics workflow task for producing data to all configured sinks."
-
-            if (project.analytics.compressFiles.toBoolean()) {
-
-               log.debug "Analytics files will be compressed after production."
-
-               from "${project.analytics.getAnalyticsDir(project.buildDir).parent}/"
-
-               appendix 'analytics'
-               version CI.getTimestamp()
-
-            }
-
-            doLast {
-
-               if (project.analytics.cleanFiles.toBoolean()) {
-
-                  log.debug "Analytics files will be deleted after production."
-
-                  project.delete "${project.analytics.getAnalyticsDir(project.buildDir).parent}"
-
-               }
-            }
-         }
-
-         // configure analytic groups
-         project.analytics.sinks.all { ag ->
-
-            taskName = ag.getTaskName('sink')
-
-            log.debug "analyticGroup name: ${ag.name}"
-
-            // setup Kinesis Firehose functionality
-            if (ag.getSink() == 'firehose') {
-
-               // Add analytics processing task
-               project.task(taskName, type: FirehoseTask) {
-
-                  group 'analytics'
-
-                  description ag.getDescription()
-
-                  // add any custom prefix to sink names
-                  prefix ag.getPrefix()
-
-               }
-
-            }
-
-            // use S3 API to upload files directly to S3
-            if (ag.getSink() == 's3') {
-
-               // Add analytics processing task
-               project.task(taskName, type: S3Task) {
-
-                  group "analytics"
-
-                  description ag.getDescription()
-
-                  // add any custom prefix to sink names
-                  prefix ag.getPrefix()
-
-               }
-
-            }
-
-            // use GS API to upload files directly to GS
-            if (ag.getSink() == 'gs') {
-
-               // Add analytics processing task
-               project.task(taskName, type: GSTask) {
-
-                  group "analytics"
-
-                  description ag.getDescription()
-
-                  // add any custom prefix to sink names
-                  prefix ag.getPrefix()
-
-               }
-
-            }
-
-            // Google PubSub
-            if (ag.getSink() == 'pubsub') {
-
-               // Add analytics processing task
-               project.task(taskName, type: PubSubTask) {
-
-                  group "analytics"
-
-                  description ag.getDescription()
-
-                  // add any custom prefix to sink names
-                  prefix ag.getPrefix()
-
-               }
-
-            }
-
-            // use JDBC and built in JSON
-            if ((ag.getSink() == 'jdbc') && dependencyMatching('analytics', '.*jdbc.*')) {
-
-               // Add analytics processing task
-               project.task(taskName, type: JdbcTask) {
-
-                  group "analytics"
-
-                  description ag.getDescription()
-
-                  // add any custom prefix to sink names
-                  prefix ag.getPrefix()
-
-                  // connection information
-                  username ag.username
-                  password ag.password
-                  driverUrl ag.driverUrl
-                  driverClass ag.driverClass
-
-               }
-            }
-
-            if (project.tasks.findByName(taskName)) {
-
-               project.tasks.producer.dependsOn project."${taskName}"
-            }
-
-
-         }
+         // add the custom Task Listener that produces Task records
+         project.gradle.addListener new ExecutionListener()
       }
 
-      // end of afterEvaluate
+      void applyExtension(Project project) {
 
-      // add the custom Task Listener that produces Task records
-      project.gradle.addListener new ExecutionListener()
-   }
+         // apply the main configuration extension
+         project.configure(project) {
+            extensions.create('analytics', AnalyticsPluginExtension)
+         }
 
-   void applyExtension(Project project) {
+         project.analytics.extensions.sinks = project.container(SinkContainer)
 
-      // apply the main configuration extension
-      project.configure(project) {
-         extensions.create('analytics', AnalyticsPluginExtension)
       }
-
-      project.analytics.extensions.sinks = project.container(SinkContainer)
-
    }
-}

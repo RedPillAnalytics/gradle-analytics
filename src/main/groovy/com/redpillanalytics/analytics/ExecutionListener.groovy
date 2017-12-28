@@ -40,24 +40,18 @@ class ExecutionListener implements TaskExecutionListener, BuildListener, Project
          tasksFile.parentFile.mkdirs()
 
          // generate the project JSON file
-         tasksFile.append(gson.toJson([
-                 buildid: task.project.extensions.analytics.buildId,
-                 organization: task.project.extensions.analytics.organization,
-                 hostname: task.project.extensions.analytics.hostname,
-                 commithash: CI.commitHash,
-                 scmbranch: CI.getBranch(),
-                 repositoryurl: CI.getRepositoryUrl(),
-                 commitemail: CI.getCommitEmail(),
-                 projectdir: task.project.name,
-                 builddir: task.project.buildDir.canonicalPath,
-                 taskname: task.getName(),
-                 taskpath: task.getPath(),
-                 taskgroup: task.getGroup(),
-                 taskdesc: task.getDescription(),
-                 taskdate: new Date(startTime).format("yyyy-MM-dd HH:mm:ss"),
-                 duration: ms,
-                 status: taskState.failure ? 'failure' : 'success'
-         ]) + '\n')
+         tasksFile.append(gson.toJson(task.project.extensions.analytics.getBasicFields() <<
+                 [projectname: task.project.project.name,
+                  projectdir : task.project.projectDir.path,
+                  builddir   : task.project.buildDir.path,
+                  taskname   : task.getName(),
+                  taskpath   : task.getPath(),
+                  taskgroup  : task.getGroup(),
+                  taskdesc   : task.getDescription(),
+                  taskdate   : new Date(startTime).format("yyyy-MM-dd HH:mm:ss"),
+                  duration   : ms,
+                  status     : taskState.failure ? 'failure' : 'success'
+                 ]) + '\n')
 
       } catch (UnknownDomainObjectException e) {
 
