@@ -36,9 +36,9 @@ class AnalyticsPlugin implements Plugin<Project> {
 
          // Go look for any -P properties that have "analytics." in them
          // If so... update the extension value
-         project.ext.properties.every { key, value ->
+         project.ext.properties.each { key, value ->
 
-            log.debug "extension: " + key + ' | ' + value
+            //log.debug "extension: " + key + ' | ' + value
 
             if (key =~ /analytics\./) {
 
@@ -49,7 +49,7 @@ class AnalyticsPlugin implements Plugin<Project> {
 
                if (extension == 'analytics' && project.analytics.hasProperty(property)) {
 
-                  log.warn "Setting configuration property for extension: $extension, property: $property, value: $value"
+                  log.debug "Setting configuration property for extension: $extension, property: $property, value: $value"
 
                   if (project.extensions.getByName(extension)."$property" instanceof Boolean) {
 
