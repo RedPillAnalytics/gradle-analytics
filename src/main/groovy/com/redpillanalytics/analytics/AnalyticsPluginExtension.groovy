@@ -23,6 +23,12 @@ class AnalyticsPluginExtension {
     */
    String buildId = CI.getTimestamp()
    /**
+    * A unique ID for each CI Server build, which might encompass multiple Gradle executions.
+    * <p>
+    * The default value is the build tag from known CI servers, and if none are detected, then it uses {@link #buildId}.
+    */
+   String buildTag = CI.getBuildTagNull() ?: buildId
+   /**
     * The name to use for the {@code task} JSON data file.
     */
    String tasksFileName = 'task.json'
@@ -132,6 +138,7 @@ class AnalyticsPluginExtension {
 
       return [
               buildid      : buildId,
+              buildTag     : buildTag,
               organization : organization,
               hostname     : hostname,
               commithash   : gitCommitHash,
