@@ -26,6 +26,12 @@ class CI {
 
    }
 
+   static getBuildTagNull() {
+
+      return System.getenv('BUILD_TAG') ?: System.getenv('bamboo_buildResultKey') ?: null
+
+   }
+
    static getBuildTag() {
 
       return System.getenv('BUILD_TAG') ?: System.getenv('bamboo_buildResultKey') ?: getTimestamp()

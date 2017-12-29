@@ -181,20 +181,22 @@ class AnalyticsPlugin implements Plugin<Project> {
             group 'analytics'
             description "Analytics workflow task for producing data to all configured sinks."
 
-            if (project.analytics.compressFiles.toBoolean()) {
+            mustRunAfter project.build
+
+            if (project.analytics.compressFiles) {
 
                log.debug "Analytics files will be compressed after production."
 
                from "${project.analytics.getAnalyticsDir(project.buildDir).parent}/"
 
-               appendix 'analytics'
-               version CI.getTimestamp()
+               baseName 'analytics'
+               appendix project.extensions.analytics.buildId
 
             }
 
             doLast {
 
-               if (project.analytics.cleanFiles.toBoolean()) {
+               if (project.analytics.cleanFiles) {
 
                   log.debug "Analytics files will be deleted after production."
 
