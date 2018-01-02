@@ -1,9 +1,9 @@
 package com.redpillanalytics.analytics
 
-import com.redpillanalytics.common.CI
 import groovy.util.logging.Slf4j
 import org.gradle.BuildListener
 import org.gradle.BuildResult
+import org.gradle.api.Project
 import org.gradle.api.ProjectEvaluationListener
 import org.gradle.api.ProjectState
 import org.gradle.api.Task
@@ -78,10 +78,10 @@ class ExecutionListener implements TaskExecutionListener, BuildListener, Project
    void settingsEvaluated(Settings settings) {}
 
    @Override
-   void beforeEvaluate(org.gradle.api.Project project) {}
+   void beforeEvaluate(Project project) {}
 
    @Override
-   void afterEvaluate(org.gradle.api.Project project, ProjectState state) {}
+   void afterEvaluate(Project project, ProjectState state) {}
 
    void onOutput(CharSequence sequence) {}
 
