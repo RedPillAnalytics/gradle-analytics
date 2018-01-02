@@ -2,7 +2,6 @@ package com.redpillanalytics.analytics
 
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import com.redpillanalytics.common.CI
 import com.redpillanalytics.analytics.tasks.FirehoseTask
 import com.redpillanalytics.analytics.tasks.GSTask
 import com.redpillanalytics.analytics.tasks.JdbcTask
@@ -88,92 +87,98 @@ class AnalyticsPlugin implements Plugin<Project> {
          }
 
          // define the analytics tests file
-         def testsFile = project.analytics.getTestsFile(project.buildDir)
+         File testsFile = project.extensions.analytics.getTestsFile(project.buildDir)
+         File testOutputFile = project.extensions.analytics.getTestOutputFile(project.buildDir)
+         def basicFields = project.rootProject.extensions.analytics.getBasicFields()
 
-         // Task configuration based on RegressionTestTask Type
-         project.tasks.withType(Test).all { Test task ->
 
-            // logging
-            testLogging {
+         // Task configuration based on Test task type
 
-               // set options for log level LIFECYCLE
-               events "failed"
-               exceptionFormat "short"
+         project.rootProject.getAllprojects().each { Project proj ->
 
-               // set options for log level DEBUG
-               debug.events "started", "skipped", "failed"
-               debug.exceptionFormat "full"
+            proj.tasks.withType(Test).all { Test task ->
 
-               // remove standard output/error logging from --info builds
-               // by assigning only 'failed' and 'skipped' events
-               info.events = ["failed", "skipped"]
-               info.exceptionFormat "short"
+               // logging
+               testLogging {
 
-            }
+                  // set options for log level LIFECYCLE
+                  events "failed"
+                  exceptionFormat "short"
 
-            beforeSuite { suite ->
+                  // set options for log level DEBUG
+                  debug.events "started", "skipped", "failed"
+                  debug.exceptionFormat "full"
 
-               // is this a new build or not
-               if (!testsFile.exists()) {
-
-                  // make the directories
-                  testsFile.parentFile.mkdirs()
+                  // remove standard output/error logging from --info builds
+                  // by assigning only 'failed' and 'skipped' events
+                  info.events = ["failed", "skipped"]
+                  info.exceptionFormat "short"
 
                }
-            }
 
-            afterTest { desc, result ->
+               beforeSuite { suite ->
 
-               // write tests to the analytics file
-               testsFile.append(gson.toJson(task.project.extensions.analytics.getBasicFields() <<
-                       [projectname : task.project.project.name,
-                        projectdir  : task.project.projectDir.path,
-                        builddir    : task.project.buildDir.path,
-                        testname    : desc.getName(),
-                        classname   : desc.getClassName(),
-                        starttime   : new Date(result.getStartTime()).format("yyyy-MM-dd HH:mm:ss"),
-                        endtime     : new Date(result.getEndTime()).format("yyyy-MM-dd HH:mm:ss"),
-                        executecount: result.getTestCount(),
-                        successcount: result.getSuccessfulTestCount(),
-                        failcount   : result.getFailedTestCount(),
-                        skipcount   : result.getSkippedTestCount()
-                       ]) + '\n')
-            }
+                  // is this a new build or not
+                  if (!testsFile.exists()) {
 
-            onOutput { desc, event ->
+                     // make the directories
+                     testsFile.parentFile.mkdirs()
 
-               File testOutputFile = project.analytics.getTestOutputFile(project.buildDir)
-               testOutputFile.parentFile.mkdirs()
-
-               String className = desc.getClassName().toString()
-               String testName = desc.getName().toString()
-               String parentName = desc.getParent().toString()
-
-               String type = ((className == testName) ? 'executor' : 'test')
-
-               String eventMessage = event.getMessage().toString()
-               String eventDestination = event.getDestination().toString()
-
-               // write tests to the analytics file
-               testOutputFile.append(gson.toJson(task.project.extensions.analytics.getBasicFields() <<
-                       [projectname: task.project.project.name,
-                        projectdir : task.project.projectDir.path,
-                        builddir   : task.project.buildDir.path,
-                        classname  : className,
-                        testname   : testName,
-                        parentname : parentName,
-                        processtype: type,
-                        destination: eventDestination,
-                        message    : eventMessage
-                       ]) + '\n')
-            }
-
-            afterSuite { desc, result ->
-               if (!desc.parent) { // will match the outermost suite
-                  log.warn "Results: ${result.resultType} (${result.testCount} tests, ${result.successfulTestCount} successes, ${result.failedTestCount} failures, ${result.skippedTestCount} skipped)"
+                  }
                }
-            }
 
+               afterTest { desc, result ->
+
+                  // write tests to the analytics file
+                  testsFile.append(gson.toJson(basicFields <<
+                          [projectname : task.project.project.name,
+                           projectdir  : task.project.projectDir.path,
+                           builddir    : task.project.buildDir.path,
+                           testname    : desc.getName(),
+                           classname   : desc.getClassName(),
+                           starttime   : new Date(result.getStartTime()).format("yyyy-MM-dd HH:mm:ss"),
+                           endtime     : new Date(result.getEndTime()).format("yyyy-MM-dd HH:mm:ss"),
+                           executecount: result.getTestCount(),
+                           successcount: result.getSuccessfulTestCount(),
+                           failcount   : result.getFailedTestCount(),
+                           skipcount   : result.getSkippedTestCount()
+                          ]) + '\n')
+               }
+
+               onOutput { desc, event ->
+
+                  testOutputFile.parentFile.mkdirs()
+
+                  String className = desc.getClassName().toString()
+                  String testName = desc.getName().toString()
+                  String parentName = desc.getParent().toString()
+
+                  String type = ((className == testName) ? 'executor' : 'test')
+
+                  String eventMessage = event.getMessage().toString()
+                  String eventDestination = event.getDestination().toString()
+
+                  // write tests to the analytics file
+                  testOutputFile.append(gson.toJson(basicFields <<
+                          [projectname: task.project.project.name,
+                           projectdir : task.project.projectDir.path,
+                           builddir   : task.project.buildDir.path,
+                           classname  : className,
+                           testname   : testName,
+                           parentname : parentName,
+                           processtype: type,
+                           destination: eventDestination,
+                           message    : eventMessage
+                          ]) + '\n')
+               }
+
+               afterSuite { desc, result ->
+                  if (!desc.parent) { // will match the outermost suite
+                     log.warn "Results: ${result.resultType} (${result.testCount} tests, ${result.successfulTestCount} successes, ${result.failedTestCount} failures, ${result.skippedTestCount} skipped)"
+                  }
+               }
+
+            }
          }
 
          // global analytics task
@@ -314,19 +319,23 @@ class AnalyticsPlugin implements Plugin<Project> {
       }
 
       // end of afterEvaluate
-
-      // add the custom Task Listener that produces Task records
-      project.gradle.addListener new ExecutionListener()
    }
 
    void applyExtension(Project project) {
 
-      // apply the main configuration extension
-      project.configure(project) {
-         extensions.create('analytics', AnalyticsPluginExtension)
-      }
+      if (project == project.rootProject) {
 
-      project.analytics.extensions.sinks = project.container(SinkContainer)
+         project.configure(project) {
+            extensions.create('analytics', AnalyticsPluginExtension)
+         }
+
+         project.analytics.extensions.sinks = project.container(SinkContainer)
+
+         project.gradle.addListener new ExecutionListener()
+
+      } else {
+         throw GradleException("Gradle Analytics may only be applied to the root project.")
+      }
 
    }
 }

@@ -28,6 +28,11 @@ class ExecutionListener implements TaskExecutionListener, BuildListener, Project
 
    void afterExecute(Task task, TaskState taskState) {
 
+      def buildDir = task.project.rootProject.buildDir
+      def basicFields = task.project.rootProject.extensions.analytics.getBasicFields()
+      def tasksFile = task.project.rootProject.extensions.analytics.getTasksFile(buildDir)
+
+
       endTime = System.currentTimeMillis()
 
       def ms = (endTime - startTime)
@@ -36,11 +41,10 @@ class ExecutionListener implements TaskExecutionListener, BuildListener, Project
 
       try {
          // define the project JSON file
-         def tasksFile = task.project.extensions.analytics.getTasksFile(task.project.buildDir)
          tasksFile.parentFile.mkdirs()
 
          // generate the project JSON file
-         tasksFile.append(gson.toJson(task.project.extensions.analytics.getBasicFields() <<
+         tasksFile.append(gson.toJson(basicFields <<
                  [projectname: task.project.project.name,
                   projectdir : task.project.projectDir.path,
                   builddir   : task.project.buildDir.path,

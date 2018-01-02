@@ -1,6 +1,7 @@
 package com.redpillanalytics.analytics
 
 import com.redpillanalytics.common.CI
+import static java.util.UUID.randomUUID
 import groovy.util.logging.Slf4j
 
 @Slf4j
@@ -21,13 +22,13 @@ class AnalyticsPluginExtension {
     * <p>
     * The default value is the current timestamp in the format of 'YYYY-MM-DD-HHMMSSIII'. The buildId can be overridden using CI server Job IDs, for instance.
     */
-   String buildId = CI.getTimestamp()
+   String buildId = randomUUID().toString()
    /**
     * A unique ID for each CI Server build, which might encompass multiple Gradle executions.
     * <p>
     * The default value is the build tag from known CI servers, and if none are detected, then it uses {@link #buildId}.
     */
-   String buildTag = CI.getBuildTagNull() ?: buildId
+   String buildTag = CI.getBuildTag()
    /**
     * The name to use for the {@code task} JSON data file.
     */
