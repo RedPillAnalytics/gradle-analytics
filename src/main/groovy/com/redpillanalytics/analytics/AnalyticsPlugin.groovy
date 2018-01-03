@@ -87,10 +87,9 @@ class AnalyticsPlugin implements Plugin<Project> {
          }
 
          // define the analytics tests file
-         File testsFile = project.extensions.analytics.getTestsFile(project.buildDir)
-         File testOutputFile = project.extensions.analytics.getTestOutputFile(project.buildDir)
          def basicFields = project.rootProject.extensions.analytics.getBasicFields()
 
+         def writer = new AnalyticsWriter(project.extensions.analytics.buildId, project.buildDir)
 
          // Task configuration based on Test task type
 
@@ -116,21 +115,10 @@ class AnalyticsPlugin implements Plugin<Project> {
 
                }
 
-               beforeSuite { suite ->
-
-                  // is this a new build or not
-                  if (!testsFile.exists()) {
-
-                     // make the directories
-                     testsFile.parentFile.mkdirs()
-
-                  }
-               }
-
                afterTest { desc, result ->
 
                   // write tests to the analytics file
-                  testsFile.append(gson.toJson(basicFields <<
+                  writer.writeData('test', basicFields <<
                           [projectname : task.project.project.name,
                            projectdir  : task.project.projectDir.path,
                            builddir    : task.project.buildDir.path,
@@ -142,12 +130,11 @@ class AnalyticsPlugin implements Plugin<Project> {
                            successcount: result.getSuccessfulTestCount(),
                            failcount   : result.getFailedTestCount(),
                            skipcount   : result.getSkippedTestCount()
-                          ]) + '\n')
+                          ])
+
                }
 
                onOutput { desc, event ->
-
-                  testOutputFile.parentFile.mkdirs()
 
                   String className = desc.getClassName().toString()
                   String testName = desc.getName().toString()
@@ -159,7 +146,7 @@ class AnalyticsPlugin implements Plugin<Project> {
                   String eventDestination = event.getDestination().toString()
 
                   // write tests to the analytics file
-                  testOutputFile.append(gson.toJson(basicFields <<
+                  writer.writeData('testoutput', basicFields <<
                           [projectname: task.project.project.name,
                            projectdir : task.project.projectDir.path,
                            builddir   : task.project.buildDir.path,
@@ -169,7 +156,7 @@ class AnalyticsPlugin implements Plugin<Project> {
                            processtype: type,
                            destination: eventDestination,
                            message    : eventMessage
-                          ]) + '\n')
+                          ])
                }
 
                afterSuite { desc, result ->
