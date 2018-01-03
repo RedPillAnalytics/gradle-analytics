@@ -7,24 +7,20 @@ import org.gradle.api.Project
 import org.gradle.api.ProjectEvaluationListener
 import org.gradle.api.ProjectState
 import org.gradle.api.Task
-import org.gradle.api.UnknownDomainObjectException
 import org.gradle.api.execution.TaskExecutionListener
 import org.gradle.api.initialization.Settings
 import org.gradle.api.invocation.Gradle
 import org.gradle.api.logging.StandardOutputListener
 import org.gradle.api.tasks.TaskState
-import com.google.gson.GsonBuilder
 
 @Slf4j
-class AnalyticsListener implements TaskExecutionListener, BuildListener, ProjectEvaluationListener, StandardOutputListener{
+class AnalyticsListener implements TaskExecutionListener, BuildListener, ProjectEvaluationListener, StandardOutputListener {
 
    long taskStartTime
    long taskEndTime
 
    long buildStartTime
    long buildEndTime
-
-   def gson = new GsonBuilder().serializeNulls().create()
 
    void beforeExecute(Task task) {
 
@@ -35,35 +31,27 @@ class AnalyticsListener implements TaskExecutionListener, BuildListener, Project
 
       def buildDir = task.project.rootProject.buildDir
       def basicFields = task.project.rootProject.extensions.analytics.getBasicFields()
-      def tasksFile = task.project.rootProject.extensions.analytics.getTasksFile(buildDir)
+
+      // define the analytics writer
+      def writer = new AnalyticsWriter(task.project.rootProject.extensions.analytics.buildId as String, buildDir)
 
       taskEndTime = System.currentTimeMillis()
 
       def ms = (taskEndTime - taskStartTime)
 
-      try {
-         // define the project JSON file
-         tasksFile.parentFile.mkdirs()
-
-         // generate the project JSON file
-         tasksFile.append(gson.toJson(basicFields <<
-                 [projectname: task.project.project.name,
-                  projectdir : task.project.projectDir.path,
-                  builddir   : task.project.buildDir.path,
-                  taskname   : task.getName(),
-                  taskpath   : task.getPath(),
-                  taskgroup  : task.getGroup(),
-                  taskdesc   : task.getDescription(),
-                  taskdate   : new Date(taskStartTime).format("yyyy-MM-dd HH:mm:ss"),
-                  duration   : ms,
-                  status     : taskState.failure ? 'failure' : 'success',
-                  stacktrace : taskState.failure.toString()
-                 ]) + '\n')
-
-      } catch (UnknownDomainObjectException e) {
-
-         log.info "Project '${task.project.name}' is not enabled for Gradle Analytics."
-      }
+      writer.writeData(task.project.rootProject.extensions.analytics.tasksFileName as String,
+              [projectname: task.project.project.name,
+               projectdir : task.project.projectDir.path,
+               builddir   : task.project.buildDir.path,
+               taskname   : task.getName(),
+               taskpath   : task.getPath(),
+               taskgroup  : task.getGroup(),
+               taskdesc   : task.getDescription(),
+               taskdate   : new Date(taskStartTime).format("yyyy-MM-dd HH:mm:ss"),
+               duration   : ms,
+               status     : taskState.failure ? 'failure' : 'success',
+               stacktrace : taskState.failure.toString()
+              ], basicFields)
 
       log.debug "${task.getPath()} took ${ms}ms"
 
@@ -77,12 +65,12 @@ class AnalyticsListener implements TaskExecutionListener, BuildListener, Project
 
       def ms = (buildEndTime - buildStartTime)
 
-      File buildsFile = result.gradle.rootProject.extensions.analytics.getBuildsFile(result.gradle.rootProject.buildDir)
+      // define the analytics writer
+      def buildDir = result.gradle.rootProject.buildDir
+      def basicFields = result.gradle.rootProject.extensions.analytics.getBasicFields()
+      def writer = new AnalyticsWriter(result.gradle.rootProject.extensions.analytics.buildId as String, buildDir)
 
-      buildsFile.parentFile.mkdirs()
-
-      // generate the project JSON file
-      buildsFile.append(gson.toJson(result.gradle.rootProject.extensions.analytics.getBasicFields() <<
+      writer.writeData(result.gradle.rootProject.extensions.analytics.buildsFileName as String,
               [hostname       : result.gradle.rootProject.project.extensions.analytics.hostname,
                commithash     : result.gradle.rootProject.project.extensions.analytics.gitCommitHash,
                scmbranch      : result.gradle.rootProject.project.extensions.analytics.gitBranch,
@@ -95,7 +83,7 @@ class AnalyticsListener implements TaskExecutionListener, BuildListener, Project
                duration       : ms,
                status         : result.failure ? 'failure' : 'success',
                stacktrace     : result.failure.toString()
-              ]) + '\n')
+              ], basicFields)
    }
 
    void projectsEvaluated(Gradle gradle) {}

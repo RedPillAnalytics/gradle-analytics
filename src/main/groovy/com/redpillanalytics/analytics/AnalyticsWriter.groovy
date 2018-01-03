@@ -37,6 +37,6 @@ class AnalyticsWriter {
 
    def writeData(String filename, def record, def basicFields) {
 
-      writeData(filename, record << basicFields)
+      writeData(filename, basicFields << record)
    }
 }

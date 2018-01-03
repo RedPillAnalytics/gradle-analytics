@@ -1,7 +1,5 @@
 package com.redpillanalytics.analytics
 
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
 import com.redpillanalytics.analytics.tasks.FirehoseTask
 import com.redpillanalytics.analytics.tasks.GSTask
 import com.redpillanalytics.analytics.tasks.JdbcTask
@@ -71,9 +69,6 @@ class AnalyticsPlugin implements Plugin<Project> {
 
          }
 
-         // Get a Gson object
-         Gson gson = new GsonBuilder().serializeNulls().create()
-
          // setup a few reusable parameters for task creation
          String taskName
 
@@ -86,9 +81,8 @@ class AnalyticsPlugin implements Plugin<Project> {
             delete project.distsDir
          }
 
-         // define the analytics tests file
+         // define the analytics writer and specifics
          def basicFields = project.rootProject.extensions.analytics.getBasicFields()
-
          def writer = new AnalyticsWriter(project.extensions.analytics.buildId, project.buildDir)
 
          // Task configuration based on Test task type
@@ -118,7 +112,7 @@ class AnalyticsPlugin implements Plugin<Project> {
                afterTest { desc, result ->
 
                   // write tests to the analytics file
-                  writer.writeData('test', basicFields <<
+                  writer.writeData(project.extensions.analytics.testsFileName as String,
                           [projectname : task.project.project.name,
                            projectdir  : task.project.projectDir.path,
                            builddir    : task.project.buildDir.path,
@@ -130,8 +124,7 @@ class AnalyticsPlugin implements Plugin<Project> {
                            successcount: result.getSuccessfulTestCount(),
                            failcount   : result.getFailedTestCount(),
                            skipcount   : result.getSkippedTestCount()
-                          ])
-
+                          ], basicFields)
                }
 
                onOutput { desc, event ->
@@ -146,7 +139,7 @@ class AnalyticsPlugin implements Plugin<Project> {
                   String eventDestination = event.getDestination().toString()
 
                   // write tests to the analytics file
-                  writer.writeData('testoutput', basicFields <<
+                  writer.writeData(project.extensions.analytics.testOutputFileName as String,
                           [projectname: task.project.project.name,
                            projectdir : task.project.projectDir.path,
                            builddir   : task.project.buildDir.path,
@@ -156,7 +149,7 @@ class AnalyticsPlugin implements Plugin<Project> {
                            processtype: type,
                            destination: eventDestination,
                            message    : eventMessage
-                          ])
+                          ], basicFields)
                }
 
                afterSuite { desc, result ->

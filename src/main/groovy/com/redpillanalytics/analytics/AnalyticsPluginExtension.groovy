@@ -103,36 +103,12 @@ class AnalyticsPluginExtension {
       return new File(getAnalyticsBaseDir(buildDir), buildId)
    }
 
-   /**
-    * Returns the {@code task} JSON data file.
-    * <p>
-    * The {@code task} JSON data file contains task-level information about the Gradle build.
-    * @param buildDir The Gradle build directory
-    * @return The {@code task} JSON data file
-    */
-   File getTasksFile(File buildDir) {
-
-      return new File(getAnalyticsDir(buildDir), tasksFileName)
-   }
-
-   /**
-    * Returns the {@code build} JSON data file.
-    * <p>
-    * The {@code build} JSON data file contains information about each build. It also contains Git-level information.
-    * @param buildDir The Gradle build directory
-    * @return The {@code test} JSON data file
-    */
-   File getBuildsFile(File buildDir) {
-
-      return new File(getAnalyticsDir(buildDir), buildsFileName)
-   }
-
    def getBasicFields() {
 
       return [
-              buildid      : buildId,
-              buildTag     : buildTag,
-              organization : organization
+              buildid     : buildId,
+              buildTag    : buildTag,
+              organization: organization
       ]
    }
 
