@@ -24,7 +24,7 @@ class GSTask extends ObjectStoreTask {
       Storage storage = StorageOptions.getDefaultInstance().getService()
 
       // first create the bucket
-      log.warn "Creating bucket: ${bucketName}"
+      log.info "Creating bucket: ${bucketName}"
       try {
 
          storage.create(BucketInfo.of(bucketName))
@@ -34,7 +34,7 @@ class GSTask extends ObjectStoreTask {
 
          if (se.message == 'You already own this bucket. Please select another name.') {
 
-            log.debug "Bucket ${prefix} already exists."
+            log.info "Bucket ${prefix} already exists."
 
          } else {
 
