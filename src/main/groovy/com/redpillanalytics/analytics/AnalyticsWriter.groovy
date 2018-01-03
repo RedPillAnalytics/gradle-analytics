@@ -8,22 +8,20 @@ class AnalyticsWriter {
    String buildId
    File buildDir
    String dataDirName
-   String extension
    Gson gson = new GsonBuilder().serializeNulls().create()
 
 
-   AnalyticsWriter(String buildId, File buildDir, String dataDirName = 'analytics', String extension = 'json') {
+   AnalyticsWriter(String buildId, File buildDir, String dataDirName = 'analytics') {
 
       this.buildId = buildId
       this.buildDir = buildDir
       this.dataDirName = dataDirName
-      this.extension = extension
 
    }
 
    File getAnalyticsFile(String filename) {
 
-      def analyticsFile = new File(buildDir, "${dataDirName}/${buildId}/${filename}.${extension}")
+      def analyticsFile = new File(buildDir, "${dataDirName}/${buildId}/${filename}")
 
       return analyticsFile
    }
@@ -35,5 +33,10 @@ class AnalyticsWriter {
       analyticsFile.parentFile.mkdirs()
 
       analyticsFile.append(gson.toJson(record) + '\n')
+   }
+
+   def writeData(String filename, def record, def basicFields) {
+
+      writeData(filename, record << basicFields)
    }
 }
