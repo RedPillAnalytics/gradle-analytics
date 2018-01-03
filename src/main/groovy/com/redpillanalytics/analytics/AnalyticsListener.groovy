@@ -40,9 +40,10 @@ class AnalyticsListener implements TaskExecutionListener, BuildListener, Project
       def ms = (taskEndTime - taskStartTime)
 
       writer.writeData(task.project.rootProject.extensions.analytics.tasksFileName as String,
-              [projectname: task.project.project.name,
+              [projectname: task.project.displayName,
                projectdir : task.project.projectDir.path,
-               builddir   : task.project.buildDir.path,
+               buildDir   : task.project.buildDir.path,
+               buildFile  : task.project.buildFile.path,
                taskname   : task.getName(),
                taskpath   : task.getPath(),
                taskgroup  : task.getGroup(),
