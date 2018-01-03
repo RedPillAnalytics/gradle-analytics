@@ -45,7 +45,7 @@ class ProducerTest extends Specification {
                }
             }
             
-            analytics.ignoreErrors = true     
+            analytics.ignoreErrors = false     
         """
 
       result = GradleRunner.create()

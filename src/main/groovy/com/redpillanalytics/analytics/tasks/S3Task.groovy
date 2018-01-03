@@ -16,7 +16,7 @@ class S3Task extends ObjectStoreTask {
 
       // first create the bucket
 
-      log.debug "Creating bucket: ${getBucketName()}"
+      log.info "Creating bucket: ${getBucketName()}"
       client.createBucket(new CreateBucketRequest(bucketName))
 
       def cnt = 0
