@@ -331,7 +331,7 @@ class AnalyticsPlugin implements Plugin<Project> {
 
          project.analytics.extensions.sinks = project.container(SinkContainer)
 
-         project.gradle.addListener new ExecutionListener()
+         project.gradle.addListener new AnalyticsListener()
 
       } else {
          throw GradleException("Gradle Analytics may only be applied to the root project.")
