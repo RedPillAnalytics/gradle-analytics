@@ -49,6 +49,7 @@ class AnalyticsListener implements TaskExecutionListener, BuildListener, Project
                taskgroup  : task.getGroup(),
                taskdesc   : task.getDescription(),
                taskdate   : new Date(taskStartTime).format("yyyy-MM-dd HH:mm:ss"),
+               didWork    : task.didWork.toString(),
                duration   : ms,
                status     : taskState.failure ? 'failure' : 'success',
                stacktrace : taskState.failure.toString()
