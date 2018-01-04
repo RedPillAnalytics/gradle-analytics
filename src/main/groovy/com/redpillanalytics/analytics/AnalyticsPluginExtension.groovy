@@ -1,6 +1,9 @@
 package com.redpillanalytics.analytics
 
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import com.redpillanalytics.common.CI
+
 import static java.util.UUID.randomUUID
 import groovy.util.logging.Slf4j
 
@@ -103,13 +106,34 @@ class AnalyticsPluginExtension {
       return new File(getAnalyticsBaseDir(buildDir), buildId)
    }
 
-   def getBasicFields() {
+   File getAnalyticsFile(String filename, File buildDir) {
 
-      return [
-              buildid     : buildId,
+      return new File(filename, getAnalyticsDir(buildDir))
+   }
+
+   def getHeaderJson() {
+
+      return [buildid     : buildId,
               buildTag    : buildTag,
-              organization: organization
-      ]
+              organization: organization]
+   }
+
+   def writeAnalytics(String filename, File buildDir, def record, Boolean useHeaders = false) {
+
+      Gson gson = new GsonBuilder().serializeNulls().create()
+
+      def analyticsFile = getAnalyticsFile(filename, buildDir)
+
+      analyticsFile.parentFile.mkdirs()
+
+      if (useHeaders) {
+
+         analyticsFile.append(gson.toJson(getHeaderJson() << record) + '\n')
+      }
+      else {
+
+         analyticsFile.append(gson.toJson(record) + '\n')
+      }
    }
 
 }
