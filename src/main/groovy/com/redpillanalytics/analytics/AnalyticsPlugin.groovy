@@ -81,10 +81,6 @@ class AnalyticsPlugin implements Plugin<Project> {
             delete project.distsDir
          }
 
-         // define the analytics writer and specifics
-         def basicFields = project.rootProject.extensions.analytics.getBasicFields()
-         def writer = new AnalyticsWriter(project.extensions.analytics.buildId, project.buildDir)
-
          // Task configuration based on Test task type
 
          project.rootProject.getAllprojects().each { Project proj ->
@@ -112,19 +108,26 @@ class AnalyticsPlugin implements Plugin<Project> {
                afterTest { desc, result ->
 
                   // write tests to the analytics file
-                  writer.writeData(project.extensions.analytics.testsFileName as String,
-                          [projectname : task.project.project.name,
-                           projectdir  : task.project.projectDir.path,
-                           builddir    : task.project.buildDir.path,
-                           testname    : desc.getName(),
-                           classname   : desc.getClassName(),
-                           starttime   : new Date(result.getStartTime()).format("yyyy-MM-dd HH:mm:ss"),
-                           endtime     : new Date(result.getEndTime()).format("yyyy-MM-dd HH:mm:ss"),
-                           executecount: result.getTestCount(),
-                           successcount: result.getSuccessfulTestCount(),
-                           failcount   : result.getFailedTestCount(),
-                           skipcount   : result.getSkippedTestCount()
-                          ], basicFields)
+                  project.extensions.analytics.writeAnalytics(
+
+                          project.rootProject.extensions.analytics.testsFileName as String,
+                          project.rootProject.buildDir,
+                          [
+                                  projectname : task.project.displayName,
+                                  projectdir  : task.project.projectDir.path,
+                                  builddir    : task.project.buildDir.path,
+                                  buildfile   : task.project.buildFile.path,
+                                  testname    : desc.getName(),
+                                  classname   : desc.getClassName(),
+                                  starttime   : new Date(result.getStartTime()).format("yyyy-MM-dd HH:mm:ss"),
+                                  endtime     : new Date(result.getEndTime()).format("yyyy-MM-dd HH:mm:ss"),
+                                  executecount: result.getTestCount(),
+                                  successcount: result.getSuccessfulTestCount(),
+                                  failcount   : result.getFailedTestCount(),
+                                  skipcount   : result.getSkippedTestCount()
+                          ],
+                          true
+                  )
                }
 
                onOutput { desc, event ->
@@ -139,17 +142,24 @@ class AnalyticsPlugin implements Plugin<Project> {
                   String eventDestination = event.getDestination().toString()
 
                   // write tests to the analytics file
-                  writer.writeData(project.extensions.analytics.testOutputFileName as String,
-                          [projectname: task.project.project.name,
-                           projectdir : task.project.projectDir.path,
-                           builddir   : task.project.buildDir.path,
-                           classname  : className,
-                           testname   : testName,
-                           parentname : parentName,
-                           processtype: type,
-                           destination: eventDestination,
-                           message    : eventMessage
-                          ], basicFields)
+                  project.extensions.analytics.writeAnalytics(
+
+                          project.rootProject.extensions.analytics.testOutputFileName as String,
+                          project.rootProject.buildDir,
+                          [
+                                  projectname: task.project.displayName,
+                                  projectdir : task.project.projectDir.path,
+                                  builddir   : task.project.buildDir.path,
+                                  buildfile  : task.project.buildFile.path,
+                                  classname  : className,
+                                  testname   : testName,
+                                  parentname : parentName,
+                                  processtype: type,
+                                  destination: eventDestination,
+                                  message    : eventMessage
+                          ],
+                          true
+                  )
                }
 
                afterSuite { desc, result ->
@@ -319,3 +329,4 @@ class AnalyticsPlugin implements Plugin<Project> {
 
    }
 }
+
