@@ -324,7 +324,7 @@ class AnalyticsPlugin implements Plugin<Project> {
          project.gradle.addListener new AnalyticsListener()
 
       } else {
-         throw GradleException("Gradle Analytics may only be applied to the root project.")
+         throw new GradleException("Gradle Analytics may only be applied to the root project.")
       }
 
    }
