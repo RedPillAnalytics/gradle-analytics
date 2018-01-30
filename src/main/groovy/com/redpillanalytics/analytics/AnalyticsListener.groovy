@@ -81,6 +81,7 @@ class AnalyticsListener implements TaskExecutionListener, BuildListener, Project
                       rootprojectname: result.gradle.rootProject.project.name,
                       rootprojectdir : result.gradle.rootProject.projectDir.path,
                       rootbuilddir   : result.gradle.rootProject.buildDir.path,
+                      version        : result.gradle.rootProject.version,
                       builddate      : new Date(buildStartTime).format("yyyy-MM-dd HH:mm:ss"),
                       duration       : ms,
                       status         : result.failure ? 'failure' : 'success',
