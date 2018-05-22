@@ -6,6 +6,7 @@ import com.google.cloud.ServiceOptions
 import com.google.cloud.pubsub.v1.Publisher
 import com.google.cloud.pubsub.v1.TopicAdminClient
 import com.google.protobuf.ByteString
+import com.google.pubsub.v1.ProjectTopicName
 import com.google.pubsub.v1.PubsubMessage
 import com.google.pubsub.v1.TopicName
 import groovy.util.logging.Slf4j
@@ -40,7 +41,9 @@ class PubSub extends Sink {
 
          TopicAdminClient topicAdminClient = TopicAdminClient.create()
 
-         topicAdminClient.createTopic(TopicName.of(projectId, topicId))
+         ProjectTopicName topicName = ProjectTopicName.of(projectId, topicId)
+
+         topicAdminClient.createTopic(topicName)
       }
       catch (AlreadyExistsException ae) {
 
@@ -68,7 +71,7 @@ class PubSub extends Sink {
     */
    def publishTopic(String topicId, String message) {
 
-      TopicName topicName = TopicName.of(projectId, topicId)
+      ProjectTopicName topicName = ProjectTopicName.of(projectId, topicId)
 
       Publisher publisher = Publisher.newBuilder(topicName).build()
 

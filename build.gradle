@@ -32,7 +32,9 @@ scmVersion {
 }
 
 //set Gradle version to SCM Version
-project.version = scmVersion.version
+allprojects {
+   project.version = scmVersion.version
+}
 
 testSets {
    integrationTest
