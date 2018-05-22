@@ -1,5 +1,6 @@
 package com.redpillanalytics.analytics.tasks
 
+import com.google.cloud.ServiceOptions
 import com.google.cloud.storage.BlobId
 import com.google.cloud.storage.BlobInfo
 import com.google.cloud.storage.BucketInfo
@@ -32,7 +33,7 @@ class GSTask extends ObjectStoreTask {
       }
       catch (StorageException se) {
 
-         if (se.message == 'You already own this bucket. Please select another name.') {
+         if (se.reason == 'conflict') {
 
             log.info "Bucket ${prefix} already exists."
 
