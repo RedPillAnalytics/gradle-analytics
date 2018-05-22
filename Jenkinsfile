@@ -6,7 +6,7 @@ pipeline {
    agent { label 'java-compile' }
 
    environment {
-      GOOGLE_APPLICATION_CREDENTIALS = '/var/lib/jenkins/.gcp/cloud-analytics-seraph-publisher.json'
+      GOOGLE_APPLICATION_CREDENTIALS = '/var/lib/jenkins/.gcp/gradle-analytics-build-user.json'
    }
 
    stages {
