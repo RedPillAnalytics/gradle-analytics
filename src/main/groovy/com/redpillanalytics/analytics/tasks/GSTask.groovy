@@ -32,7 +32,7 @@ class GSTask extends ObjectStoreTask {
       }
       catch (StorageException se) {
 
-         if (se.message == 'You already own this bucket. Please select another name.') {
+         if (se.reason == 'conflict') {
 
             log.info "Bucket ${prefix} already exists."
 
