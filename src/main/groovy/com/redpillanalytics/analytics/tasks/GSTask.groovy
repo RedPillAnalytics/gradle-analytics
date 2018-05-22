@@ -1,5 +1,6 @@
 package com.redpillanalytics.analytics.tasks
 
+import com.google.cloud.ServiceOptions
 import com.google.cloud.storage.BlobId
 import com.google.cloud.storage.BlobInfo
 import com.google.cloud.storage.BucketInfo
@@ -22,6 +23,8 @@ class GSTask extends ObjectStoreTask {
    def gsTask() {
 
       Storage storage = StorageOptions.getDefaultInstance().getService()
+
+      def bucketName = ServiceOptions.getDefaultProjectId() + '-' + getBucketName()
 
       // first create the bucket
       log.info "Creating bucket: ${bucketName}"
