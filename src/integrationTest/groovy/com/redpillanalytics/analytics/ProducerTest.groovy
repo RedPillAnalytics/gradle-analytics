@@ -38,10 +38,10 @@ class ProducerTest extends Specification {
                pubsub
                firehose
                gs {
-                  prefix = 'gradle-analytics'
+                  prefix = 'rpa-gradle-analytics'
                }
                s3 {
-                  prefix = 'gradle-analytics'
+                  prefix = 'rpa-gradle-analytics'
                }
             }
             

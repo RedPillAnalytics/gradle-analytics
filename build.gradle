@@ -14,10 +14,10 @@ plugins {
 //   sinks {
 //      pubsub
 //      gs {
-//         prefix = 'gradle-analytics'
+//         prefix = 'rpa-gradle-analytics'
 //      }
 //      s3 {
-//         prefix = 'gradle-analytics'
+//         prefix = 'rpa-gradle-analytics'
 //      }
 //   }
 //}
@@ -32,7 +32,9 @@ scmVersion {
 }
 
 //set Gradle version to SCM Version
-project.version = scmVersion.version
+allprojects {
+   project.version = scmVersion.version
+}
 
 testSets {
    integrationTest
