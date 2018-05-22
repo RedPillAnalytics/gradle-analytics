@@ -24,8 +24,6 @@ class GSTask extends ObjectStoreTask {
 
       Storage storage = StorageOptions.getDefaultInstance().getService()
 
-      def bucketName = ServiceOptions.getDefaultProjectId() + '-' + getBucketName()
-
       // first create the bucket
       log.info "Creating bucket: ${bucketName}"
       try {
