@@ -35,13 +35,16 @@ class ProducerTest extends Specification {
             }
             
             analytics.sinks {
-               pubsub
+//               pubsub
                firehose
-               gs {
-                  prefix = 'rpa-gradle-analytics'
-               }
+//               gs {
+//                  prefix = 'rpa-gradle-analytics'
+//               }
                s3 {
                   prefix = 'rpa-gradle-analytics'
+               }
+               kafka {
+                  prefix = 'gradle-analytics'
                }
             }
             

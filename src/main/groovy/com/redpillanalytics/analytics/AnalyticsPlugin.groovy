@@ -3,6 +3,7 @@ package com.redpillanalytics.analytics
 import com.redpillanalytics.analytics.tasks.FirehoseTask
 import com.redpillanalytics.analytics.tasks.GSTask
 import com.redpillanalytics.analytics.tasks.JdbcTask
+import com.redpillanalytics.analytics.tasks.KafkaTask
 import com.redpillanalytics.analytics.tasks.PubSubTask
 import com.redpillanalytics.analytics.tasks.S3Task
 import groovy.util.logging.Slf4j
@@ -265,6 +266,23 @@ class AnalyticsPlugin implements Plugin<Project> {
 
                // Add analytics processing task
                project.task(taskName, type: PubSubTask) {
+
+                  group "analytics"
+
+                  description ag.getDescription()
+
+                  // add any custom prefix to sink names
+                  prefix ag.getPrefix()
+
+               }
+
+            }
+
+            // Google PubSub
+            if (ag.getSink() == 'kafka') {
+
+               // Add analytics processing task
+               project.task(taskName, type: KafkaTask) {
 
                   group "analytics"
 

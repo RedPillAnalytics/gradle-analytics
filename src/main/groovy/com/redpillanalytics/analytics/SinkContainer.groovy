@@ -1,12 +1,13 @@
 package com.redpillanalytics.analytics
 
+import com.redpillanalytics.analytics.containers.AnalyticsContainer
 import groovy.util.logging.Slf4j
 
 /**
  * Created by stewartbryson on 11/19/16.
  */
 @Slf4j
-class SinkContainer extends DomainContainer {
+class SinkContainer extends AnalyticsContainer {
 
    // naming
    String prefix, sink
@@ -30,7 +31,7 @@ class SinkContainer extends DomainContainer {
 
       def sink = this.sink ?: name
       log.debug "sink: ${sink}"
-      assert ['s3', 'firehose', 'pubsub', 'jdbc', 'gs'].contains(sink)
+      assert ['s3', 'firehose', 'pubsub', 'jdbc', 'gs', 'kafka'].contains(sink)
       return sink
    }
 
