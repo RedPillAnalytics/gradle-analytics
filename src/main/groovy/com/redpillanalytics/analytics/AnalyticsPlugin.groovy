@@ -278,7 +278,7 @@ class AnalyticsPlugin implements Plugin<Project> {
 
             }
 
-            // Google PubSub
+            // Apache Kafka
             if (ag.getSink() == 'kafka') {
 
                // Add analytics processing task
@@ -290,6 +290,14 @@ class AnalyticsPlugin implements Plugin<Project> {
 
                   // add any custom prefix to sink names
                   prefix ag.getPrefix()
+
+                  servers = ag.getServers() ?: 'localhost:9092'
+
+                  serializerKey = ag.getSerializerKey() ?: "org.apache.kafka.common.serialization.StringSerializer"
+
+                  serializerValue = ag.getSerializerValue() ?: "org.apache.kafka.common.serialization.StringSerializer"
+
+                  acks ag.getAcks() ?: 'all'
 
                }
 

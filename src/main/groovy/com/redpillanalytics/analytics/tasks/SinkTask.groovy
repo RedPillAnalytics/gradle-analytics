@@ -3,7 +3,7 @@ package com.redpillanalytics.analytics.tasks
 import com.redpillanalytics.common.Utils
 import groovy.util.logging.Slf4j
 import org.gradle.api.DefaultTask
-import org.gradle.api.internal.tasks.options.Option
+import org.gradle.api.tasks.options.Option
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputDirectory
 
@@ -16,8 +16,7 @@ class SinkTask extends DefaultTask {
     */
    @Input
    @Option(option = "prefix",
-           description = "A prefix to use when creating or producing to Sink entities.",
-           order = 1)
+           description = "A prefix to use when creating or producing to Sink entities.")
    String prefix
 
    /**
@@ -25,8 +24,7 @@ class SinkTask extends DefaultTask {
     */
    @Input
    @Option(option = "ignoreErrors",
-           description = "Determines whether errors returned from the Sink are ignored.",
-           order = 2)
+           description = "Determines whether errors returned from the Sink are ignored.")
 
    Boolean ignoreErrors = project.analytics.ignoreErrors
 

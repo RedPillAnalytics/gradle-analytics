@@ -10,6 +10,14 @@ class AnalyticsContainer {
     */
    String name
 
+   String servers
+
+   String serializerKey
+
+   String serializerValue
+
+   String acks
+
    // capture the debug status
    Boolean isDebugEnabled = log.isDebugEnabled()
 
