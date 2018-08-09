@@ -12,7 +12,7 @@ import org.gradle.api.tasks.InputDirectory
 class SinkTask extends DefaultTask {
 
    /**
-    * Configured using {@link com.redpillanalytics.analytics.SinkContainer#prefix}
+    * Configured using {@link com.redpillanalytics.analytics.containers.SinkContainer#prefix}
     */
    @Input
    @Option(option = "prefix",
@@ -20,7 +20,7 @@ class SinkTask extends DefaultTask {
    String prefix
 
    /**
-    * Configured using {@link com.redpillanalytics.analytics.SinkContainer#ignoreErrors}
+    * Configured using {@link com.redpillanalytics.analytics.containers.SinkContainer#ignoreErrors}
     */
    @Input
    @Option(option = "ignoreErrors",

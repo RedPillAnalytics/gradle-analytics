@@ -1,5 +1,6 @@
 package com.redpillanalytics.analytics
 
+import com.redpillanalytics.analytics.containers.SinkContainer
 import com.redpillanalytics.analytics.tasks.FirehoseTask
 import com.redpillanalytics.analytics.tasks.GSTask
 import com.redpillanalytics.analytics.tasks.JdbcTask
