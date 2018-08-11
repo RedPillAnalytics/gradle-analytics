@@ -157,28 +157,18 @@ class AnalyticsPluginExtension {
 
    def writeAnalytics(String filename, File buildDir, def record, Boolean useHeaders = false) {
 
-      def message
+      Gson gson = new GsonBuilder().serializeNulls().create()
 
       def analyticsFile = getAnalyticsFile(filename, buildDir)
 
       analyticsFile.parentFile.mkdirs()
 
-      Gson gson = new GsonBuilder().serializeNulls().create()
-
       if (useHeaders) {
 
-         message = getHeaderJson() + record
-      }
+         analyticsFile.append(gson.toJson(getHeaderJson() << record) + '\n')
+      } else {
 
-      message = message + '\n'
-
-      if (getFormat().toLowerCase() == 'avro') {
-
-         analyticsFile.append(new JsonAvroConverter().convertToAvro((gson.toJson(record)).getBytes(), ReflectData.get().getSchema(getTestSchema())))
-      }
-      else {
-
-         analyticsFile.append(gson.toJson(record))
+         analyticsFile.append(gson.toJson(record) + '\n')
       }
    }
 
