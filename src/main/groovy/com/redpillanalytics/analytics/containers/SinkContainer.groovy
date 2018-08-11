@@ -16,7 +16,7 @@ class SinkContainer extends AnalyticsContainer {
    String username, password, driverUrl, driverClass
 
    // Kafka properties
-   String name, servers, serializerKey, serializerValue, acks
+   String name, servers, serializerKey, serializerValue, acks, registry
 
    Boolean ignoreErrors
 

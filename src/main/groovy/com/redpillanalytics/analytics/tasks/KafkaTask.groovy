@@ -15,31 +15,30 @@ import org.gradle.api.tasks.TaskAction
 class KafkaTask extends SinkTask {
 
    @Input
-   String servers
+   String servers, serializerKey, serializerValue, acks
 
    @Input
    @Optional
-   String serializerKey
-
-   @Input
-   @Optional
-   String serializerValue
-
-   @Input
-   @Optional
-   String acks
+   String registry
 
    @TaskAction
    def kafkaTask() {
 
-      def producer = new KafkaProducer([
-              "bootstrap.servers": servers,
+      def properties = [
+              "bootstrap.servers"   : servers,
               // serializers
-              "value.serializer" : serializerValue,
-              "key.serializer"   : serializerKey,
+              "value.serializer"    : serializerValue,
+              "key.serializer"      : serializerKey,
               // acknowledgement control
-              "acks"             : acks
-      ])
+              "acks"                : acks
+      ]
+
+      if (registry) {
+
+         properties['schema.registry.url'] = registry
+      }
+
+      def producer = new KafkaProducer(properties)
 
       getAnalyticsDir().eachFile(FileType.DIRECTORIES) { dir ->
 
@@ -47,7 +46,13 @@ class KafkaTask extends SinkTask {
 
             def topicName = getEntityName(file)
 
+            //todo set to debug
+            logger.warn "topic: $topicName"
+
             def response
+
+            //todo set to debug
+            logger.warn "message: ${file.text}"
 
             try {
 
@@ -66,7 +71,9 @@ class KafkaTask extends SinkTask {
             }
             finally {
 
-               logger.warn "response: $response"
+               //todo set to debug
+               logger.warn "response: ${response.dump()}"
+               logger.warn "result: ${response.result.dump()}"
 
             }
 

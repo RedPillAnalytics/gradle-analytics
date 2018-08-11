@@ -85,6 +85,8 @@ class AnalyticsPlugin implements Plugin<Project> {
 
          // Task configuration based on Test task type
 
+         log.debug "test schema:\n${testSchema}"
+
          project.rootProject.getAllprojects().each { Project proj ->
 
             proj.tasks.withType(Test).all { Test task ->
@@ -294,11 +296,15 @@ class AnalyticsPlugin implements Plugin<Project> {
 
                   servers = ag.getServers() ?: 'localhost:9092'
 
-                  serializerKey = ag.getSerializerKey() ?: "org.apache.kafka.common.serialization.StringSerializer"
+                  //serializerKey = ag.getSerializerKey() ?: "org.apache.kafka.common.serialization.StringSerializer"
+                  serializerKey = ag.getSerializerKey() ?: "io.confluent.kafka.serializers.KafkaAvroSerializer"
 
-                  serializerValue = ag.getSerializerValue() ?: "org.apache.kafka.common.serialization.StringSerializer"
+                  //serializerValue = ag.getSerializerValue() ?: "org.apache.kafka.common.serialization.StringSerializer"
+                  serializerValue = ag.getSerializerValue() ?: "io.confluent.kafka.serializers.KafkaAvroSerializer"
 
                   acks ag.getAcks() ?: 'all'
+
+                  registry ag.getRegistry() ? ag.getRegistry() : null
 
                }
 

@@ -3,12 +3,43 @@ package com.redpillanalytics.analytics
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.redpillanalytics.common.CI
+import org.apache.avro.Schema
+import org.apache.avro.reflect.ReflectData
+import tech.allegro.schema.json2avro.converter.JsonAvroConverter
 
 import static java.util.UUID.randomUUID
 import groovy.util.logging.Slf4j
 
 @Slf4j
 class AnalyticsPluginExtension {
+
+   String schemaHeader = '''
+         { "name": "buildid", "type": "string" },
+         { "name": "buildtag", "type": "string" },
+         { "name": "organization", "type": "string" }
+         '''.stripIndent()
+
+   String testSchema = """
+         {
+           "type" : "record",
+           "name" : "Test",
+           "fields" : [
+                        ${schemaHeader}
+                        { "name": "projectname", "type": "string" },
+                        { "name": "projectdir", "type": "string" },
+                        { "name": "builddir", "type": "string" },
+                        { "name": "buildfile", "type": "string" },
+                        { "name": "testname", "type": "string" },
+                        { "name": "classname", "type": "string" },
+                        { "name": "starttimee", "type": "string" },
+                        { "name": "endtime", "type": "string" },
+                        { "name": "executioncount", "type": "int" },
+                        { "name": "successcount", "type": "int" },
+                        { "name": "failcount", "type": "int" },
+                        { "name": "skipcount", "type": "int" },
+                      ]
+          }
+          """.stripIndent()
 
    /**
     * The organization name for Gradle Analytics.
@@ -32,6 +63,12 @@ class AnalyticsPluginExtension {
     * The default value is the build tag from known CI servers, and if none are detected, then it uses {@link #buildId}.
     */
    String buildTag = CI.getBuildTag()
+   /**
+    * The format to use when writing the output data.
+    * <p>
+    * The default value is 'JSON', but it also supports 'Avro'.
+    */
+   String format = 'JSON'
    /**
     * The name to use for the {@code build} JSON data file.
     */
@@ -120,19 +157,28 @@ class AnalyticsPluginExtension {
 
    def writeAnalytics(String filename, File buildDir, def record, Boolean useHeaders = false) {
 
-      Gson gson = new GsonBuilder().serializeNulls().create()
+      def message
 
       def analyticsFile = getAnalyticsFile(filename, buildDir)
 
       analyticsFile.parentFile.mkdirs()
 
+      Gson gson = new GsonBuilder().serializeNulls().create()
+
       if (useHeaders) {
 
-         analyticsFile.append(gson.toJson(getHeaderJson() << record) + '\n')
+         message = getHeaderJson() + record
+      }
+
+      message = message + '\n'
+
+      if (getFormat().toLowerCase() == 'avro') {
+
+         analyticsFile.append(new JsonAvroConverter().convertToAvro((gson.toJson(record)).getBytes(), ReflectData.get().getSchema(getTestSchema())))
       }
       else {
 
-         analyticsFile.append(gson.toJson(record) + '\n')
+         analyticsFile.append(gson.toJson(record))
       }
    }
 
