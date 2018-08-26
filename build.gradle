@@ -39,7 +39,10 @@ allprojects {
 }
 
 testSets {
-   integrationTest
+   kafkaTest
+   confluentTest
+   amazonTest
+   googleTest
 }
 
 // configure the upload to GitHub releases
@@ -71,10 +74,10 @@ dependencies {
    // Kafka
    compile 'org.apache.kafka:kafka-clients:2.0.0'
    compile 'org.apache.avro:avro:1.8.2'
-   compile ('io.confluent:kafka-avro-serializer:3.2.1') {
-      exclude group: "org.slf4j"
-   }
-   compile group: 'tech.allegro.schema.json2avro', name: 'converter', version: '0.2.6'
+//   compile ('io.confluent:kafka-avro-serializer:3.2.1') {
+//      exclude group: "org.slf4j"
+//   }
+   //compile group: 'tech.allegro.schema.json2avro', name: 'converter', version: '0.2.6'
 
    testCompile('org.spockframework:spock-core:1.1-groovy-2.4')
 }

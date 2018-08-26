@@ -26,7 +26,7 @@ pipeline {
 
       stage('Integration') {
          steps {
-            sh "$gradle integrationTest --rerun-tasks"
+            sh "$gradle amazonTest googleTest --rerun-tasks"
          }
       }
 

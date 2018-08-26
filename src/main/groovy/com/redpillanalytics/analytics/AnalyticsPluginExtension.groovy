@@ -2,44 +2,17 @@ package com.redpillanalytics.analytics
 
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import com.redpillanalytics.analytics.records.BuildRecord
+import com.redpillanalytics.analytics.records.TaskRecord
+import com.redpillanalytics.analytics.records.TestOutputRecord
+import com.redpillanalytics.analytics.records.TestRecord
 import com.redpillanalytics.common.CI
-import org.apache.avro.Schema
-import org.apache.avro.reflect.ReflectData
-import tech.allegro.schema.json2avro.converter.JsonAvroConverter
 
 import static java.util.UUID.randomUUID
 import groovy.util.logging.Slf4j
 
 @Slf4j
 class AnalyticsPluginExtension {
-
-   String schemaHeader = '''
-         { "name": "buildid", "type": "string" },
-         { "name": "buildtag", "type": "string" },
-         { "name": "organization", "type": "string" }
-         '''.stripIndent()
-
-   String testSchema = """
-         {
-           "type" : "record",
-           "name" : "Test",
-           "fields" : [
-                        ${schemaHeader}
-                        { "name": "projectname", "type": "string" },
-                        { "name": "projectdir", "type": "string" },
-                        { "name": "builddir", "type": "string" },
-                        { "name": "buildfile", "type": "string" },
-                        { "name": "testname", "type": "string" },
-                        { "name": "classname", "type": "string" },
-                        { "name": "starttimee", "type": "string" },
-                        { "name": "endtime", "type": "string" },
-                        { "name": "executioncount", "type": "int" },
-                        { "name": "successcount", "type": "int" },
-                        { "name": "failcount", "type": "int" },
-                        { "name": "skipcount", "type": "int" },
-                      ]
-          }
-          """.stripIndent()
 
    /**
     * The organization name for Gradle Analytics.
@@ -66,7 +39,7 @@ class AnalyticsPluginExtension {
    /**
     * The format to use when writing the output data.
     * <p>
-    * The default value is 'JSON', but it also supports 'Avro'.
+    * The default value is 'JSON', but 'Avro' is also supported.
     */
    String format = 'JSON'
    /**
@@ -148,14 +121,50 @@ class AnalyticsPluginExtension {
       return new File(filename, getAnalyticsDir(buildDir))
    }
 
-   def getHeaderJson() {
+   def getBuildHeader() {
 
       return [buildid     : buildId,
               buildTag    : buildTag,
               organization: organization]
    }
 
-   def writeAnalytics(String filename, File buildDir, def record, Boolean useHeaders = false) {
+   def getBuildRecord(def record) {
+
+      def buildRecord = new BuildRecord(record << getBuildHeader())
+
+      log.debug "task record: ${buildRecord.dump()}"
+
+      return buildRecord
+   }
+
+   def getTaskRecord(def record) {
+
+      def taskRecord = new TaskRecord(record << getBuildHeader())
+
+      log.debug "task record: ${taskRecord.dump()}"
+
+      return taskRecord
+   }
+
+   def getTestRecord(def record) {
+
+      def testRecord = new TestRecord(record << getBuildHeader())
+
+      log.debug "task record: ${testRecord.dump()}"
+
+      return testRecord
+   }
+
+   def getTestOutputRecord(def record) {
+
+      def testRecord = new TestOutputRecord(record << getBuildHeader())
+
+      log.debug "task record: ${testRecord.dump()}"
+
+      return testRecord
+   }
+
+   def writeAnalytics(String filename, File buildDir, def record) {
 
       Gson gson = new GsonBuilder().serializeNulls().create()
 
@@ -163,10 +172,11 @@ class AnalyticsPluginExtension {
 
       analyticsFile.parentFile.mkdirs()
 
-      if (useHeaders) {
+      if (format.toLowerCase() == 'avro') {
 
-         analyticsFile.append(gson.toJson(getHeaderJson() << record) + '\n')
-      } else {
+
+      }
+      else if (format.toLowerCase() == 'json') {
 
          analyticsFile.append(gson.toJson(record) + '\n')
       }

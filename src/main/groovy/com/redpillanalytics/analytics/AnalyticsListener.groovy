@@ -33,12 +33,14 @@ class AnalyticsListener implements TaskExecutionListener, BuildListener, Project
 
       def ms = (taskEndTime - taskStartTime)
 
+      // construct the Task Map
+
       // write tests to the analytics file
       task.project.rootProject.extensions.analytics.writeAnalytics(
 
               task.project.rootProject.extensions.analytics.tasksFileName as String,
               task.project.rootProject.buildDir,
-              [
+              task.project.rootProject.extensions.analytics.getTaskRecord([
                       projectname: task.project.displayName,
                       projectdir : task.project.projectDir.path,
                       builddir   : task.project.buildDir.path,
@@ -52,8 +54,7 @@ class AnalyticsListener implements TaskExecutionListener, BuildListener, Project
                       duration   : ms,
                       status     : taskState.failure ? 'failure' : 'success',
                       stacktrace : taskState.failure.toString()
-              ],
-              true
+              ])
       )
 
       log.debug "${task.getPath()} took ${ms}ms"
@@ -72,7 +73,7 @@ class AnalyticsListener implements TaskExecutionListener, BuildListener, Project
 
               result.gradle.rootProject.extensions.analytics.buildsFileName as String,
               result.gradle.rootProject.buildDir,
-              [
+              result.gradle.rootProject.analytics.getBuildRecord([
                       hostname       : result.gradle.rootProject.project.extensions.analytics.hostname,
                       commithash     : result.gradle.rootProject.project.extensions.analytics.gitCommitHash,
                       scmbranch      : result.gradle.rootProject.project.extensions.analytics.gitBranch,
@@ -86,8 +87,7 @@ class AnalyticsListener implements TaskExecutionListener, BuildListener, Project
                       duration       : ms,
                       status         : result.failure ? 'failure' : 'success',
                       stacktrace     : result.failure.toString()
-              ],
-              true
+              ]),
       )
    }
 

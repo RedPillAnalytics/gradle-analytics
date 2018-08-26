@@ -1,4 +1,4 @@
-package com.redpillanalytics.analytics
+package analytics
 
 import groovy.util.logging.Slf4j
 import org.gradle.testkit.runner.GradleRunner
@@ -11,7 +11,7 @@ import spock.lang.Unroll
 
 @Slf4j
 @Title("Execute :publish task using --dry-run")
-class JsonProducerTest extends Specification {
+class AvroProducerTest extends Specification {
 
    @ClassRule
    @Shared
@@ -43,12 +43,13 @@ class JsonProducerTest extends Specification {
                s3 {
                   prefix = 'rpa-gradle-analytics'
                }
-               kafka {
-                  registry = 'http://localhost:8081'
-               }
+               kafka
             }
             
-            analytics.ignoreErrors = false     
+            analytics {
+               ignoreErrors = false
+               format = 'avro'
+            }
         """
 
       result = GradleRunner.create()
