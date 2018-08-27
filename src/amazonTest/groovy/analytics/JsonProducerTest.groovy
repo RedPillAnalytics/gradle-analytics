@@ -1,4 +1,4 @@
-package com.redpillanalytics.analytics
+package analytics
 
 import groovy.util.logging.Slf4j
 import org.gradle.testkit.runner.GradleRunner
@@ -11,7 +11,7 @@ import spock.lang.Unroll
 
 @Slf4j
 @Title("Execute :publish task using --dry-run")
-class ProducerTest extends Specification {
+class JsonProducerTest extends Specification {
 
    @ClassRule
    @Shared
@@ -35,11 +35,7 @@ class ProducerTest extends Specification {
             }
             
             analytics.sinks {
-               pubsub
                firehose
-               gs {
-                  prefix = 'rpa-gradle-analytics'
-               }
                s3 {
                   prefix = 'rpa-gradle-analytics'
                }

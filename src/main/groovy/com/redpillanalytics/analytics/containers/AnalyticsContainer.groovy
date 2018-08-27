@@ -1,14 +1,13 @@
-package com.redpillanalytics.analytics
+package com.redpillanalytics.analytics.containers
 
 import groovy.util.logging.Slf4j
 
 @Slf4j
-class DomainContainer {
+class AnalyticsContainer {
 
    /**
     * The name of the container entity.
     */
-   String name
 
    // capture the debug status
    Boolean isDebugEnabled = log.isDebugEnabled()

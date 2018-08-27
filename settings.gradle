@@ -1,2 +1,11 @@
+//pluginManagement {
+//   repositories {
+//      maven {
+//         url "http://packages.confluent.io/maven/"
+//      }
+//      gradlePluginPortal()
+//   }
+//}
+
 rootProject.name = 'gradle-plugins'
 include 'samples'

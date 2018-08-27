@@ -2,6 +2,10 @@ package com.redpillanalytics.analytics
 
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import com.redpillanalytics.analytics.records.BuildRecord
+import com.redpillanalytics.analytics.records.TaskRecord
+import com.redpillanalytics.analytics.records.TestOutputRecord
+import com.redpillanalytics.analytics.records.TestRecord
 import com.redpillanalytics.common.CI
 
 import static java.util.UUID.randomUUID
@@ -32,6 +36,12 @@ class AnalyticsPluginExtension {
     * The default value is the build tag from known CI servers, and if none are detected, then it uses {@link #buildId}.
     */
    String buildTag = CI.getBuildTag()
+   /**
+    * The format to use when writing the output data.
+    * <p>
+    * The default value is 'JSON', but 'Avro' is also supported.
+    */
+   String format = 'JSON'
    /**
     * The name to use for the {@code build} JSON data file.
     */
@@ -111,14 +121,50 @@ class AnalyticsPluginExtension {
       return new File(filename, getAnalyticsDir(buildDir))
    }
 
-   def getHeaderJson() {
+   def getBuildHeader() {
 
       return [buildid     : buildId,
               buildTag    : buildTag,
               organization: organization]
    }
 
-   def writeAnalytics(String filename, File buildDir, def record, Boolean useHeaders = false) {
+   def getBuildRecord(def record) {
+
+      def buildRecord = new BuildRecord(record << getBuildHeader())
+
+      log.debug "task record: ${buildRecord.dump()}"
+
+      return buildRecord
+   }
+
+   def getTaskRecord(def record) {
+
+      def taskRecord = new TaskRecord(record << getBuildHeader())
+
+      log.debug "task record: ${taskRecord.dump()}"
+
+      return taskRecord
+   }
+
+   def getTestRecord(def record) {
+
+      def testRecord = new TestRecord(record << getBuildHeader())
+
+      log.debug "task record: ${testRecord.dump()}"
+
+      return testRecord
+   }
+
+   def getTestOutputRecord(def record) {
+
+      def testRecord = new TestOutputRecord(record << getBuildHeader())
+
+      log.debug "task record: ${testRecord.dump()}"
+
+      return testRecord
+   }
+
+   def writeAnalytics(String filename, File buildDir, def record) {
 
       Gson gson = new GsonBuilder().serializeNulls().create()
 
@@ -126,11 +172,11 @@ class AnalyticsPluginExtension {
 
       analyticsFile.parentFile.mkdirs()
 
-      if (useHeaders) {
+      if (format.toLowerCase() == 'avro') {
 
-         analyticsFile.append(gson.toJson(getHeaderJson() << record) + '\n')
+
       }
-      else {
+      else if (format.toLowerCase() == 'json') {
 
          analyticsFile.append(gson.toJson(record) + '\n')
       }

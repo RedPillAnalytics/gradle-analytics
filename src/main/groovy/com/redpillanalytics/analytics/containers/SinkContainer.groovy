@@ -1,4 +1,4 @@
-package com.redpillanalytics.analytics
+package com.redpillanalytics.analytics.containers
 
 import groovy.util.logging.Slf4j
 
@@ -6,15 +6,21 @@ import groovy.util.logging.Slf4j
  * Created by stewartbryson on 11/19/16.
  */
 @Slf4j
-class SinkContainer extends DomainContainer {
+class SinkContainer extends AnalyticsContainer {
 
    // naming
-   String prefix, sink
+   String prefix, sink, suffix
+
+   // RESTful URL for any Sink that has one
+   String restUrl
 
    // JDBC connection information
    String username, password, driverUrl, driverClass
 
-   Boolean ignoreErrors
+   // Kafka properties
+   String name, servers, serializerKey, serializerValue, acks, registry
+
+   Boolean ignoreErrors, formatSuffix=true
 
    SinkContainer(String name) {
 
@@ -30,7 +36,7 @@ class SinkContainer extends DomainContainer {
 
       def sink = this.sink ?: name
       log.debug "sink: ${sink}"
-      assert ['s3', 'firehose', 'pubsub', 'jdbc', 'gs'].contains(sink)
+      assert ['s3', 'firehose', 'pubsub', 'jdbc', 'gs', 'kafka'].contains(sink)
       return sink
    }
 

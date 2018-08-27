@@ -1,8 +1,11 @@
 package com.redpillanalytics.analytics
 
+import com.redpillanalytics.analytics.containers.SinkContainer
+import com.redpillanalytics.analytics.tasks.ConfluentTask
 import com.redpillanalytics.analytics.tasks.FirehoseTask
 import com.redpillanalytics.analytics.tasks.GSTask
 import com.redpillanalytics.analytics.tasks.JdbcTask
+import com.redpillanalytics.analytics.tasks.KafkaTask
 import com.redpillanalytics.analytics.tasks.PubSubTask
 import com.redpillanalytics.analytics.tasks.S3Task
 import groovy.util.logging.Slf4j
@@ -83,6 +86,8 @@ class AnalyticsPlugin implements Plugin<Project> {
 
          // Task configuration based on Test task type
 
+         log.debug "test schema:\n${testSchema}"
+
          project.rootProject.getAllprojects().each { Project proj ->
 
             proj.tasks.withType(Test).all { Test task ->
@@ -112,7 +117,7 @@ class AnalyticsPlugin implements Plugin<Project> {
 
                           project.rootProject.extensions.analytics.testsFileName as String,
                           project.rootProject.buildDir,
-                          [
+                          project.extensions.analytics.getTestRecord([
                                   projectname : task.project.displayName,
                                   projectdir  : task.project.projectDir.path,
                                   builddir    : task.project.buildDir.path,
@@ -125,8 +130,7 @@ class AnalyticsPlugin implements Plugin<Project> {
                                   successcount: result.getSuccessfulTestCount(),
                                   failcount   : result.getFailedTestCount(),
                                   skipcount   : result.getSkippedTestCount()
-                          ],
-                          true
+                          ]),
                   )
                }
 
@@ -142,24 +146,27 @@ class AnalyticsPlugin implements Plugin<Project> {
                   String eventDestination = event.getDestination().toString()
 
                   // write tests to the analytics file
-                  project.extensions.analytics.writeAnalytics(
+                  if (eventMessage != '\n') {
 
-                          project.rootProject.extensions.analytics.testOutputFileName as String,
-                          project.rootProject.buildDir,
-                          [
-                                  projectname: task.project.displayName,
-                                  projectdir : task.project.projectDir.path,
-                                  builddir   : task.project.buildDir.path,
-                                  buildfile  : task.project.buildFile.path,
-                                  classname  : className,
-                                  testname   : testName,
-                                  parentname : parentName,
-                                  processtype: type,
-                                  destination: eventDestination,
-                                  message    : eventMessage
-                          ],
-                          true
-                  )
+                     project.extensions.analytics.writeAnalytics(
+
+                             project.rootProject.extensions.analytics.testOutputFileName as String,
+                             project.rootProject.buildDir,
+                             project.extensions.analytics.getTestOutputRecord([
+                                     projectname: task.project.displayName,
+                                     projectdir : task.project.projectDir.path,
+                                     builddir   : task.project.buildDir.path,
+                                     buildfile  : task.project.buildFile.path,
+                                     classname  : className,
+                                     testname   : testName,
+                                     parentname : parentName,
+                                     processtype: type,
+                                     destination: eventDestination,
+                                     message    : eventMessage
+                             ]),
+                     )
+
+                  }
                }
 
                afterSuite { desc, result ->
@@ -222,6 +229,9 @@ class AnalyticsPlugin implements Plugin<Project> {
                   // add any custom prefix to sink names
                   prefix ag.getPrefix()
 
+                  // handle the suffix
+                  suffix (ag.getFormatSuffix()?project.extensions.analytics.format:null)
+
                }
 
             }
@@ -276,6 +286,54 @@ class AnalyticsPlugin implements Plugin<Project> {
                }
 
             }
+
+//            // Apache Kafka
+//            if (ag.getSink() == 'kafka') {
+//
+//               // Add analytics processing task
+//               project.task(taskName, type: KafkaTask) {
+//
+//                  group "analytics"
+//
+//                  description ag.getDescription()
+//
+//                  // add any custom prefix to sink names
+//                  prefix ag.getPrefix()
+//
+//                  servers = ag.getServers() ?: 'localhost:9092'
+//
+//                  serializerKey = ag.getSerializerKey() ?: "org.apache.kafka.common.serialization.StringSerializer"
+//                  //serializerKey = ag.getSerializerKey() ?: "io.confluent.kafka.serializers.KafkaAvroSerializer"
+//
+//                  serializerValue = ag.getSerializerValue() ?: "org.apache.kafka.common.serialization.StringSerializer"
+//                  //serializerValue = ag.getSerializerValue() ?: "io.confluent.kafka.serializers.KafkaAvroSerializer"
+//
+//                  acks ag.getAcks() ?: 'all'
+//
+//                  registry ag.getRegistry() ? ag.getRegistry() : null
+//
+//               }
+//
+//            }
+
+            // Apache Confluent
+//            if (ag.getSink() == 'confluent') {
+//
+//               // Add analytics processing task
+//               project.task(taskName, type: ConfluentTask) {
+//
+//                  group "analytics"
+//
+//                  description ag.getDescription()
+//
+//                  // add any custom prefix to sink names
+//                  prefix ag.getPrefix()
+//
+//                  restUrl ag.getRestUrl()
+//
+//               }
+//
+//            }
 
             // use JDBC and built in JSON
             if ((ag.getSink() == 'jdbc') && dependencyMatching('analytics', '.*jdbc.*')) {
