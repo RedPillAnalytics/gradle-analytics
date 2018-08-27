@@ -106,7 +106,7 @@ repositories {
 
 gradlePlugin {
    plugins {
-      checkmatePlugin {
+      gradleAnalytics {
          id = 'com.redpillanalytics.gradle-analytics'
          implementationClass = 'com.redpillanalytics.analytics.AnalyticsPlugin'
       }
