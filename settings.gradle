@@ -7,5 +7,4 @@
 //   }
 //}
 
-rootProject.name = 'gradle-plugins'
-include 'samples'
+rootProject.name = 'gradle-analytics'
