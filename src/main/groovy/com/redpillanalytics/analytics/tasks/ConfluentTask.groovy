@@ -36,7 +36,7 @@ class ConfluentTask extends SinkTask {
 
             try {
 
-               //response = producer.send(new ProducerRecord(topicName, file.text))
+               // need REST logic for passing file.text to topicName
             }
             catch (Exception e) {
 

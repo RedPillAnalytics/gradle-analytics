@@ -39,8 +39,8 @@ allprojects {
 }
 
 testSets {
-   kafkaTest
-   confluentTest
+//   kafkaTest
+//   confluentTest
    amazonTest
    googleTest
 }
