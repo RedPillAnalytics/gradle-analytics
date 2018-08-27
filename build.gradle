@@ -95,6 +95,15 @@ repositories {
    }
 }
 
+gradlePlugin {
+   plugins {
+      checkmatePlugin {
+         id = 'com.redpillanalytics.gradle-analytics'
+         implementationClass = 'com.redpillanalytics.analytics.AnalyticsPlugin'
+      }
+   }
+}
+
 pluginBundle {
 
    website = 'http://redpillanalytics.com/'
@@ -103,7 +112,6 @@ pluginBundle {
    plugins {
 
       gradleAnalytics {
-         id = 'com.redpillanalytics.gradle-analytics'
          displayName = 'gradle-analytics'
          description = "A plugin for publishing data from Gradle builds to a variety of cloud and on-premises data sinks."
          tags = ['analytics', 'data-sinks']
