@@ -41,7 +41,7 @@ class AnalyticsPluginExtension {
     * <p>
     * The default value is 'JSON', but 'Avro' is also supported.
     */
-   String format = 'JSON'
+   String format = 'json'
    /**
     * The name to use for the {@code build} JSON data file.
     */
@@ -172,11 +172,11 @@ class AnalyticsPluginExtension {
 
       analyticsFile.parentFile.mkdirs()
 
-      if (format.toLowerCase() == 'avro') {
+      if (format.equalsIgnoreCase('avro')) {
 
 
       }
-      else if (format.toLowerCase() == 'json') {
+      else if (format.equalsIgnoreCase('json')) {
 
          analyticsFile.append(gson.toJson(record) + '\n')
       }
