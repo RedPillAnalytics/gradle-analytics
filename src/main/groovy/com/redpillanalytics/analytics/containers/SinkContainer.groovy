@@ -20,7 +20,7 @@ class SinkContainer extends AnalyticsContainer {
    // Kafka properties
    String name, servers, serializerKey, serializerValue, acks, registry
 
-   Boolean ignoreErrors, formatSuffix=true
+   Boolean ignoreErrors, formatSuffix=false
 
    SinkContainer(String name) {
 
@@ -44,5 +44,4 @@ class SinkContainer extends AnalyticsContainer {
 
       return prefix ?: "gradle"
    }
-
 }

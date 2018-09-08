@@ -68,7 +68,8 @@ class SinkTask extends DefaultTask {
    @Input
    String getEntityName(File file, String joiner='.') {
 
-      def entityName = [prefix, Utils.getFileBase(file), suffix].join(joiner)
+      def entityName = [prefix, Utils.getFileBase(file)].join(joiner)
+      entityName = suffix ? [entityName, suffix].join(joiner) : entityName
       log.debug "Name of the sink entity: $entityName"
       return entityName
 
