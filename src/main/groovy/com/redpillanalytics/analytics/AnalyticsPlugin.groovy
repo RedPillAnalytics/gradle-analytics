@@ -86,8 +86,6 @@ class AnalyticsPlugin implements Plugin<Project> {
 
          // Task configuration based on Test task type
 
-         log.debug "test schema:\n${testSchema}"
-
          project.rootProject.getAllprojects().each { Project proj ->
 
             proj.tasks.withType(Test).all { Test task ->

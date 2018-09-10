@@ -5,6 +5,12 @@
 .idea/
 *.iml
 
+# VS Code stuff
+.settings
+.project
+.classpath
+bin
+
 # Gradle Cache directory
 .gradle
 
