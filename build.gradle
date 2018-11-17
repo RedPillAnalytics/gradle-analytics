@@ -67,28 +67,31 @@ githubRelease {
 
 dependencies {
 
-   compile gradleApi()
-   compile group: 'org.codehaus.groovy', name: 'groovy-all', version: '2.4.15'
-   compile group: 'org.slf4j', name: 'slf4j-simple', version: '+'
+   implementation gradleApi()
+   implementation group: 'org.codehaus.groovy', name: 'groovy-all', version: '2.4.15'
+   implementation group: 'org.slf4j', name: 'slf4j-simple', version: '+'
 
-   compile group: 'com.google.code.gson', name: 'gson', version: '+'
-   compile group: 'org.eclipse.jgit', name: 'org.eclipse.jgit', version: '+'
+   // gradle-utilities
+   implementation 'com.redpillanalytics:gradle-utilities:+'
 
-   compile group: 'com.amazonaws', name: 'aws-java-sdk-kinesis', version: '+'
-   compile group: 'com.amazonaws', name: 'aws-java-sdk-s3', version: '+'
+   implementation group: 'com.google.code.gson', name: 'gson', version: '+'
+   implementation group: 'org.eclipse.jgit', name: 'org.eclipse.jgit', version: '+'
 
-   compile 'com.google.cloud:google-cloud-pubsub:+'
-   compile 'com.google.cloud:google-cloud-storage:+'
+   implementation group: 'com.amazonaws', name: 'aws-java-sdk-kinesis', version: '+'
+   implementation group: 'com.amazonaws', name: 'aws-java-sdk-s3', version: '+'
+
+   implementation 'com.google.cloud:google-cloud-pubsub:+'
+   implementation 'com.google.cloud:google-cloud-storage:+'
 
    // Kafka
-   compile 'org.apache.kafka:kafka-clients:2.0.0'
-   compile 'org.apache.avro:avro:1.8.2'
-//   compile ('io.confluent:kafka-avro-serializer:3.2.1') {
+   implementation 'org.apache.kafka:kafka-clients:2.0.0'
+   implementation 'org.apache.avro:avro:1.8.2'
+//   implementation ('io.confluent:kafka-avro-serializer:3.2.1') {
 //      exclude group: "org.slf4j"
 //   }
-   //compile group: 'tech.allegro.schema.json2avro', name: 'converter', version: '0.2.6'
+   //implementation group: 'tech.allegro.schema.json2avro', name: 'converter', version: '0.2.6'
 
-   testCompile('org.spockframework:spock-core:1.1-groovy-2.4')
+   testImplementation('org.spockframework:spock-core:1.1-groovy-2.4')
 }
 
 // Default artifact naming.
@@ -98,6 +101,18 @@ repositories {
    jcenter()
    maven {
       url "https://plugins.gradle.org/m2/"
+   }
+   maven {
+      url releaseUrl
+      authentication {
+         awsIm(AwsImAuthentication)
+      }
+   }
+   maven {
+      url snapshotUrl
+      authentication {
+         awsIm(AwsImAuthentication)
+      }
    }
    maven {
       url "http://packages.confluent.io/maven/"
