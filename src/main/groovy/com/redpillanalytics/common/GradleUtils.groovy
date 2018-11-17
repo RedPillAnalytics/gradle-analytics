@@ -38,7 +38,7 @@ class GradleUtils {
       }
    }
 
-   static public getParameter(Project project, String name, String extension, String defaultValue = null) {
+   static getParameter(Project project, String name, String extension, String defaultValue = null) {
 
       // define the value we get along the way
       def value

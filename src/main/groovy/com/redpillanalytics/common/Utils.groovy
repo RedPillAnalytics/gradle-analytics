@@ -6,33 +6,33 @@ import groovy.util.logging.Slf4j
 
 class Utils {
 
-   static public getMatchingFiles(File sourceDir, String pattern) {
+   static getMatchingFiles(File sourceDir, String pattern) {
 
       // return a list of File objects that match a particular extension
       return sourceDir.listFiles([accept: { file -> file ==~ /$pattern/ }] as FileFilter).toList()
 
    }
 
-   static public getFileExt(String file) {
+   static getFileExt(String file) {
 
       // return a list of File objects that match a particular extension
       return file.tokenize('.').last()
 
    }
 
-   static public getFileExt(File file) {
+   static getFileExt(File file) {
 
       // return a list of File objects that match a particular extension
       return getFileExt(file.name)
 
    }
 
-   static public getFileBase(File file) {
+   static getFileBase(File file) {
 
       return file.name.tokenize('.').first()
    }
 
-   static public getFilesByExt(File fileDir, String fileExt) {
+   static getFilesByExt(File fileDir, String fileExt) {
 
       log.debug("fileDir: $fileDir")
       log.debug("fileExt: $fileExt")
@@ -41,7 +41,7 @@ class Utils {
 
    }
 
-   static public getFilesByBasename(File fileDir, String basename) {
+   static getFilesByBasename(File fileDir, String basename) {
 
       log.debug("fileDir: $fileDir")
       log.debug("basename: $basename")
@@ -50,7 +50,7 @@ class Utils {
 
    }
 
-   static public getModifiedFileName(File file, String fileExt) {
+   static getModifiedFileName(File file, String fileExt) {
 
       log.debug("original file: $file")
       log.debug("fileExt: $fileExt")
@@ -64,7 +64,7 @@ class Utils {
 
    }
 
-   static public getRenamedFileName(File file, String source, String target) {
+   static getRenamedFileName(File file, String source, String target) {
 
       log.debug("original file: $file")
 
@@ -77,14 +77,14 @@ class Utils {
 
    }
 
-   static public getRenamedFile(File file, String source, String target) {
+   static getRenamedFile(File file, String source, String target) {
 
       return new File(file.parentFile, getRenamedFileName(file, source, target))
 
    }
 
 
-   static public getModifiedFile(File file, File fileDir, String fileExt) {
+   static getModifiedFile(File file, File fileDir, String fileExt) {
 
       log.debug("fileDir: $fileDir")
 
@@ -93,7 +93,7 @@ class Utils {
 
    }
 
-   static public getModifiedFile(File file, File fileDir) {
+   static getModifiedFile(File file, File fileDir) {
 
       log.debug("file: $file")
       log.debug("fileDir: $fileDir")
@@ -103,14 +103,14 @@ class Utils {
 
    }
 
-   static public getModifiedFile(File file, String fileExt) {
+   static getModifiedFile(File file, String fileExt) {
 
       // returns a file with the same basename, same path, but different extension
       return new File(file.parent, getModifiedFileName(file, fileExt))
 
    }
 
-   static public getModifiedFiles(File fileDir, String currentExtension, String newExtension) {
+   static getModifiedFiles(File fileDir, String currentExtension, String newExtension) {
 
       return fileDir.listFiles([accept: { file -> file ==~ /.*?\.$currentExtension/ }] as FileFilter).toList().collect {
 
@@ -120,7 +120,7 @@ class Utils {
 
    }
 
-   static public getModifiedFiles(File currentDir, String currentExtension, File newDir, String newExtension) {
+   static getModifiedFiles(File currentDir, String currentExtension, File newDir, String newExtension) {
 
       def newFiles = currentDir.listFiles([accept: { file -> file ==~ /.*?\.$currentExtension/ }] as FileFilter).toList().collect {
 
@@ -132,8 +132,7 @@ class Utils {
 
    }
 
-   static
-   public getModifiedMatchingFiles(File currentDir, String currentExtension, File newDir, String newExtension, File matchDir, String matchExtension) {
+   static getModifiedMatchingFiles(File currentDir, String currentExtension, File newDir, String newExtension, File matchDir, String matchExtension) {
 
       // On the left side of the intersect, I'm finding all files matching $currentExtension
       // I'm using the collect with getModifiedFile to get a file object with a new directory and new extension for each file
@@ -150,7 +149,7 @@ class Utils {
 
    }
 
-   static public exec(List command, File workingDir = null) {
+   static exec(List command, File workingDir = null) {
 
       log.info("Utils Command: " + command.join(' '))
       log.info("Working Directory: $workingDir")
@@ -164,21 +163,21 @@ class Utils {
 
    }
 
-   static public copy(File source, File target) {
+   static copy(File source, File target) {
 
       // copy the files
       target.bytes = source.bytes
       log.info "$source.canonicalPath file copied to $target.canonicalPath"
    }
 
-   static public getMatchingFilesExt(File sourceDir, String sourceExt) {
+   static getMatchingFilesExt(File sourceDir, String sourceExt) {
 
       // return a list of File objects that match a particular extension
       return sourceDir.listFiles([accept: { file -> file ==~ /.*?\.$sourceExt/ }] as FileFilter).toList()
 
    }
 
-   static public compareFiles(File baseFile, File compareFile) {
+   static compareFiles(File baseFile, File compareFile) {
 
       // need to put in some logic to make sure the basename of the files are the same
       // raise an exception if they are not
@@ -190,14 +189,14 @@ class Utils {
 
    }
 
-   static public getToolExt() {
+   static getToolExt() {
 
       return '.' + (System.getProperty("os.name").contains('Windows') ? 'cmd' : 'sh')
 
    }
 
 
-   static public getModifiedBranch(String branchName) {
+   static getModifiedBranch(String branchName) {
 
       if (!branchName) {
 
@@ -213,7 +212,7 @@ class Utils {
       }
    }
 
-   static public getJenkinsRemote() {
+   static getJenkinsRemote() {
 
       if (!CI.isJenkinsCI())
 
@@ -225,13 +224,13 @@ class Utils {
    }
 
 
-   static public getRelativePath(File root, File full) {
+   static getRelativePath(File root, File full) {
 
       return root.toURI().relativize(full.toURI()).toString()
 
    }
 
-   static public getHostname() {
+   static getHostname() {
 
       return (new InetAddress().getLocalHost().getCanonicalHostName()) ?: 'localhost'
 
