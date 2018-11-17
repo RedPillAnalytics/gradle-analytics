@@ -67,21 +67,21 @@ githubRelease {
 
 dependencies {
 
-   shadow gradleApi()
-   shadow group: 'org.codehaus.groovy', name: 'groovy-all', version: '2.4.15'
-   shadow group: 'org.slf4j', name: 'slf4j-simple', version: '+'
+   compile gradleApi()
+   compile group: 'org.codehaus.groovy', name: 'groovy-all', version: '2.4.15'
+   compile group: 'org.slf4j', name: 'slf4j-simple', version: '+'
 
-   shadow group: 'com.google.code.gson', name: 'gson', version: '+'
-   shadow group: 'org.eclipse.jgit', name: 'org.eclipse.jgit', version: '+'
+   compile group: 'com.google.code.gson', name: 'gson', version: '+'
+   compile group: 'org.eclipse.jgit', name: 'org.eclipse.jgit', version: '+'
 
-   shadow group: 'com.amazonaws', name: 'aws-java-sdk-kinesis', version: '+'
-   shadow group: 'com.amazonaws', name: 'aws-java-sdk-s3', version: '+'
+   compile group: 'com.amazonaws', name: 'aws-java-sdk-kinesis', version: '+'
+   compile group: 'com.amazonaws', name: 'aws-java-sdk-s3', version: '+'
 
-   shadow 'com.google.cloud:google-cloud-pubsub:+'
+   compile 'com.google.cloud:google-cloud-pubsub:+'
 
    // Kafka
-   shadow 'org.apache.kafka:kafka-clients:2.0.0'
-   shadow 'org.apache.avro:avro:1.8.2'
+   compile 'org.apache.kafka:kafka-clients:2.0.0'
+   compile 'org.apache.avro:avro:1.8.2'
 
    // gradle-utilities
    compile 'com.redpillanalytics:gradle-utilities:+'
