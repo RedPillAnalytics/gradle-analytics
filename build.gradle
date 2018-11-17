@@ -171,3 +171,13 @@ task uploadGroovydoc {
 
    dependsOn groovydoc
 }
+
+//customize ShadowJar
+jar.enabled = false
+
+shadowJar {
+   classifier = ''
+   zip64 = true
+}
+
+tasks.build.dependsOn tasks.shadowJar
