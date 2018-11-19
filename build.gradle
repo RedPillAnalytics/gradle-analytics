@@ -82,12 +82,10 @@ dependencies {
    // Kafka
    compile 'org.apache.kafka:kafka-clients:2.0.0'
    compile 'org.apache.avro:avro:1.8.2'
-
-   // gradle-utilities
-   compile 'com.redpillanalytics:gradle-utilities:+'
+   
    compile 'com.google.cloud:google-cloud-storage:+'
 
-   testCompile('org.spockframework:spock-core:1.1-groovy-2.4')
+   testCompile 'org.spockframework:spock-core:1.1-groovy-2.4'
 }
 
 // Default artifact naming.
