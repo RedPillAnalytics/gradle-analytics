@@ -5,7 +5,6 @@ plugins {
    id 'groovy'
    id 'java-gradle-plugin'
    id 'org.unbroken-dome.test-sets' version '2.0.2'
-   id "com.github.johnrengelman.shadow" version "4.0.2"
    id "com.github.ben-manes.versions" version "0.20.0"
    id "com.redpillanalytics.gradle-analytics" version "1.1.10"
 }
@@ -165,13 +164,3 @@ task uploadGroovydoc {
 
    dependsOn groovydoc
 }
-
-//customize ShadowJar
-jar.enabled = false
-
-shadowJar {
-   classifier = ''
-   zip64 = true
-}
-
-tasks.build.dependsOn tasks.shadowJar
