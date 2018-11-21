@@ -2,6 +2,7 @@ package com.redpillanalytics.common
 
 import groovy.util.logging.Slf4j
 import org.gradle.api.Project
+import org.gradle.api.artifacts.UnknownConfigurationException
 
 /**
  * Created by stewartbryson on 11/30/16.
@@ -35,6 +36,25 @@ class GradleUtils {
                }
             }
          }
+      }
+   }
+
+   static getDependency(Project project, String configuration, String regexp) {
+
+      return project.configurations."$configuration".find { File file -> file.absolutePath =~ regexp }
+   }
+
+   static isUsableConfiguration(Project project, String configuration, String regexp) {
+
+      try {
+
+         if (getDependency(project, configuration, regexp)) {
+            return true
+         } else {
+            return false
+         }
+      } catch (UnknownConfigurationException e) {
+         return false
       }
    }
 
