@@ -19,7 +19,7 @@ class GradleUtils {
 
             def (extensionName, property) = key.toString().split(/\./)
 
-            if (extensionName == extension && project.$extension.hasProperty(property)) {
+            if (extensionName == extension && project."$extension".hasProperty(property)) {
 
                log.debug "Setting configuration property for extension: $extension, property: $property, value: $value"
 
