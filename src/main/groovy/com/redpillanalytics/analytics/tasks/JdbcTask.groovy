@@ -8,7 +8,7 @@ import com.redpillanalytics.common.Utils
 import groovy.sql.Sql
 import groovy.io.FileType
 import groovy.util.logging.Slf4j
-import org.gradle.api.internal.tasks.options.Option
+import org.gradle.api.tasks.options.Option
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.TaskAction
 
@@ -19,14 +19,12 @@ class JdbcTask extends SinkTask {
 
    @Input
    @Option(option = "username",
-           description = "Username for making the JDBC connection.",
-           order = 3)
+           description = "Username for making the JDBC connection.")
    String username
 
    @Input
    @Option(option = "password",
-           description = "Password for making the JDBC connection.",
-           order = 4)
+           description = "Password for making the JDBC connection.")
    String password
 
    @Input
