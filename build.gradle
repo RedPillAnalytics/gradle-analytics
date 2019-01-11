@@ -1,3 +1,5 @@
+// added because the github-release plugin used implementation instead of api/compile for plugin dependencies
+// An issue exists for this, so hopefully it will be corrected soon
 buildscript {
    dependencies {
       classpath 'com.squareup.okhttp3:okhttp:3.12.0'
