@@ -1,0 +1,10 @@
+steps:
+  - name: gcr.io/cloud-builders/gcloud
+    args:
+      - kms
+      - decrypt
+      - --ciphertext-file=gradle.properties.enc
+      - --plaintext-file=gradle.properties
+      - --location=global
+      - --keyring=cloudbuild
+      - --key=gradle-properties
