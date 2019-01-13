@@ -129,7 +129,6 @@ pluginBundle {
    vcsUrl = 'https://github.com/RedPillAnalytics/gradle-plugins/'
 
    plugins {
-
       gradleAnalytics {
          id = 'com.redpillanalytics.gradle-analytics'
          displayName = 'gradle-analytics'
@@ -152,12 +151,10 @@ task uploadGroovydoc {
    group = 'documentation'
 
    doLast {
-
       exec {
          executable 'aws'
          args 's3', 'sync', groovydoc.destinationDir.getPath(), "s3://rpa-documentation/gradle-analytics/$version/"
       }
-
       exec {
          executable 'aws'
          args 's3', 'sync', groovydoc.destinationDir.getPath(), "s3://rpa-documentation/gradle-analytics/latest/"
