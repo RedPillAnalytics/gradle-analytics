@@ -8,7 +8,7 @@ steps:
       - --plaintext-file=id_rsa
       - --location=global
       - --keyring=cloudbuild
-      - --key=gradle-properties
+      - --key=id-rsa
   - name: gcr.io/cloud-builders/gcloud
     id: decrypt-gradle-properties
     args:
