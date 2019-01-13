@@ -20,11 +20,6 @@ steps:
       - --keyring=cloudbuild
       - --key=gradle-properties
   - name: gradle
-    id: ssh-keygen
-    entrypoint: ssh-keygen
-    args:
-      - -t rsa github.com > known_hosts
-  - name: gradle
     id: ls-dir
     entrypoint: ls
     args:
