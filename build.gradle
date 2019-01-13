@@ -5,6 +5,7 @@ buildscript {
       classpath 'com.squareup.okhttp3:okhttp:3.12.0'
       classpath 'com.j256.simplemagic:simplemagic:1.10'
       classpath 'org.zeroturnaround:zt-exec:1.10'
+      //classpath "gradle.plugin.com.redpillanalytics:gradle-analytics:1.1.18"
    }
 }
 
@@ -16,7 +17,9 @@ plugins {
    id 'java-gradle-plugin'
    id 'org.unbroken-dome.test-sets' version '2.0.3'
    id "com.github.ben-manes.versions" version "0.20.0"
-   //id "com.redpillanalytics.gradle-analytics" version "1.1.10"
+   //id "com.selesse.git.changelog" version "0.3.0"
+   id "com.moonlitdoor.git-version" version "0.0.8"
+   //id "com.redpillanalytics.gradle-analytics" version "1.1.19"
 }
 
 // send analytics
@@ -80,7 +83,7 @@ dependencies {
    // Kafka
    compile 'org.apache.kafka:kafka-clients:2.1.0'
    compile 'org.apache.avro:avro:1.8.2'
-   
+
    compile 'com.google.cloud:google-cloud-storage:+'
 
    testCompile 'org.spockframework:spock-core:1.2-groovy-2.5'
@@ -163,3 +166,8 @@ task uploadGroovydoc {
 
    dependsOn groovydoc
 }
+
+// Only execute certain tasks if we are on the master branch
+tasks.release.configure { onlyIf { gitBranchName == 'master' } }
+tasks.publishPlugins.configure { onlyIf { gitBranchName == 'master' } }
+tasks.githubRelease.configure { onlyIf { gitBranchName == 'master' } }

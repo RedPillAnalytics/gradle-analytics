@@ -9,3 +9,20 @@ steps:
       - --location=global
       - --keyring=cloudbuild
       - --key=gradle-properties
+  - name: gcr.io/cloud-builders/git
+    id: git-fetch
+    args: [ 'fetch','--tags','--unshallow']
+  - name: gcr.io/cloud-builders/git
+    id: git-checkout
+    args: [ 'checkout', '$BRANCH_NAME']
+  - name: gradle
+    id: gradle-release
+    entrypoint: gradlew
+    args: [
+      '--build-cache',
+      '-Si',
+      '-Panalytics.buildId=$BUILD_ID',
+      'release',
+      '-Prelease.disableChecks',
+      '-Prelease.localOnly'
+    ]
