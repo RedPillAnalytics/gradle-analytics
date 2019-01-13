@@ -9,6 +9,11 @@ steps:
       - --location=global
       - --keyring=cloudbuild
       - --key=gradle-properties
+  - name: gcr.io/cloud-builders/git
+    id: git-clone
+    args:
+      - clone
+      - git@github.com:[GIT-USERNAME]/[REPOSITORY]
   - name: ubuntu
     id: ls-dir
     args: ['ls','-la']
