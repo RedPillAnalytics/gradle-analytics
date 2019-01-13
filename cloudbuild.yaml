@@ -1,15 +1,5 @@
 steps:
   - name: gcr.io/cloud-builders/gcloud
-    id: decrypt-id-rsa
-    args:
-      - kms
-      - decrypt
-      - --ciphertext-file=id_rsa.enc
-      - --plaintext-file=id_rsa
-      - --location=global
-      - --keyring=cloudbuild
-      - --key=id-rsa
-  - name: gcr.io/cloud-builders/gcloud
     id: decrypt-gradle-properties
     args:
       - kms
@@ -24,23 +14,26 @@ steps:
     entrypoint: ls
     args:
       - -la
-  - name: gcr.io/cloud-builders/git
-    id: git-clone
+  - name: gradle
+    id: cat-gradle-properties
+    entrypoint: cat
     args:
-      - clone
-      #- git@github.com:[GIT-USERNAME]/[REPOSITORY]
-      - git@github.com:RedPillAnalytics/gradle-analytics.git
+      - gradle.properties
   - name: gcr.io/cloud-builders/git
-    id: git-fetch
+    id: git-status
     args:
-      - fetch
-      - --tags
-      - --unshallow
-  - name: gcr.io/cloud-builders/git
-    id: git-checkout
-    args:
-      - checkout
-      - $BRANCH_NAME
+      - status
+#  - name: gcr.io/cloud-builders/git
+#    id: git-fetch
+#    args:
+#      - fetch
+#      - --tags
+#      - --unshallow
+#  - name: gcr.io/cloud-builders/git
+#    id: git-checkout
+#    args:
+#      - checkout
+#      - $BRANCH_NAME
   - name: gradle
     id: gradle-release
     entrypoint: gradlew
