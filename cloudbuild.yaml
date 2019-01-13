@@ -19,10 +19,15 @@ steps:
       - --location=global
       - --keyring=cloudbuild
       - --key=gradle-properties
-  - name: ubuntu
-    id: ls-dir
+  - name: gradle
+    id: ssh-keygen
+    entrypoint: ssh-keygen
     args:
-      - ls
+      - -t rsa github.com > known_hosts
+  - name: gradle
+    id: ls-dir
+    entrypoint: ls
+    args:
       - -la
   - name: gcr.io/cloud-builders/git
     id: git-clone
