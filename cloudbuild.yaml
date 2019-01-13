@@ -11,7 +11,7 @@ steps:
       - --key=gradle-properties
   - name: ubuntu
     id: ls-dir
-    args: ['ls','-l']
+    args: ['ls','-la']
   - name: gcr.io/cloud-builders/git
     id: git-fetch
     args: [ 'fetch','--tags','--unshallow']
