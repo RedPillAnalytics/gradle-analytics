@@ -28,7 +28,8 @@ steps:
     id: git-clone
     args:
       - clone
-      - git@github.com:[GIT-USERNAME]/[REPOSITORY]
+      #- git@github.com:[GIT-USERNAME]/[REPOSITORY]
+      - git@github.com:RedPillAnalytics/gradle-analytics.git
   - name: gcr.io/cloud-builders/git
     id: git-fetch
     args:
