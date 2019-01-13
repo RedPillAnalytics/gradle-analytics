@@ -1,6 +1,16 @@
 steps:
-  # decrypt gradle.properties file
   - name: gcr.io/cloud-builders/gcloud
+    id: decrypt-id-rsa
+    args:
+      - kms
+      - decrypt
+      - --ciphertext-file=id_rsa.enc
+      - --plaintext-file=id_rsa
+      - --location=global
+      - --keyring=cloudbuild
+      - --key=gradle-properties
+  - name: gcr.io/cloud-builders/gcloud
+    id: decrypt-gradle-properties
     args:
       - kms
       - decrypt
@@ -16,21 +26,27 @@ steps:
       - git@github.com:[GIT-USERNAME]/[REPOSITORY]
   - name: ubuntu
     id: ls-dir
-    args: ['ls','-la']
+    args:
+      - ls
+      - -la
   - name: gcr.io/cloud-builders/git
     id: git-fetch
-    args: [ 'fetch','--tags','--unshallow']
+    args:
+      - fetch
+      - --tags
+      - --unshallow
   - name: gcr.io/cloud-builders/git
     id: git-checkout
-    args: [ 'checkout', '$BRANCH_NAME']
+    args:
+      - checkout
+      - $BRANCH_NAME
   - name: gradle
     id: gradle-release
     entrypoint: gradlew
-    args: [
-      '--build-cache',
-      '-Si',
-      '-Panalytics.buildId=$BUILD_ID',
-      'release',
-      '-Prelease.disableChecks',
-      '-Prelease.localOnly'
-    ]
+    args:
+      - --build-cache
+      - -Si
+      - -Panalytics.buildId=$BUILD_ID
+      - release
+      - -Prelease.disableChecks
+      - -Prelease.localOnly
