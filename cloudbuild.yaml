@@ -10,15 +10,8 @@ steps:
       - --keyring=cloudbuild
       - --key=gradle-properties
   - name: gradle
-    id: ls-dir
-    entrypoint: ls
-    args:
-      - -la
-  - name: gradle
-    id: cat-gradle-properties
-    entrypoint: cat
-    args:
-      - gradle.properties
+    id: env-vars
+    entrypoint: env
   - name: gcr.io/cloud-builders/git
     id: git-status
     args:
@@ -34,13 +27,13 @@ steps:
 #    args:
 #      - checkout
 #      - $BRANCH_NAME
-  - name: gradle
-    id: gradle-release
-    entrypoint: gradlew
-    args:
-      - --build-cache
-      - -Si
-      - -Panalytics.buildId=$BUILD_ID
-      - release
-      - -Prelease.disableChecks
-      - -Prelease.localOnly
+#  - name: gradle
+#    id: gradle-release
+#    entrypoint: gradlew
+#    args:
+#      - --build-cache
+#      - -Si
+#      - -Panalytics.buildId=$BUILD_ID
+#      - release
+#      - -Prelease.disableChecks
+#      - -Prelease.localOnly
