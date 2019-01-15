@@ -28,7 +28,7 @@ class CI {
 
    static getBuildTag() {
 
-      return System.getenv('BUILD_TAG') ?: System.getenv('bamboo_buildResultKey') ?: getTimestamp()
+      return System.getenv('BUILD_ID') ?: System.getenv('BUILD_TAG') ?: System.getenv('bamboo_buildResultKey') ?: getTimestamp()
 
    }
 
@@ -44,38 +44,29 @@ class CI {
 
    }
 
-   static isJenkinsCI() {
-
-      if (getCIServer() == 'jenkins')
-
-         return true
-      else
-
-         return false
-   }
-
-   static isBambooCI() {
-
-      if (getCIServer() == 'bamboo')
-
-         return true
-      else
-
-         return false
-   }
 
    static getCIServer() {
 
-      if (System.getenv('JENKINS_HOME')) {
+      if (System.getenv('JENKINS_HOME')) return 'jenkins'
+      else if (System.getenv('bamboo_planKey')) return 'bamboo'
+      else if (System.getenv('PROJECT_ID')) return 'cloud-build'
+      else return 'other'
 
-         return 'jenkins'
-      } else if (System.getenv('bamboo_planKey')) {
+   }
 
-         return 'bamboo'
-      } else {
+   static isJenkins() {
 
-         return 'other'
-      }
+      return getCIServer() == 'jenkins'
+   }
+
+   static isBamboo() {
+
+      return getCIServer() == 'bamboo'
+   }
+
+   static isCloudBuild() {
+
+      return getCIServer() == 'cloud-build'
    }
 
    static getRepositoryUrl() {

@@ -202,7 +202,7 @@ class Utils {
 
          return null
 
-      } else if (CI.isJenkinsCI() && !(branchName =~ /(.+)(\/)/)) {
+      } else if (CI.isJenkins() && !(branchName =~ /(.+)(\/)/)) {
 
          return getJenkinsRemote() + '/' + branchName
 
@@ -214,7 +214,7 @@ class Utils {
 
    static getJenkinsRemote() {
 
-      if (!CI.isJenkinsCI())
+      if (!CI.isJenkins())
 
          return null
 
