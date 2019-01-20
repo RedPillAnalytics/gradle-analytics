@@ -35,6 +35,9 @@ class AnalyticsPlugin implements Plugin<Project> {
 
       project.afterEvaluate {
 
+         // apply the git-info plugin
+         project.plugins.apply("org.dvaske.gradle.git-build-info")
+
          // Go look for any -P properties that have "analytics." in them
          // If so... update the extension value
          project.ext.properties.each { key, value ->
