@@ -1,0 +1,36 @@
+steps:
+  - name: gcr.io/cloud-builders/gcloud
+    id: decrypt-gradle-properties
+    args:
+      - kms
+      - decrypt
+      - --ciphertext-file=gradle.properties.enc
+      - --plaintext-file=gradle.properties
+      - --location=global
+      - --keyring=cloudbuild
+      - --key=gradle-properties
+  - name: gcr.io/cloud-builders/git
+    id: git-status
+    args:
+      - status
+#  - name: gcr.io/cloud-builders/git
+#    id: git-fetch
+#    args:
+#      - fetch
+#      - --tags
+#      - --unshallow
+#  - name: gcr.io/cloud-builders/git
+#    id: git-checkout
+#    args:
+#      - checkout
+#      - $BRANCH_NAME
+#  - name: gradle
+#    id: gradle-release
+#    entrypoint: gradlew
+#    args:
+#      - --build-cache
+#      - -Si
+#      - -Panalytics.buildId=$BUILD_ID
+#      - release
+#      - -Prelease.disableChecks
+#      - -Prelease.localOnly
