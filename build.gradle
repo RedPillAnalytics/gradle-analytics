@@ -1,35 +1,11 @@
-<<<<<<< HEAD
-=======
-// added because the github-release plugin used implementation instead of api/compile for plugin dependencies
-// An issue exists for this, so hopefully it will be corrected soon
->>>>>>> 7767cbd5c570aee3406de5adfe7889f589089b15
-buildscript {
-   dependencies {
-      classpath 'com.squareup.okhttp3:okhttp:3.12.0'
-      classpath 'com.j256.simplemagic:simplemagic:1.10'
-      classpath 'org.zeroturnaround:zt-exec:1.10'
-<<<<<<< HEAD
-=======
-      //classpath "gradle.plugin.com.redpillanalytics:gradle-analytics:1.1.18"
->>>>>>> 7767cbd5c570aee3406de5adfe7889f589089b15
-   }
-}
-
 plugins {
-   id "com.gradle.plugin-publish" version "0.10.0"
+   id "com.gradle.plugin-publish" version "0.10.1"
    id "pl.allegro.tech.build.axion-release" version "1.10.0"
-   id "com.github.breadmoirai.github-release" version "2.2.3"
+   id "com.github.breadmoirai.github-release" version "2.2.4"
    id 'groovy'
    id 'java-gradle-plugin'
-   id 'org.unbroken-dome.test-sets' version '2.0.3'
+   id 'org.unbroken-dome.test-sets' version '2.1.1'
    id "com.github.ben-manes.versions" version "0.20.0"
-<<<<<<< HEAD
-   //id "com.redpillanalytics.gradle-analytics" version "1.1.10"
-=======
-   //id "com.selesse.git.changelog" version "0.3.0"
-   id "com.moonlitdoor.git-version" version "0.0.8"
-   //id "com.redpillanalytics.gradle-analytics" version "1.1.19"
->>>>>>> 7767cbd5c570aee3406de5adfe7889f589089b15
 }
 
 // send analytics
@@ -93,15 +69,13 @@ dependencies {
    // Kafka
    compile 'org.apache.kafka:kafka-clients:2.1.0'
    compile 'org.apache.avro:avro:1.8.2'
-<<<<<<< HEAD
-   
-   compile 'com.google.cloud:google-cloud-storage:+'
-
-=======
 
    compile 'com.google.cloud:google-cloud-storage:+'
 
->>>>>>> 7767cbd5c570aee3406de5adfe7889f589089b15
+   compile 'com.google.cloud:google-cloud-storage:+'
+
+   compile "gradle.plugin.org.dvaske.gradle:git-build-info:0.9"
+
    testCompile 'org.spockframework:spock-core:1.2-groovy-2.5'
 }
 
@@ -179,11 +153,9 @@ task uploadGroovydoc {
 
    dependsOn groovydoc
 }
-<<<<<<< HEAD
-=======
 
 // Only execute certain tasks if we are on the master branch
-tasks.release.configure { onlyIf { gitBranchName == 'master' } }
-tasks.publishPlugins.configure { onlyIf { gitBranchName == 'master' } }
-tasks.githubRelease.configure { onlyIf { gitBranchName == 'master' } }
->>>>>>> 7767cbd5c570aee3406de5adfe7889f589089b15
+//tasks.release.configure { onlyIf { gitBranchName == 'master' } }
+//tasks.publishPlugins.configure { onlyIf { gitBranchName == 'master' } }
+//tasks.githubRelease.configure { onlyIf { gitBranchName == 'master' } }
+

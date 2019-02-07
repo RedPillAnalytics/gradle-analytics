@@ -75,9 +75,9 @@ class AnalyticsListener implements TaskExecutionListener, BuildListener, Project
               result.gradle.rootProject.buildDir,
               result.gradle.rootProject.analytics.getBuildRecord([
                       hostname       : result.gradle.rootProject.project.extensions.analytics.hostname,
-                      commithash     : result.gradle.rootProject.project.extensions.analytics.gitCommitHash,
-                      scmbranch      : result.gradle.rootProject.project.extensions.analytics.gitBranch,
-                      repositoryurl  : result.gradle.rootProject.project.extensions.analytics.gitRepositoryUrl,
+                      commithash     : result.gradle.rootProject.project.gitCommit,
+                      scmbranch      : result.gradle.rootProject.project.gitBranch,
+                      repositoryurl  : result.gradle.rootProject.project.gitRemote,
                       commitemail    : result.gradle.rootProject.project.extensions.analytics.gitCommitEmail,
                       rootprojectname: result.gradle.rootProject.project.name,
                       rootprojectdir : result.gradle.rootProject.projectDir.path,
