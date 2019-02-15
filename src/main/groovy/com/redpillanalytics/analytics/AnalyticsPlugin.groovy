@@ -1,11 +1,9 @@
 package com.redpillanalytics.analytics
 
 import com.redpillanalytics.analytics.containers.SinkContainer
-import com.redpillanalytics.analytics.tasks.ConfluentTask
 import com.redpillanalytics.analytics.tasks.FirehoseTask
 import com.redpillanalytics.analytics.tasks.GSTask
 import com.redpillanalytics.analytics.tasks.JdbcTask
-import com.redpillanalytics.analytics.tasks.KafkaTask
 import com.redpillanalytics.analytics.tasks.PubSubTask
 import com.redpillanalytics.analytics.tasks.S3Task
 import groovy.util.logging.Slf4j
@@ -27,7 +25,6 @@ class AnalyticsPlugin implements Plugin<Project> {
 
       // apply plugin for git properties
       project.plugins.apply("org.dvaske.gradle.git-build-info")
-      project.plugins.apply("com.gorylenko.gradle-git-properties")
 
       // apply the Gradle extension plugin and the context container
       applyExtension(project)

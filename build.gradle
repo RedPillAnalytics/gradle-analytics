@@ -6,7 +6,7 @@ plugins {
    id 'java-gradle-plugin'
    id 'org.unbroken-dome.test-sets' version '2.1.1'
    id "com.github.ben-manes.versions" version "0.20.0"
-   id "com.moonlitdoor.git-version" version "0.1.1"
+   id "org.dvaske.gradle.git-build-info" version "0.9"
 }
 
 // send analytics
@@ -73,11 +73,8 @@ dependencies {
 
    compile 'com.google.cloud:google-cloud-storage:+'
 
-   compile 'com.google.cloud:google-cloud-storage:+'
-
    // git properties dependencies
    compile "gradle.plugin.org.dvaske.gradle:git-build-info:0.9"
-   compile "gradle.plugin.com.gorylenko.gradle-git-properties:gradle-git-properties:2.0.0"
 
    testCompile 'org.spockframework:spock-core:1.2-groovy-2.5'
 }
@@ -139,27 +136,42 @@ tasks.withType(Test) {
    systemProperty 'projectDir', temporaryDir
 }
 
-task uploadGroovydoc {
+ext.bucket = 's3://documentation.redpillanalytics.com'
+ext.bucketPath = 'gradle-analytics'
 
-   description = 'Upload Groovydocs to s3.'
+task publishVersionDocs {
+
+   description = 'Upload version Groovydocs to s3.'
    group = 'documentation'
 
    doLast {
       exec {
          executable 'aws'
-         args 's3', 'sync', groovydoc.destinationDir.getPath(), "s3://rpa-documentation/gradle-analytics/$version/"
-      }
-      exec {
-         executable 'aws'
-         args 's3', 'sync', groovydoc.destinationDir.getPath(), "s3://rpa-documentation/gradle-analytics/latest/"
+         args 's3', 'sync', groovydoc.destinationDir.getPath(), "${bucket}/${bucketPath}/${version}/"
       }
    }
-
    dependsOn groovydoc
 }
 
+task publishLatestDocs {
+
+   description = 'Upload latest Groovydocs to s3.'
+   group = 'documentation'
+
+   doLast {
+      exec {
+         executable 'aws'
+         args 's3', 'sync', groovydoc.destinationDir.getPath(), "${bucket}/${bucketPath}/latest/"
+      }
+   }
+   dependsOn groovydoc
+   onlyIf { gitBranch == 'master' }
+}
+
+tasks.publishPlugins.dependsOn publishVersionDocs, publishLatestDocs
+
 // Only execute certain tasks if we are on the master branch
-//tasks.release.configure { onlyIf { gitBranchName == 'master' } }
-//tasks.publishPlugins.configure { onlyIf { gitBranchName == 'master' } }
-//tasks.githubRelease.configure { onlyIf { gitBranchName == 'master' } }
+tasks.release.configure { onlyIf { gitBranch == 'master' } }
+tasks.publishPlugins.configure { onlyIf { gitBranch == 'master' } }
+tasks.githubRelease.configure { onlyIf { gitBranch == 'master' } }
 
