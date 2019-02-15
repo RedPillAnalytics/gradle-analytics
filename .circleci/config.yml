@@ -1,13 +1,13 @@
 version: 2.1
 
 executors:
-  release-build-test-publish: # declares a reusable executor
+  build-test-publish: # declares a reusable executor
     machine: true
     working_directory: ~/workspace
 
 jobs:
     build-test-publish:
-        executor: release-build-test-publish
+        executor: build-test-publish
         steps:
             - checkout
             - restore_cache:
@@ -18,7 +18,7 @@ jobs:
                 command: ./gradlew release -Prelease.disableChecks -Prelease.localOnly
             - run:
                 name: Build and Test
-                command: ./gradlew build runAllTests
+                command: ./gradlew build test amazonTest
             - run:
                 name: Publish
                 command: ./gradlew publishPlugins githubRelease -Pgradle.publish.key=${GRADLE_KEY} -Pgradle.publish.secret=${GRADLE_SECRET}
