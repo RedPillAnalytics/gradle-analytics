@@ -25,6 +25,10 @@ class AnalyticsPlugin implements Plugin<Project> {
       // apply Gradle built-in plugins
       project.apply plugin: 'base'
 
+      // apply plugin for git properties
+      project.plugins.apply("org.dvaske.gradle.git-build-info")
+      project.plugins.apply("com.gorylenko.gradle-git-properties")
+
       // apply the Gradle extension plugin and the context container
       applyExtension(project)
 
@@ -34,9 +38,6 @@ class AnalyticsPlugin implements Plugin<Project> {
       }
 
       project.afterEvaluate {
-
-         // apply the git-info plugin
-         project.plugins.apply("org.dvaske.gradle.git-build-info")
 
          // Go look for any -P properties that have "analytics." in them
          // If so... update the extension value

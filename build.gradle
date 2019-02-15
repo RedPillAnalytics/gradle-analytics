@@ -6,6 +6,7 @@ plugins {
    id 'java-gradle-plugin'
    id 'org.unbroken-dome.test-sets' version '2.1.1'
    id "com.github.ben-manes.versions" version "0.20.0"
+   id "com.moonlitdoor.git-version" version "0.1.1"
 }
 
 // send analytics
@@ -74,7 +75,9 @@ dependencies {
 
    compile 'com.google.cloud:google-cloud-storage:+'
 
+   // git properties dependencies
    compile "gradle.plugin.org.dvaske.gradle:git-build-info:0.9"
+   compile "gradle.plugin.com.gorylenko.gradle-git-properties:gradle-git-properties:2.0.0"
 
    testCompile 'org.spockframework:spock-core:1.2-groovy-2.5'
 }
@@ -133,6 +136,7 @@ pluginBundle {
 tasks.withType(Test) {
    ignoreFailures true
    testLogging.showStandardStreams true
+   systemProperty 'projectDir', temporaryDir
 }
 
 task uploadGroovydoc {
