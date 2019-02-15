@@ -18,7 +18,7 @@ jobs:
                 command: ./gradlew release -Prelease.disableChecks -Prelease.localOnly
             - run:
                 name: Build and Test
-                command: ./gradlew build test amazonTest
+                command: ./gradlew downloadGCPCreds build test amazonTest googleTest
             - run:
                 name: Publish
                 command: ./gradlew publishPlugins githubRelease -Pgradle.publish.key=${GRADLE_KEY} -Pgradle.publish.secret=${GRADLE_SECRET}
