@@ -8,6 +8,7 @@ plugins {
    id "com.github.ben-manes.versions" version "0.20.0"
    id "org.dvaske.gradle.git-build-info" version "0.9"
    id 'com.adarshr.test-logger' version '1.6.0'
+   //id 'com.github.ksoichiro.console.reporter' version '0.6.2'
 }
 
 // send analytics
