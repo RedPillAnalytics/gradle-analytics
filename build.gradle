@@ -173,6 +173,21 @@ task publishLatestDocs {
    onlyIf { gitBranch == 'master' }
 }
 
+task copyBuildResources {
+   description 'Copy build resource files from S3.'
+   group 'build'
+   doLast {
+      exec {
+         executable 'aws'
+         args 's3', 'cp',"${resourceBucket}/gradle-analytics-build-user.json", "."
+      }
+      exec {
+         executable 'aws'
+         args 's3', 'cp',"${resourceBucket}/gradle.properties", "."
+      }
+   }
+}
+
 tasks.publishPlugins.dependsOn publishVersionDocs, publishLatestDocs
 
 // Only execute certain tasks if we are on the master branch
