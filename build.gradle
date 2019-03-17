@@ -58,13 +58,13 @@ dependencies {
 
    compile gradleApi()
    compile localGroovy()
-   compile group: 'org.slf4j', name: 'slf4j-simple', version: '+'
+   compile 'org.slf4j:slf4j-simple:+'
 
-   compile group: 'com.google.code.gson', name: 'gson', version: '+'
-   compile group: 'org.eclipse.jgit', name: 'org.eclipse.jgit', version: '+'
+   compile 'com.google.code.gson:gson:+'
+   compile 'org.eclipse.jgit:org.eclipse.jgit:+'
 
-   compile group: 'com.amazonaws', name: 'aws-java-sdk-kinesis', version: '+'
-   compile group: 'com.amazonaws', name: 'aws-java-sdk-s3', version: '+'
+   compile 'com.amazonaws:aws-java-sdk-kinesis:+'
+   compile 'com.amazonaws:aws-java-sdk-s3:+'
 
    compile 'com.google.cloud:google-cloud-pubsub:+'
 
@@ -76,6 +76,7 @@ dependencies {
 
    // git properties dependencies
    compile "gradle.plugin.org.dvaske.gradle:git-build-info:0.9"
+   compile "org.ajoberstar.grgit:grgit-gradle:3.0.0"
 
    testCompile 'org.spockframework:spock-core:1.2-groovy-2.5'
 }

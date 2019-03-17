@@ -24,7 +24,8 @@ class AnalyticsPlugin implements Plugin<Project> {
       project.apply plugin: 'base'
 
       // apply plugin for git properties
-      project.plugins.apply("org.dvaske.gradle.git-build-info")
+      project.apply plugin: "org.ajoberstar.grgit"
+      project.apply plugin: "org.dvaske.gradle.git-build-info"
 
       // apply the Gradle extension plugin and the context container
       applyExtension(project)
@@ -54,13 +55,10 @@ class AnalyticsPlugin implements Plugin<Project> {
                   log.debug "Setting configuration property for extension: $extension, property: $property, value: $value"
 
                   if (project.extensions.getByName(extension)."$property" instanceof Boolean) {
-
                      project.extensions.getByName(extension)."$property" = value.toBoolean()
                   } else if (project.extensions.getByName(extension)."$property" instanceof Integer) {
-
                      project.extensions.getByName(extension)."$property" = value.toInteger()
                   } else {
-
                      project.extensions.getByName(extension)."$property" = value
                   }
                }
@@ -68,10 +66,12 @@ class AnalyticsPlugin implements Plugin<Project> {
          }
 
          def dependencyMatching = { configuration, regexp ->
-
             return (project.configurations."$configuration".dependencies.find { it.name =~ regexp }) ?: false
-
          }
+
+         // create git extensions
+         project.ext.gitDescribeInfo = project.grgit?.describe(longDescr: true, tags: true)
+         project.ext.gitLastRelease = project.ext.gitDescribeInfo?.split('-')?.getAt(0)
 
          // setup a few reusable parameters for task creation
          String taskName
@@ -375,9 +375,7 @@ class AnalyticsPlugin implements Plugin<Project> {
          project.configure(project) {
             extensions.create('analytics', AnalyticsPluginExtension)
          }
-
          project.analytics.extensions.sinks = project.container(SinkContainer)
-
          project.gradle.addListener new AnalyticsListener()
 
       } else {

@@ -50,4 +50,16 @@ class PropertiesTest extends Specification {
       expect:
       result.output.contains("gitBranch")
    }
+
+   @Unroll
+   def "properties contains #property"() {
+
+      given: "executing Gradle :properties"
+
+      expect:
+      result.output.contains("$property")
+
+      where:
+      property << ['gitDescribeInfo','gitLastRelease','gitBranch']
+   }
 }
