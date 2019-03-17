@@ -1,14 +1,13 @@
 plugins {
    id "com.gradle.plugin-publish" version "0.10.1"
    id "pl.allegro.tech.build.axion-release" version "1.10.0"
-   id "com.github.breadmoirai.github-release" version "2.2.4"
+   id "com.github.breadmoirai.github-release" version "2.2.6"
    id 'groovy'
    id 'java-gradle-plugin'
    id 'org.unbroken-dome.test-sets' version '2.1.1'
-   id "com.github.ben-manes.versions" version "0.20.0"
+   id "com.github.ben-manes.versions" version "0.21.0"
    id "org.dvaske.gradle.git-build-info" version "0.9"
    id 'com.adarshr.test-logger' version '1.6.0'
-   //id 'com.github.ksoichiro.console.reporter' version '0.6.2'
 }
 
 // send analytics
@@ -70,7 +69,7 @@ dependencies {
    compile 'com.google.cloud:google-cloud-pubsub:+'
 
    // Kafka
-   compile 'org.apache.kafka:kafka-clients:2.1.0'
+   compile 'org.apache.kafka:kafka-clients:2.1.1'
    compile 'org.apache.avro:avro:1.8.2'
 
    compile 'com.google.cloud:google-cloud-storage:+'

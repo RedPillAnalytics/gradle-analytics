@@ -229,7 +229,7 @@ class AnalyticsPlugin implements Plugin<Project> {
                   prefix ag.getPrefix()
 
                   // handle the suffix
-                  suffix (ag.getFormatSuffix()?project.extensions.analytics.format:null)
+                  suffix(ag.getFormatSuffix() ? project.extensions.analytics.format : null)
 
                }
 
