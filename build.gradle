@@ -8,21 +8,16 @@ plugins {
    id "com.github.ben-manes.versions" version "0.21.0"
    id "org.dvaske.gradle.git-build-info" version "0.9"
    id 'com.adarshr.test-logger' version '1.6.0'
+   id "com.redpillanalytics.gradle-analytics" version "1.1.21"
 }
 
 // send analytics
-//analytics {
-//   organization = 'Red Pill Analytics'
-//   sinks {
-//      pubsub
-//      gs {
-//         prefix = 'rpa-gradle-analytics'
-//      }
-//      s3 {
-//         prefix = 'rpa-gradle-analytics'
-//      }
-//   }
-//}
+analytics {
+   organization = 'Red Pill Analytics'
+   sinks {
+      pubsub
+   }
+}
 
 scmVersion {
 
@@ -30,7 +25,7 @@ scmVersion {
       prefix = 'v'
       versionSeparator = ''
    }
-   ignoreUncommittedChanges = false
+   ignoreUncommittedChanges = true
 }
 
 //set Gradle version to SCM Version
@@ -39,8 +34,6 @@ allprojects {
 }
 
 testSets {
-//   kafkaTest
-//   confluentTest
    amazonTest
    googleTest
 }
@@ -183,7 +176,7 @@ task publishLatestDocs {
 tasks.publishPlugins.dependsOn publishVersionDocs, publishLatestDocs
 
 // Only execute certain tasks if we are on the master branch
-tasks.release.configure { onlyIf { gitBranch == 'master' } }
-tasks.publishPlugins.configure { onlyIf { gitBranch == 'master' } }
-tasks.githubRelease.configure { onlyIf { gitBranch == 'master' } }
+//tasks.release.configure { onlyIf { gitBranch == 'master' } }
+//tasks.publishPlugins.configure { onlyIf { gitBranch == 'master' } }
+//tasks.githubRelease.configure { onlyIf { gitBranch == 'master' } }
 

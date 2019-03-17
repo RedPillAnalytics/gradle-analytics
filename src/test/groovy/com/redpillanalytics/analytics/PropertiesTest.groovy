@@ -43,7 +43,7 @@ class PropertiesTest extends Specification {
       log.warn result.output
    }
 
-   def "Git properties are included"() {
+   def "Execute :properties task"() {
 
       given: "gradle properties"
 
