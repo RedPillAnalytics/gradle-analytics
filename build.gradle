@@ -1,26 +1,23 @@
 plugins {
    id "com.gradle.plugin-publish" version "0.10.1"
    id "pl.allegro.tech.build.axion-release" version "1.10.0"
-   id "com.github.breadmoirai.github-release" version "2.2.4"
+   id "com.github.breadmoirai.github-release" version "2.2.6"
    id 'groovy'
    id 'java-gradle-plugin'
    id 'org.unbroken-dome.test-sets' version '2.1.1'
-   id "com.github.ben-manes.versions" version "0.20.0"
+   id "com.github.ben-manes.versions" version "0.21.0"
+   id "org.dvaske.gradle.git-build-info" version "0.9"
+   id 'com.adarshr.test-logger' version '1.6.0'
+   id "com.redpillanalytics.gradle-analytics" version "1.1.21"
 }
 
 // send analytics
-//analytics {
-//   organization = 'Red Pill Analytics'
-//   sinks {
-//      pubsub
-//      gs {
-//         prefix = 'rpa-gradle-analytics'
-//      }
-//      s3 {
-//         prefix = 'rpa-gradle-analytics'
-//      }
-//   }
-//}
+analytics {
+   organization = 'Red Pill Analytics'
+   sinks {
+      pubsub
+   }
+}
 
 scmVersion {
 
@@ -28,7 +25,7 @@ scmVersion {
       prefix = 'v'
       versionSeparator = ''
    }
-   ignoreUncommittedChanges = false
+   ignoreUncommittedChanges = true
 }
 
 //set Gradle version to SCM Version
@@ -37,8 +34,6 @@ allprojects {
 }
 
 testSets {
-//   kafkaTest
-//   confluentTest
    amazonTest
    googleTest
 }
@@ -56,25 +51,25 @@ dependencies {
 
    compile gradleApi()
    compile localGroovy()
-   compile group: 'org.slf4j', name: 'slf4j-simple', version: '+'
+   compile 'org.slf4j:slf4j-simple:+'
 
-   compile group: 'com.google.code.gson', name: 'gson', version: '+'
-   compile group: 'org.eclipse.jgit', name: 'org.eclipse.jgit', version: '+'
+   compile 'com.google.code.gson:gson:+'
+   compile 'org.eclipse.jgit:org.eclipse.jgit:+'
 
-   compile group: 'com.amazonaws', name: 'aws-java-sdk-kinesis', version: '+'
-   compile group: 'com.amazonaws', name: 'aws-java-sdk-s3', version: '+'
+   compile 'com.amazonaws:aws-java-sdk-kinesis:+'
+   compile 'com.amazonaws:aws-java-sdk-s3:+'
 
    compile 'com.google.cloud:google-cloud-pubsub:+'
 
    // Kafka
-   compile 'org.apache.kafka:kafka-clients:2.1.0'
+   compile 'org.apache.kafka:kafka-clients:2.1.1'
    compile 'org.apache.avro:avro:1.8.2'
 
    compile 'com.google.cloud:google-cloud-storage:+'
 
-   compile 'com.google.cloud:google-cloud-storage:+'
-
+   // git properties dependencies
    compile "gradle.plugin.org.dvaske.gradle:git-build-info:0.9"
+   compile "org.ajoberstar.grgit:grgit-gradle:3.0.0"
 
    testCompile 'org.spockframework:spock-core:1.2-groovy-2.5'
 }
@@ -133,29 +128,71 @@ pluginBundle {
 tasks.withType(Test) {
    ignoreFailures true
    testLogging.showStandardStreams true
+   systemProperty 'projectDir', temporaryDir
 }
 
-task uploadGroovydoc {
+task downloadGCPCreds {
+   description 'Get GCP credentials JSON file.'
+   doLast {
+      exec {
+         executable 'aws'
+         args 's3', 'cp',"s3://rpa-build-resources/gradle-analytics-build-user.json", "."
+      }
+   }
+}
 
-   description = 'Upload Groovydocs to s3.'
+ext.bucket = 's3://documentation.redpillanalytics.com'
+ext.bucketPath = 'gradle-analytics'
+ext.resourceBucket = 's3://rpa-build-resources'
+
+task publishVersionDocs {
+
+   description = 'Upload version Groovydocs to s3.'
    group = 'documentation'
 
    doLast {
       exec {
          executable 'aws'
-         args 's3', 'sync', groovydoc.destinationDir.getPath(), "s3://rpa-documentation/gradle-analytics/$version/"
-      }
-      exec {
-         executable 'aws'
-         args 's3', 'sync', groovydoc.destinationDir.getPath(), "s3://rpa-documentation/gradle-analytics/latest/"
+         args 's3', 'sync', groovydoc.destinationDir.getPath(), "${bucket}/${bucketPath}/${version}/"
       }
    }
-
    dependsOn groovydoc
 }
 
+task publishLatestDocs {
+
+   description = 'Upload latest Groovydocs to s3.'
+   group = 'documentation'
+
+   doLast {
+      exec {
+         executable 'aws'
+         args 's3', 'sync', groovydoc.destinationDir.getPath(), "${bucket}/${bucketPath}/latest/"
+      }
+   }
+   dependsOn groovydoc
+   onlyIf { gitBranch == 'master' }
+}
+
+task copyBuildResources {
+   description 'Copy build resource files from S3.'
+   group 'build'
+   doLast {
+      exec {
+         executable 'aws'
+         args 's3', 'cp',"${resourceBucket}/gradle-analytics-build-user.json", "."
+      }
+      exec {
+         executable 'aws'
+         args 's3', 'cp',"${resourceBucket}/gradle.properties", "."
+      }
+   }
+}
+
+tasks.publishPlugins.dependsOn publishVersionDocs, publishLatestDocs
+
 // Only execute certain tasks if we are on the master branch
-//tasks.release.configure { onlyIf { gitBranchName == 'master' } }
-//tasks.publishPlugins.configure { onlyIf { gitBranchName == 'master' } }
-//tasks.githubRelease.configure { onlyIf { gitBranchName == 'master' } }
+//tasks.release.configure { onlyIf { gitBranch == 'master' } }
+//tasks.publishPlugins.configure { onlyIf { gitBranch == 'master' } }
+//tasks.githubRelease.configure { onlyIf { gitBranch == 'master' } }
 

@@ -2,9 +2,6 @@ package com.redpillanalytics.analytics
 
 import groovy.util.logging.Slf4j
 import org.gradle.testkit.runner.GradleRunner
-import org.junit.ClassRule
-import org.junit.rules.TemporaryFolder
-import spock.lang.Ignore
 import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Title
@@ -14,53 +11,68 @@ import spock.lang.Unroll
 @Title("Execute :tasks")
 class TasksTest extends Specification {
 
-   @ClassRule
    @Shared
-   TemporaryFolder testProjectDir = new TemporaryFolder()
+   AntBuilder ant = new AntBuilder()
 
    @Shared
-           buildFile
-   @Shared
-           result
-   @Shared
-           indexedResultOutput
+   File projectDir, buildDir, buildFile, settingsFile, artifact
 
-   // run the Gradle build
-   // return regular output
+   @Shared
+   String taskName
+
+   @Shared
+   def result
+
+   @Shared
+   String projectName = 'tasks-test'
+
    def setupSpec() {
 
-      buildFile = testProjectDir.newFile('build.gradle')
-      buildFile << """
-            plugins {
-                id 'com.redpillanalytics.gradle-analytics'
-            }
-            
-            analytics.sinks {
-               pubsub
-               s3
-               jdbc
-               firehose
-               gs
-            }
-        """
+      projectDir = new File("${System.getProperty("projectDir")}/$projectName")
+      buildDir = new File(projectDir, 'build')
 
+      ant.mkdir(dir: projectDir)
+
+      settingsFile = new File(projectDir, 'settings.gradle').write("""rootProject.name = '$projectName'""")
+
+      buildFile = new File(projectDir, 'build.gradle')
+
+      buildFile.write("""
+               |plugins {
+               |  id 'com.redpillanalytics.gradle-analytics'
+               |}
+               |""".stripMargin())
+   }
+
+   def executeSingleTask(String taskName, List otherArgs, Boolean logOutput = true) {
+
+      otherArgs.add(0, taskName)
+
+      log.warn "runner arguments: ${otherArgs.toString()}"
+
+      // execute the Gradle test build
       result = GradleRunner.create()
-              .withProjectDir(testProjectDir.root)
-              .withArguments('-Si', 'tasks')
+              .withProjectDir(projectDir)
+              .withArguments(otherArgs)
               .withPluginClasspath()
               .build()
 
-      indexedResultOutput = result.output.readLines()
+      // log the results
+      if (logOutput) log.warn result.getOutput()
 
-      log.warn result.output
+      return result
+
    }
 
    @Unroll
    def "Executing :tasks contains :#task"() {
 
-      given: "a gradle tasks execution"
+      given:
+      taskName = 'tasks'
+      result = executeSingleTask(taskName, ['-Si'])
 
       expect:
+      result.task(":${taskName}").outcome.name() != 'FAILED'
       result.output.contains("$task")
 
       where:

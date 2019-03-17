@@ -1,11 +1,9 @@
 package com.redpillanalytics.analytics
 
 import com.redpillanalytics.analytics.containers.SinkContainer
-import com.redpillanalytics.analytics.tasks.ConfluentTask
 import com.redpillanalytics.analytics.tasks.FirehoseTask
 import com.redpillanalytics.analytics.tasks.GSTask
 import com.redpillanalytics.analytics.tasks.JdbcTask
-import com.redpillanalytics.analytics.tasks.KafkaTask
 import com.redpillanalytics.analytics.tasks.PubSubTask
 import com.redpillanalytics.analytics.tasks.S3Task
 import groovy.util.logging.Slf4j
@@ -25,6 +23,10 @@ class AnalyticsPlugin implements Plugin<Project> {
       // apply Gradle built-in plugins
       project.apply plugin: 'base'
 
+      // apply plugin for git properties
+      project.apply plugin: "org.ajoberstar.grgit"
+      project.apply plugin: "org.dvaske.gradle.git-build-info"
+
       // apply the Gradle extension plugin and the context container
       applyExtension(project)
 
@@ -34,9 +36,6 @@ class AnalyticsPlugin implements Plugin<Project> {
       }
 
       project.afterEvaluate {
-
-         // apply the git-info plugin
-         project.plugins.apply("org.dvaske.gradle.git-build-info")
 
          // Go look for any -P properties that have "analytics." in them
          // If so... update the extension value
@@ -56,13 +55,10 @@ class AnalyticsPlugin implements Plugin<Project> {
                   log.debug "Setting configuration property for extension: $extension, property: $property, value: $value"
 
                   if (project.extensions.getByName(extension)."$property" instanceof Boolean) {
-
                      project.extensions.getByName(extension)."$property" = value.toBoolean()
                   } else if (project.extensions.getByName(extension)."$property" instanceof Integer) {
-
                      project.extensions.getByName(extension)."$property" = value.toInteger()
                   } else {
-
                      project.extensions.getByName(extension)."$property" = value
                   }
                }
@@ -70,10 +66,12 @@ class AnalyticsPlugin implements Plugin<Project> {
          }
 
          def dependencyMatching = { configuration, regexp ->
-
             return (project.configurations."$configuration".dependencies.find { it.name =~ regexp }) ?: false
-
          }
+
+         // create git extensions
+         project.ext.gitDescribeInfo = project.grgit?.describe(longDescr: true, tags: true)
+         project.ext.gitLastRelease = project.ext.gitDescribeInfo?.split('-')?.getAt(0)
 
          // setup a few reusable parameters for task creation
          String taskName
@@ -231,7 +229,7 @@ class AnalyticsPlugin implements Plugin<Project> {
                   prefix ag.getPrefix()
 
                   // handle the suffix
-                  suffix (ag.getFormatSuffix()?project.extensions.analytics.format:null)
+                  suffix(ag.getFormatSuffix() ? project.extensions.analytics.format : null)
 
                }
 
@@ -377,9 +375,7 @@ class AnalyticsPlugin implements Plugin<Project> {
          project.configure(project) {
             extensions.create('analytics', AnalyticsPluginExtension)
          }
-
          project.analytics.extensions.sinks = project.container(SinkContainer)
-
          project.gradle.addListener new AnalyticsListener()
 
       } else {

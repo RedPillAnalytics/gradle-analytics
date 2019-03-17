@@ -6,7 +6,7 @@ pipeline {
    agent { label 'java-compile' }
 
    environment {
-      GOOGLE_APPLICATION_CREDENTIALS = '/var/lib/jenkins/.gcp/gradle-analytics-build-user.json'
+      GOOGLE_APPLICATION_CREDENTIALS = './gradle-analytics-build-user.json'
    }
 
    stages {
@@ -20,7 +20,7 @@ pipeline {
 
       stage('Build') {
          steps {
-            sh "$gradle build"
+            sh "$gradle build copyBuildResources"
          }
       }
 
@@ -33,7 +33,7 @@ pipeline {
       stage('Publish') {
          when { branch "master" }
          steps {
-            sh "$gradle ${options} publishPlugins uploadGroovydoc githubRelease"
+            sh "$gradle ${options} publishPlugins githubRelease"
          }
       }
       // Place for new Stage
