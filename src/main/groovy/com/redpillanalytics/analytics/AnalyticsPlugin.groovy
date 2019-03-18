@@ -71,8 +71,8 @@ class AnalyticsPlugin implements Plugin<Project> {
 
          // create git extensions
          project.ext.gitDescribeInfo = project.grgit?.describe(longDescr: true, tags: true)
-         project.ext.gitLastRelease = project.ext.gitDescribeInfo?.split('-')?.getAt(0)
-
+         project.ext.gitLastTag = (project.ext.gitDescribeInfo?.split('-')?.getAt(0)) ?: 'v0.1.0'
+         project.ext.gitLastVersion = project.ext.gitLastTag.replaceAll(/(^\w)/,'')
          // setup a few reusable parameters for task creation
          String taskName
 
