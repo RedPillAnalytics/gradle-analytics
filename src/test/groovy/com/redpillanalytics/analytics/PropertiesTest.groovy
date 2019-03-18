@@ -17,9 +17,10 @@ class PropertiesTest extends Specification {
    @Shared
    TemporaryFolder testProjectDir = new TemporaryFolder()
 
-   @Shared buildFile
-   @Shared result
-   @Shared indexedResultOutput
+   @Shared
+   File buildFile
+   @Shared
+   def result
 
    // run the Gradle build
    // return regular output
@@ -38,18 +39,9 @@ class PropertiesTest extends Specification {
               .withPluginClasspath()
               .build()
 
-      indexedResultOutput = result.output.readLines()
-
       log.warn result.output
    }
 
-   def "Execute :properties task"() {
-
-      given: "gradle properties"
-
-      expect:
-      result.output.contains("gitBranch")
-   }
 
    @Unroll
    def "properties contains #property"() {
@@ -60,6 +52,6 @@ class PropertiesTest extends Specification {
       result.output.contains("$property")
 
       where:
-      property << ['gitDescribeInfo','gitLastRelease','gitBranch']
+      property << ['gitDescribeInfo', 'gitLastTag', 'gitLastVersion', 'gitBranch']
    }
 }
