@@ -42,7 +42,7 @@ pipeline {
 
    post {
       always {
-         junit "build/test-results/**/*.xml"
+         junit testResults: "build/test-results/**/*.xml", allowEmptyResults: true, keepLongStdio: true
          archiveArtifacts artifacts: 'build/libs/*.jar', fingerprint: true
          //sh "$gradle producer"
       }
