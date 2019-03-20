@@ -78,11 +78,8 @@ class AnalyticsPlugin implements Plugin<Project> {
          String taskName
 
          project.task('cleanDist', type: Delete) {
-
             group "Distribution"
-
             description "Delete the Distributions directory."
-
             delete project.distsDir
          }
 
@@ -189,22 +186,15 @@ class AnalyticsPlugin implements Plugin<Project> {
             if (project.analytics.compressFiles) {
 
                log.debug "Analytics files will be compressed after production."
-
                from "${project.analytics.getAnalyticsDir(project.buildDir).parent}/"
-
                baseName 'analytics'
                appendix project.extensions.analytics.buildId
-
             }
-
             doLast {
 
                if (project.analytics.cleanFiles) {
-
                   log.debug "Analytics files will be deleted after production."
-
                   project.delete "${project.analytics.getAnalyticsDir(project.buildDir).parent}"
-
                }
             }
          }
@@ -223,17 +213,12 @@ class AnalyticsPlugin implements Plugin<Project> {
                project.task(taskName, type: FirehoseTask) {
 
                   group 'analytics'
-
                   description ag.getDescription()
-
                   // add any custom prefix to sink names
                   prefix ag.getPrefix()
-
                   // handle the suffix
                   suffix(ag.getFormatSuffix() ? project.extensions.analytics.format : null)
-
                }
-
             }
 
             // use S3 API to upload files directly to S3
@@ -241,16 +226,11 @@ class AnalyticsPlugin implements Plugin<Project> {
 
                // Add analytics processing task
                project.task(taskName, type: S3Task) {
-
                   group "analytics"
-
                   description ag.getDescription()
-
                   // add any custom prefix to sink names
                   prefix ag.getPrefix()
-
                }
-
             }
 
             // use GS API to upload files directly to GS
@@ -260,14 +240,10 @@ class AnalyticsPlugin implements Plugin<Project> {
                project.task(taskName, type: GSTask) {
 
                   group "analytics"
-
                   description ag.getDescription()
-
                   // add any custom prefix to sink names
                   prefix ag.getPrefix()
-
                }
-
             }
 
             // Google PubSub
@@ -277,9 +253,7 @@ class AnalyticsPlugin implements Plugin<Project> {
                project.task(taskName, type: PubSubTask) {
 
                   group "analytics"
-
                   description ag.getDescription()
-
                   // add any custom prefix to sink names
                   prefix ag.getPrefix()
 
@@ -292,22 +266,17 @@ class AnalyticsPlugin implements Plugin<Project> {
 
                // Add analytics processing task
                project.task(taskName, type: KafkaTask) {
-
                   group "analytics"
-
                   description ag.getDescription()
 
                   // add any custom prefix to sink names
                   prefix ag.getPrefix()
-
                   servers = ag.getServers() ?: 'localhost:9092'
-
                   serializerKey = ag.getSerializerKey() ?: "org.apache.kafka.common.serialization.StringSerializer"
-
                   serializerValue = ag.getSerializerValue() ?: "org.apache.kafka.common.serialization.StringSerializer"
-
                   acks ag.getAcks() ?: 'all'
 
+                  // confluent schema registry
                   registry ag.getRegistry() ? ag.getRegistry() : null
 
                }
@@ -332,12 +301,10 @@ class AnalyticsPlugin implements Plugin<Project> {
                   password ag.password
                   driverUrl ag.driverUrl
                   driverClass ag.driverClass
-
                }
             }
 
             if (project.tasks.findByName(taskName)) {
-
                project.tasks.producer.dependsOn project."${taskName}"
             }
 
