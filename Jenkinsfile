@@ -28,7 +28,7 @@ pipeline {
           steps {
               sh "$gradle composeUp"
               sleep 5
-              sh "$gradle amazonTest googleTest --rerun-tasks"
+              sh "$gradle amazonTest googleTest kafkaTest --rerun-tasks"
           }
       }
 
