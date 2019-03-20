@@ -2,23 +2,21 @@ package analytics
 
 import groovy.util.logging.Slf4j
 import org.gradle.testkit.runner.GradleRunner
-import org.junit.ClassRule
-import org.junit.rules.TemporaryFolder
 import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Title
-import spock.lang.Unroll
 
 @Slf4j
 @Title("Execute :publish task using --dry-run")
 class JsonProducerTest extends Specification {
 
-   @ClassRule
    @Shared
-   TemporaryFolder testProjectDir = new TemporaryFolder()
+   File projectDir, buildDir, buildFile, settingsFile, resourcesDir
+   @Shared
+   AntBuilder ant = new AntBuilder()
+   @Shared
+   String projectName = 'json-test', taskName
 
-   @Shared
-   File buildFile
    @Shared
    def result
    @Shared
@@ -28,40 +26,76 @@ class JsonProducerTest extends Specification {
    // return regular output
    def setupSpec() {
 
-      buildFile = testProjectDir.newFile('build.gradle')
-      buildFile << """
-            plugins {
-                id 'com.redpillanalytics.gradle-analytics'
-            }
-            
-            analytics.sinks {
-               pubsub
-               gs {
-                  prefix = 'rpa-gradle-analytics'
-               }
-            }
-            
-            analytics.ignoreErrors = false     
-        """
+      projectDir = new File("${System.getProperty("projectDir")}/$projectName")
+      ant.mkdir(dir: projectDir)
+      buildDir = new File(projectDir, 'build')
 
+      settingsFile = new File(projectDir, 'settings.gradle').write("""rootProject.name = '$projectName'""")
+
+      buildFile = new File(projectDir, 'build.gradle').write("""
+            |plugins {
+            |    id 'com.redpillanalytics.gradle-analytics'
+            |}
+            |
+            |analytics {
+            |  ignoreErrors = false
+            |  sinks {
+            |     pubsub
+            |     gs {
+            |        prefix = 'rpa-gradle-analytics'
+            |     }
+            |  }
+            |}
+            |""".stripMargin()
+      )
+   }
+
+   // helper method
+   def executeSingleTask(String taskName, List otherArgs, Boolean logOutput = true) {
+
+      otherArgs.add(0, taskName)
+
+      log.warn "runner arguments: ${otherArgs.toString()}"
+
+      // execute the Gradle test build
       result = GradleRunner.create()
-              .withProjectDir(testProjectDir.root)
-              .withArguments('-Si', 'build', 'producer')
+              .withProjectDir(projectDir)
+              .withArguments(otherArgs)
               .withPluginClasspath()
               .build()
 
-      indexedResultOutput = result.output.readLines()
+      // log the results
+      if (logOutput) log.warn result.getOutput()
 
-      log.warn result.output
+      return result
+
    }
 
-   @Unroll
-   def "build was successful"() {
-
-      given: "an integration test execution"
+   def "Execute :tasks task"() {
+      given:
+      taskName = 'tasks'
+      result = executeSingleTask(taskName, ['-Si'])
 
       expect:
-      result.output.contains("BUILD SUCCESSFUL")
-
+      result.task(":${taskName}").outcome.name() != 'FAILED'
    }
+
+   def "Execute :build task"() {
+      given:
+      taskName = 'build'
+      result = executeSingleTask(taskName, ['-Si'])
+
+      expect:
+      result.task(":${taskName}").outcome.name() != 'FAILED'
+   }
+
+   def "Execute :producer task"() {
+      given:
+      taskName = 'producer'
+      result = executeSingleTask(taskName, ['-Si'])
+
+      expect:
+      result.task(":${taskName}").outcome.name() != 'FAILED'
+   }
+
 }

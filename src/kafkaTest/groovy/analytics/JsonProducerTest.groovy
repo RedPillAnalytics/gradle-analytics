@@ -13,12 +13,10 @@ class JsonProducerTest extends Specification {
 
    @Shared
    File projectDir, buildDir, buildFile, settingsFile, resourcesDir
-
    @Shared
    AntBuilder ant = new AntBuilder()
-
    @Shared
-   String projectName = 'json-test'
+   String projectName = 'json-test', taskName
 
    @Shared
    def result
@@ -42,33 +40,60 @@ class JsonProducerTest extends Specification {
             |
             |analytics {
             |   ignoreErrors = false
-            |   compressFiles = false
-            |   cleanFiles = false
             |   sinks {
             |      kafka
             |   }
             |}
             |""".stripMargin()
       )
+   }
 
+   // helper method
+   def executeSingleTask(String taskName, List otherArgs, Boolean logOutput = true) {
+
+      otherArgs.add(0, taskName)
+
+      log.warn "runner arguments: ${otherArgs.toString()}"
+
+      // execute the Gradle test build
       result = GradleRunner.create()
               .withProjectDir(projectDir)
-              .withArguments('-Si', 'build', 'producer')
+              .withArguments(otherArgs)
               .withPluginClasspath()
               .build()
 
-      indexedResultOutput = result.output.readLines()
+      // log the results
+      if (logOutput) log.warn result.getOutput()
 
-      log.warn result.output
+      return result
+
    }
 
-   @Unroll
-   def "build was successful"() {
-
-      given: "an integration test execution"
+   def "Execute :tasks task"() {
+      given:
+      taskName = 'tasks'
+      result = executeSingleTask(taskName, ['-Si'])
 
       expect:
-      result.output.contains("BUILD SUCCESSFUL")
-
+      result.task(":${taskName}").outcome.name() != 'FAILED'
    }
+
+   def "Execute :build task"() {
+      given:
+      taskName = 'build'
+      result = executeSingleTask(taskName, ['-Si'])
+
+      expect:
+      result.task(":${taskName}").outcome.name() != 'FAILED'
+   }
+
+   def "Execute :producer task"() {
+      given:
+      taskName = 'producer'
+      result = executeSingleTask(taskName, ['-Si'])
+
+      expect:
+      result.task(":${taskName}").outcome.name() != 'FAILED'
+   }
+
 }
