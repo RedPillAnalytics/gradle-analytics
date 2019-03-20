@@ -55,7 +55,7 @@ class GSTask extends ObjectStoreTask {
 
       analyticsFiles.each { file ->
          try {
-            BlobId blobId = BlobId.of(bucketName, "${getFilePath(file, dir)}")
+            BlobId blobId = BlobId.of(bucketName, "${getFilePath(file, file.parentFile)}")
             BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType("text/plain").build()
             storage.create(blobInfo, file.text.getBytes(UTF_8))
          } catch (Exception e) {
