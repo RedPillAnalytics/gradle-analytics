@@ -11,46 +11,28 @@ class S3Task extends ObjectStoreTask {
 
    @TaskAction
    def s3Task() {
-
       def client = new AmazonS3Client()
 
       // first create the bucket
-
       log.info "Creating bucket: ${getBucketName()}"
       client.createBucket(new CreateBucketRequest(bucketName))
 
-      def cnt = 0
+      analyticsFiles.each { file ->
+         project.logger.debug "bucket: ${prefix}"
 
-      getAnalyticsDir().eachFile FileType.DIRECTORIES, { dir ->
-
-         dir.eachFile FileType.FILES, { file ->
-
-            cnt++
-
-            project.logger.debug "bucket: ${prefix}"
-
-            try {
-
-               String object = getFilePath(file, dir)
-               def result = client.putObject(getBucketName(), object, file)
-
-               logger.info "Key '$object' uploaded to bucket '${getBucketName()}'."
-               logger.debug result.toString()
-
-            } catch (Exception e) {
-
-               if (project.analytics.ignoreErrors.toBoolean()) {
-
-                  logger.info e.toString()
-
-               } else {
-
-                  throw e
-               }
+         try {
+            String object = getFilePath(file, file.parentFile)
+            def result = client.putObject(getBucketName(), object, file)
+            log.info "Key '$object' uploaded to bucket '${getBucketName()}'."
+            log.debug result.toString()
+         } catch (Exception e) {
+            if (project.analytics.ignoreErrors.toBoolean()) {
+               log.info e.toString()
+            } else {
+               throw e
             }
          }
       }
-
-      log.warn "$cnt files uploaded to S3."
+      logSink()
    }
 }
