@@ -26,20 +26,19 @@ class DryRunTest extends Specification {
    // return regular output
    def setupSpec() {
 
-      buildFile = testProjectDir.newFile('build.gradle')
-      buildFile << """
-            plugins {
-                id 'com.redpillanalytics.gradle-analytics'
-            }
-            
-            analytics.sinks {
-               pubsub
-               s3
-               jdbc
-               firehose
-               gs
-            }
-        """
+      buildFile = testProjectDir.newFile('build.gradle').write("""
+               |plugins {
+               |  id 'com.redpillanalytics.gradle-analytics'
+               |}
+               |analytics.sinks {
+               |  s3
+               |  pubsub
+               |  kafka
+               |  firehose
+               |  gs
+               |  kafka
+               |}
+               |""".stripMargin())
 
       result = GradleRunner.create()
               .withProjectDir(testProjectDir.root)
@@ -61,7 +60,7 @@ class DryRunTest extends Specification {
       result.output.contains(":$task")
 
       where:
-      task << ['producer']
+      task << ['producer','firehoseSink','gsSink','kafkaSink','pubsubSink','s3Sink']
    }
 
    @Unroll
@@ -76,8 +75,8 @@ class DryRunTest extends Specification {
 
       where:
 
-      firstTask << ['s3', 'pubsub']
-      secondTask << ['producer', 'producer']
+      firstTask << ['s3Sink', 'pubsubSink','kafkaSink','gsSink','firehoseSink']
+      secondTask << ['producer', 'producer','producer','producer','producer']
    }
 
 }
