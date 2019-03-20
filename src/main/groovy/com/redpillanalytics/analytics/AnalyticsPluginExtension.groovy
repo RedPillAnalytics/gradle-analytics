@@ -172,11 +172,7 @@ class AnalyticsPluginExtension {
 
       analyticsFile.parentFile.mkdirs()
 
-      if (format.equalsIgnoreCase('avro')) {
-
-
-      }
-      else if (format.equalsIgnoreCase('json')) {
+      if (format.equalsIgnoreCase('json')) {
 
          analyticsFile.append(gson.toJson(record) + '\n')
       }
