@@ -3,6 +3,7 @@ package com.redpillanalytics.analytics.tasks
 import com.redpillanalytics.common.Utils
 import groovy.util.logging.Slf4j
 import org.gradle.api.DefaultTask
+import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.options.Option
 import org.gradle.api.tasks.Input
@@ -74,5 +75,28 @@ class SinkTask extends DefaultTask {
       log.debug "Name of the sink entity: $entityName"
       return entityName
 
+   }
+
+   /**
+    * Gets the hierarchical collection of analytics files, sorted using folder structure and alphanumeric logic.
+    *
+    * @return The List of analytics files.
+    */
+   @InputFiles
+   List getAnalyticsFiles() {
+
+      def tree = project.fileTree(dir: analyticsDir, includes: ['**/*.json'])
+      return tree.sort()
+   }
+
+   /**
+    * Provide generic logging upon the completion of a sink task.
+    */
+   @InputFiles
+   def logSink() {
+      analyticsFiles.each{ file ->
+         log.info "Analytics file $file processed."
+      }
+      log.warn "${analyticsFiles.size()} analytics files processed."
    }
 }

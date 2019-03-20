@@ -1,7 +1,5 @@
 package com.redpillanalytics.analytics.tasks
 
-
-import groovy.io.FileType
 import groovy.util.logging.Slf4j
 import org.apache.kafka.clients.producer.KafkaProducer
 import org.apache.kafka.clients.producer.ProducerRecord
@@ -38,37 +36,32 @@ class KafkaTask extends SinkTask {
       }
       def producer = new KafkaProducer(properties)
 
-      getAnalyticsDir().eachFile(FileType.DIRECTORIES) { dir ->
+      analyticsFiles.each { file ->
+         log.debug "file: $file"
 
-         logger.debug "directory: $dir"
-         logger.debug "files: ${dir.listFiles()}"
+         def topicName = getEntityName(file, '-')
+         log.debug "topic: $topicName"
 
-         dir.eachFile(FileType.FILES) { file ->
+         def response
+         log.debug "message: ${file.text}"
 
-            logger.debug "file: $file"
-
-            def topicName = getEntityName(file, '-')
-            logger.debug "topic: $topicName"
-
-            def response
-            logger.debug "message: ${file.text}"
-
-            try {
-               response = producer.send(new ProducerRecord(topicName, file.text))
-            }
-            catch (Exception e) {
-               if (ignoreErrors) {
-                  logger.info e.toString()
-               } else {
-                  throw e
-               }
-            }
-            finally {
-               logger.debug "response: ${response.dump()}"
-               logger.debug "result: ${response.result.dump()}"
-            }
-            return response
+         try {
+            response = producer.send(new ProducerRecord(topicName, file.text))
          }
+         catch (Exception e) {
+            if (ignoreErrors) {
+               log.info e.toString()
+            } else {
+               throw e
+            }
+         }
+         finally {
+            log.debug "response: ${response.dump()}"
+            log.debug "result: ${response.result.dump()}"
+         }
+         return response
       }
+
+      logSink()
    }
 }

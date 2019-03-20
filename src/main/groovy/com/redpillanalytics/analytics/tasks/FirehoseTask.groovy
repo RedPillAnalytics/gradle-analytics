@@ -5,7 +5,6 @@
 package com.redpillanalytics.analytics.tasks
 
 import com.redpillanalytics.analytics.sinks.Kinesis
-import groovy.io.FileType
 import groovy.util.logging.Slf4j
 import org.gradle.api.tasks.TaskAction
 
@@ -18,13 +17,10 @@ class FirehoseTask extends SinkTask {
 
       def kinesis = new Kinesis(project.extensions.analytics.ignoreErrors.toBoolean())
 
-      getAnalyticsDir().eachFile(FileType.DIRECTORIES) { dir ->
-
-         dir.eachFile(FileType.FILES) { file ->
-
-            kinesis.sendRecord(getEntityName(file), file)
-
-         }
+      analyticsFiles.each { file ->
+         kinesis.sendRecord(getEntityName(file), file)
       }
+
+      logSink()
    }
 }

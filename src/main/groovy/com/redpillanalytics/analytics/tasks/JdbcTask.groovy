@@ -6,7 +6,6 @@ package com.redpillanalytics.analytics.tasks
 
 import com.redpillanalytics.common.Utils
 import groovy.sql.Sql
-import groovy.io.FileType
 import groovy.util.logging.Slf4j
 import org.gradle.api.tasks.options.Option
 import org.gradle.api.tasks.Input
@@ -31,9 +30,7 @@ class JdbcTask extends SinkTask {
    String driverUrl, driverClass
 
    def getStreamName(File file) {
-
       return [prefix, Utils.getFileBase(file)].join('.').replace('-', '_') + '_stream'
-
    }
 
    @TaskAction
@@ -50,39 +47,26 @@ class JdbcTask extends SinkTask {
               driverClass
       )
 
-      getAnalyticsDir().eachFile(FileType.DIRECTORIES) { dir ->
-
-         dir.eachFile(FileType.FILES) { file ->
-
-            def table = getStreamName(file)
-
-            file.each { record ->
-
-               def statement = "insert into " + table + "(data) values('${record}')"
-
-               logger.debug("Statement: $statement")
-
-               try {
-                  db.execute(statement)
-               }
-               catch (Exception e) {
-
-                  if (ignoreErrors) {
-
-                     logger.debug "Exception logged"
-                     project.logger.info e.toString()
-
-                  } else {
-
-                     logger.debug "Exception thrown"
-                     throw e
-                  }
+      analyticsFiles.each { file ->
+         def table = getStreamName(file)
+         file.each { record ->
+            def statement = "insert into " + table + "(data) values('${record}')"
+            log.debug("Statement: $statement")
+            try {
+               db.execute(statement)
+            }
+            catch (Exception e) {
+               if (ignoreErrors) {
+                  log.debug "Exception logged"
+                  project.logger.info e.toString()
+               } else {
+                  log.debug "Exception thrown"
+                  throw e
                }
             }
-            logger.info "JDBC record(s) sent to '${table}'"
          }
+         logSink()
       }
-
       db.close()
    }
 }

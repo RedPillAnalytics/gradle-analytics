@@ -17,11 +17,8 @@ class ObjectStoreTask extends SinkTask {
    @Input
    @Optional
    String getBucketName() {
-
       log.debug "Name of bucket: $prefix"
-
       return prefix
-
    }
 
    /**
@@ -31,16 +28,9 @@ class ObjectStoreTask extends SinkTask {
     */
    @Input
    String getFilePath(File file, File dir) {
-
       log.debug "Original file: ${file.absolutePath}"
-
       def fileName = "${Utils.getFileBase(file)}/$dir.name.${Utils.getFileExt(file)}"
-
       log.debug "Name of file: $fileName"
-
       return fileName
-
    }
-
-
 }
