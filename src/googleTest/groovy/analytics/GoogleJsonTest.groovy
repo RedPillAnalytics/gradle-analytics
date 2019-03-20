@@ -8,7 +8,7 @@ import spock.lang.Title
 
 @Slf4j
 @Title("Execute :publish task using --dry-run")
-class JsonProducerTest extends Specification {
+class GoogleJsonTest extends Specification {
 
    @Shared
    File projectDir, buildDir, buildFile, settingsFile, resourcesDir
@@ -40,9 +40,9 @@ class JsonProducerTest extends Specification {
             |analytics {
             |  ignoreErrors = false
             |  sinks {
-            |     firehose
-            |     s3 {
-            |           prefix = 'rpa-gradle-analytics'
+            |     pubsub
+            |     gs {
+            |        prefix = 'rpa-gradle-analytics'
             |     }
             |  }
             |}

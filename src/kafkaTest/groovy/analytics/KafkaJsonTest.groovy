@@ -5,11 +5,10 @@ import org.gradle.testkit.runner.GradleRunner
 import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Title
-import spock.lang.Unroll
 
 @Slf4j
 @Title("Execute :publish task using --dry-run")
-class JsonProducerTest extends Specification {
+class KafkaJsonTest extends Specification {
 
    @Shared
    File projectDir, buildDir, buildFile, settingsFile, resourcesDir
