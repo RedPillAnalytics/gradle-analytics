@@ -20,7 +20,7 @@ pipeline {
 
       stage('Build') {
          steps {
-            sh "$gradle build copyBuildResources"
+            sh "$gradle build copyBuildResources cV"
          }
       }
 
