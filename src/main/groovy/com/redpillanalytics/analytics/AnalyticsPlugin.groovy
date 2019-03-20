@@ -4,6 +4,7 @@ import com.redpillanalytics.analytics.containers.SinkContainer
 import com.redpillanalytics.analytics.tasks.FirehoseTask
 import com.redpillanalytics.analytics.tasks.GSTask
 import com.redpillanalytics.analytics.tasks.JdbcTask
+import com.redpillanalytics.analytics.tasks.KafkaTask
 import com.redpillanalytics.analytics.tasks.PubSubTask
 import com.redpillanalytics.analytics.tasks.S3Task
 import groovy.util.logging.Slf4j
@@ -286,53 +287,32 @@ class AnalyticsPlugin implements Plugin<Project> {
 
             }
 
-//            // Apache Kafka
-//            if (ag.getSink() == 'kafka') {
-//
-//               // Add analytics processing task
-//               project.task(taskName, type: KafkaTask) {
-//
-//                  group "analytics"
-//
-//                  description ag.getDescription()
-//
-//                  // add any custom prefix to sink names
-//                  prefix ag.getPrefix()
-//
-//                  servers = ag.getServers() ?: 'localhost:9092'
-//
-//                  serializerKey = ag.getSerializerKey() ?: "org.apache.kafka.common.serialization.StringSerializer"
-//                  //serializerKey = ag.getSerializerKey() ?: "io.confluent.kafka.serializers.KafkaAvroSerializer"
-//
-//                  serializerValue = ag.getSerializerValue() ?: "org.apache.kafka.common.serialization.StringSerializer"
-//                  //serializerValue = ag.getSerializerValue() ?: "io.confluent.kafka.serializers.KafkaAvroSerializer"
-//
-//                  acks ag.getAcks() ?: 'all'
-//
-//                  registry ag.getRegistry() ? ag.getRegistry() : null
-//
-//               }
-//
-//            }
+            // Apache Kafka
+            if (ag.getSink() == 'kafka') {
 
-            // Apache Confluent
-//            if (ag.getSink() == 'confluent') {
-//
-//               // Add analytics processing task
-//               project.task(taskName, type: ConfluentTask) {
-//
-//                  group "analytics"
-//
-//                  description ag.getDescription()
-//
-//                  // add any custom prefix to sink names
-//                  prefix ag.getPrefix()
-//
-//                  restUrl ag.getRestUrl()
-//
-//               }
-//
-//            }
+               // Add analytics processing task
+               project.task(taskName, type: KafkaTask) {
+
+                  group "analytics"
+
+                  description ag.getDescription()
+
+                  // add any custom prefix to sink names
+                  prefix ag.getPrefix()
+
+                  servers = ag.getServers() ?: 'localhost:9092'
+
+                  serializerKey = ag.getSerializerKey() ?: "org.apache.kafka.common.serialization.StringSerializer"
+
+                  serializerValue = ag.getSerializerValue() ?: "org.apache.kafka.common.serialization.StringSerializer"
+
+                  acks ag.getAcks() ?: 'all'
+
+                  registry ag.getRegistry() ? ag.getRegistry() : null
+
+               }
+
+            }
 
             // use JDBC and built in JSON
             if ((ag.getSink() == 'jdbc') && dependencyMatching('analytics', '.*jdbc.*')) {

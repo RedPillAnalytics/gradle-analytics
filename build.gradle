@@ -37,6 +37,7 @@ allprojects {
 testSets {
    amazonTest
    googleTest
+   kafkaTest
 }
 
 githubRelease {
