@@ -25,12 +25,12 @@ class KafkaTask extends SinkTask {
    def kafkaTask() {
 
       def properties = [
-              "bootstrap.servers"   : servers,
+              "bootstrap.servers": servers,
               // serializers
-              "value.serializer"    : serializerValue,
-              "key.serializer"      : serializerKey,
+              "value.serializer" : serializerValue,
+              "key.serializer"   : serializerKey,
               // acknowledgement control
-              "acks"                : acks
+              "acks"             : acks
       ]
 
       if (registry) {
@@ -40,9 +40,14 @@ class KafkaTask extends SinkTask {
 
       getAnalyticsDir().eachFile(FileType.DIRECTORIES) { dir ->
 
+         logger.debug "directory: $dir"
+         logger.debug "files: ${dir.listFiles()}"
+
          dir.eachFile(FileType.FILES) { file ->
 
-            def topicName = getEntityName(file,'-')
+            logger.debug "file: $file"
+
+            def topicName = getEntityName(file, '-')
             logger.debug "topic: $topicName"
 
             def response

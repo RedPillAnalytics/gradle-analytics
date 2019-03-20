@@ -2,8 +2,6 @@ package analytics
 
 import groovy.util.logging.Slf4j
 import org.gradle.testkit.runner.GradleRunner
-import org.junit.ClassRule
-import org.junit.rules.TemporaryFolder
 import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Title
@@ -13,12 +11,15 @@ import spock.lang.Unroll
 @Title("Execute :publish task using --dry-run")
 class JsonProducerTest extends Specification {
 
-   @ClassRule
    @Shared
-   TemporaryFolder testProjectDir = new TemporaryFolder()
+   File projectDir, buildDir, buildFile, settingsFile, resourcesDir
 
    @Shared
-   File buildFile
+   AntBuilder ant = new AntBuilder()
+
+   @Shared
+   String projectName = 'json-test'
+
    @Shared
    def result
    @Shared
@@ -28,21 +29,30 @@ class JsonProducerTest extends Specification {
    // return regular output
    def setupSpec() {
 
-      buildFile = testProjectDir.newFile('build.gradle')
-      buildFile << """
-            plugins {
-                id 'com.redpillanalytics.gradle-analytics'
-            }
-            
-            analytics.sinks {
-               kafka
-            }
-            
-            analytics.ignoreErrors = false     
-        """
+      projectDir = new File("${System.getProperty("projectDir")}/$projectName")
+      ant.mkdir(dir: projectDir)
+      buildDir = new File(projectDir, 'build')
+
+      settingsFile = new File(projectDir, 'settings.gradle').write("""rootProject.name = '$projectName'""")
+
+      buildFile = new File(projectDir, 'build.gradle').write("""
+            |plugins {
+            |    id 'com.redpillanalytics.gradle-analytics'
+            |}
+            |
+            |analytics {
+            |   ignoreErrors = false
+            |   compressFiles = false
+            |   cleanFiles = false
+            |   sinks {
+            |      kafka
+            |   }
+            |}
+            |""".stripMargin()
+      )
 
       result = GradleRunner.create()
-              .withProjectDir(testProjectDir.root)
+              .withProjectDir(projectDir)
               .withArguments('-Si', 'build', 'producer')
               .withPluginClasspath()
               .build()

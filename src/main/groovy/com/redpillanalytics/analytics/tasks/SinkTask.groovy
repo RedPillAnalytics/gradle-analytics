@@ -33,7 +33,7 @@ class SinkTask extends DefaultTask {
     * Configured using {@link com.redpillanalytics.analytics.containers.SinkContainer#ignoreErrors}
     */
    @Input
-   @Option(option = "ignoreErrors",
+   @Option(option = "ignore-errors",
            description = "Determines whether errors returned from the Sink are ignored.")
 
    Boolean ignoreErrors = project.analytics.ignoreErrors
@@ -47,8 +47,9 @@ class SinkTask extends DefaultTask {
     */
    @InputDirectory
    File getAnalyticsDir() {
-
-      return project.analytics.getAnalyticsBaseDir(project.buildDir)
+      def dir = project.analytics.getAnalyticsBaseDir(project.buildDir)
+      log.debug "analytics directory: $dir"
+      return dir
    }
 
    /**

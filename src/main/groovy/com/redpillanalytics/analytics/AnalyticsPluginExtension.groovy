@@ -118,7 +118,10 @@ class AnalyticsPluginExtension {
 
    File getAnalyticsFile(String filename, File buildDir) {
 
-      return new File(filename, getAnalyticsDir(buildDir))
+      File file = new File(getAnalyticsDir(buildDir),filename)
+      log.debug "analytics file: $file"
+
+      return file
    }
 
    def getBuildHeader() {
