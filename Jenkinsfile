@@ -20,7 +20,7 @@ pipeline {
 
       stage('Build') {
          steps {
-            sh "$gradle build copyBuildResources cV"
+            sh "$gradle cleanTests build copyBuildResources cV"
             junit testResults: "build/test-results/test/*.xml", allowEmptyResults: true, keepLongStdio: true
          }
       }
@@ -29,7 +29,7 @@ pipeline {
           steps {
               sh "$gradle composeUp"
               sleep 5
-              sh "$gradle amazonTest googleTest kafkaTest --rerun-tasks"
+              sh "$gradle integrationStage --rerun-tasks"
               junit testResults: "build/test-results/*Test/*.xml", allowEmptyResults: true, keepLongStdio: true
           }
       }
