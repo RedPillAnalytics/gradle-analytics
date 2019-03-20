@@ -138,7 +138,7 @@ task downloadGCPCreds {
    doLast {
       exec {
          executable 'aws'
-         args 's3', 'cp',"s3://rpa-build-resources/gradle-analytics-build-user.json", "."
+         args 's3', 'cp', "s3://rpa-build-resources/gradle-analytics-build-user.json", "."
       }
    }
 }
@@ -182,14 +182,27 @@ task copyBuildResources {
    doLast {
       exec {
          executable 'aws'
-         args 's3', 'cp',"${resourceBucket}/gradle-analytics-build-user.json", "."
+         args 's3', 'cp', "${resourceBucket}/gradle-analytics-build-user.json", "."
       }
       exec {
          executable 'aws'
-         args 's3', 'cp',"${resourceBucket}/gradle.properties", "."
+         args 's3', 'cp', "${resourceBucket}/gradle.properties", "."
       }
    }
 }
+
+task cleanTests {
+   description "Cleans the results of integration testing."
+   group "verification"
+   dependsOn cleanTest, cleanAmazonTest, cleanGoogleTest, cleanKafkaTest
+}
+
+task integrationStage {
+   group "stage"
+   description "Run all the tests for the Jenkins 'integration' phase."
+   dependsOn amazonTest, googleTest, kafkaTest
+}
+
 
 tasks.publishPlugins.dependsOn publishVersionDocs, publishLatestDocs
 

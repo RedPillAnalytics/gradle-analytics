@@ -26,13 +26,12 @@ class ConfluentTask extends SinkTask {
 
             def topicName = getEntityName(file)
 
-            //todo set to debug
-            logger.warn "topic: $topicName"
+            logger.debug "topic: $topicName"
 
             def response
 
             //todo set to debug
-            logger.warn "message: ${file.text}"
+            logger.debug "message: ${file.text}"
 
             try {
 

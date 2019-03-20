@@ -41,6 +41,13 @@ class TasksTest extends Specification {
                |plugins {
                |  id 'com.redpillanalytics.gradle-analytics'
                |}
+               |analytics.sinks {
+               |  s3
+               |  pubsub
+               |  kafka
+               |  firehose
+               |  gs
+               |}
                |""".stripMargin())
    }
 
