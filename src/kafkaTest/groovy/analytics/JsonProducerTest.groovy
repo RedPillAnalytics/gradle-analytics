@@ -35,10 +35,7 @@ class JsonProducerTest extends Specification {
             }
             
             analytics.sinks {
-               pubsub
-               gs {
-                  prefix = 'rpa-gradle-analytics'
-               }
+               kafka
             }
             
             analytics.ignoreErrors = false     

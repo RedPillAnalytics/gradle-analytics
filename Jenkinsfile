@@ -20,14 +20,16 @@ pipeline {
 
       stage('Build') {
          steps {
-            sh "$gradle build copyBuildResources"
+            sh "$gradle build copyBuildResources cV"
          }
       }
 
       stage('Integration') {
-         steps {
-            sh "$gradle amazonTest googleTest --rerun-tasks"
-         }
+          steps {
+              sh "$gradle composeUp"
+              sleep 5
+              sh "$gradle amazonTest googleTest kafkaTest --rerun-tasks"
+          }
       }
 
       stage('Publish') {
@@ -45,6 +47,9 @@ pipeline {
          junit testResults: "build/test-results/**/*.xml", allowEmptyResults: true, keepLongStdio: true
          archiveArtifacts artifacts: 'build/libs/*.jar', fingerprint: true
          //sh "$gradle producer"
+      }
+      cleanup {
+        sh "$gradle composeDown"
       }
    }
 

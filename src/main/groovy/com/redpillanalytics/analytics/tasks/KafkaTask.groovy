@@ -34,49 +34,34 @@ class KafkaTask extends SinkTask {
       ]
 
       if (registry) {
-
          properties['schema.registry.url'] = registry
       }
-
       def producer = new KafkaProducer(properties)
 
       getAnalyticsDir().eachFile(FileType.DIRECTORIES) { dir ->
 
          dir.eachFile(FileType.FILES) { file ->
 
-            def topicName = getEntityName(file)
-
-            //todo set to debug
-            logger.warn "topic: $topicName"
+            def topicName = getEntityName(file,'-')
+            logger.debug "topic: $topicName"
 
             def response
-
-            //todo set to debug
-            logger.warn "message: ${file.text}"
+            logger.debug "message: ${file.text}"
 
             try {
-
                response = producer.send(new ProducerRecord(topicName, file.text))
             }
             catch (Exception e) {
-
                if (ignoreErrors) {
-
                   logger.info e.toString()
-
                } else {
-
                   throw e
                }
             }
             finally {
-
-               //todo set to debug
-               logger.warn "response: ${response.dump()}"
-               logger.warn "result: ${response.result.dump()}"
-
+               logger.debug "response: ${response.dump()}"
+               logger.debug "result: ${response.result.dump()}"
             }
-
             return response
          }
       }
