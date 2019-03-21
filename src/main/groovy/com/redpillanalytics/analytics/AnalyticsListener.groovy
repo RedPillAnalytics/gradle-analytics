@@ -40,21 +40,22 @@ class AnalyticsListener implements TaskExecutionListener, BuildListener, Project
 
               task.project.rootProject.extensions.analytics.tasksFileName as String,
               task.project.rootProject.buildDir,
-              task.project.rootProject.extensions.analytics.getTaskRecord([
-                      projectname: task.project.displayName,
-                      projectdir : task.project.projectDir.path,
-                      builddir   : task.project.buildDir.path,
-                      buildfile  : task.project.buildFile.path,
-                      taskname   : task.getName(),
-                      taskpath   : task.getPath(),
-                      taskgroup  : task.getGroup(),
-                      taskdesc   : task.getDescription(),
-                      taskdate   : new Date(taskStartTime).format("yyyy-MM-dd HH:mm:ss"),
-                      didWork    : task.didWork.toString(),
-                      duration   : ms,
-                      status     : taskState.failure ? 'failure' : 'success',
-                      stacktrace : taskState.failure.toString()
-              ])
+              task.project.rootProject.extensions.analytics.getBuildHeader() <<
+                      [
+                              projectname: task.project.displayName,
+                              projectdir : task.project.projectDir.path,
+                              builddir   : task.project.buildDir.path,
+                              buildfile  : task.project.buildFile.path,
+                              taskname   : task.getName(),
+                              taskpath   : task.getPath(),
+                              taskgroup  : task.getGroup(),
+                              taskdesc   : task.getDescription(),
+                              taskdate   : new Date(taskStartTime).format("yyyy-MM-dd HH:mm:ss"),
+                              didWork    : task.didWork.toString(),
+                              duration   : ms,
+                              status     : taskState.failure ? 'failure' : 'success',
+                              stacktrace : taskState.failure.toString()
+                      ],
       )
 
       log.debug "${task.getPath()} took ${ms}ms"
@@ -73,21 +74,22 @@ class AnalyticsListener implements TaskExecutionListener, BuildListener, Project
 
               result.gradle.rootProject.extensions.analytics.buildsFileName as String,
               result.gradle.rootProject.buildDir,
-              result.gradle.rootProject.analytics.getBuildRecord([
-                      hostname       : result.gradle.rootProject.project.extensions.analytics.hostname,
-                      commithash     : result.gradle.rootProject.project.gitCommit,
-                      scmbranch      : result.gradle.rootProject.project.gitBranch,
-                      repositoryurl  : result.gradle.rootProject.project.gitRemote,
-                      commitemail    : result.gradle.rootProject.project.extensions.analytics.gitCommitEmail,
-                      rootprojectname: result.gradle.rootProject.project.name,
-                      rootprojectdir : result.gradle.rootProject.projectDir.path,
-                      rootbuilddir   : result.gradle.rootProject.buildDir.path,
-                      version        : result.gradle.rootProject.version,
-                      builddate      : new Date(buildStartTime).format("yyyy-MM-dd HH:mm:ss"),
-                      duration       : ms,
-                      status         : result.failure ? 'failure' : 'success',
-                      stacktrace     : result.failure.toString()
-              ]),
+              result.gradle.rootProject.extensions.analytics.getBuildHeader() <<
+                      [
+                              hostname       : result.gradle.rootProject.project.extensions.analytics.hostname,
+                              commithash     : result.gradle.rootProject.project.gitCommit,
+                              scmbranch      : result.gradle.rootProject.project.gitBranch,
+                              repositoryurl  : result.gradle.rootProject.project.gitRemote,
+                              commitemail    : result.gradle.rootProject.project.extensions.analytics.gitCommitEmail,
+                              rootprojectname: result.gradle.rootProject.project.name,
+                              rootprojectdir : result.gradle.rootProject.projectDir.path,
+                              rootbuilddir   : result.gradle.rootProject.buildDir.path,
+                              version        : result.gradle.rootProject.version,
+                              builddate      : new Date(buildStartTime).format("yyyy-MM-dd HH:mm:ss"),
+                              duration       : ms,
+                              status         : result.failure ? 'failure' : 'success',
+                              stacktrace     : result.failure.toString()
+                      ],
       )
    }
 
