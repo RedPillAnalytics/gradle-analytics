@@ -73,7 +73,7 @@ class AnalyticsPlugin implements Plugin<Project> {
          // create git extensions
          project.ext.gitDescribeInfo = project.grgit?.describe(longDescr: true, tags: true)
          project.ext.gitLastTag = (project.ext.gitDescribeInfo?.split('-')?.getAt(0)) ?: 'v0.1.0'
-         project.ext.gitLastVersion = project.ext.gitLastTag.replaceAll(/(^\w)/,'')
+         project.ext.gitLastVersion = project.ext.gitLastTag.replaceAll(/(^\w)/, '')
          // setup a few reusable parameters for task creation
          String taskName
 
@@ -114,20 +114,21 @@ class AnalyticsPlugin implements Plugin<Project> {
 
                           project.rootProject.extensions.analytics.testsFileName as String,
                           project.rootProject.buildDir,
-                          project.extensions.analytics.getTestRecord([
-                                  projectname : task.project.displayName,
-                                  projectdir  : task.project.projectDir.path,
-                                  builddir    : task.project.buildDir.path,
-                                  buildfile   : task.project.buildFile.path,
-                                  testname    : desc.getName(),
-                                  classname   : desc.getClassName(),
-                                  starttime   : new Date(result.getStartTime()).format("yyyy-MM-dd HH:mm:ss"),
-                                  endtime     : new Date(result.getEndTime()).format("yyyy-MM-dd HH:mm:ss"),
-                                  executecount: result.getTestCount(),
-                                  successcount: result.getSuccessfulTestCount(),
-                                  failcount   : result.getFailedTestCount(),
-                                  skipcount   : result.getSkippedTestCount()
-                          ]),
+                          project.rootProject.extensions.analytics.getBuildHeader() <<
+                                  [
+                                          projectname : task.project.displayName,
+                                          projectdir  : task.project.projectDir.path,
+                                          builddir    : task.project.buildDir.path,
+                                          buildfile   : task.project.buildFile.path,
+                                          testname    : desc.getName(),
+                                          classname   : desc.getClassName(),
+                                          starttime   : new Date(result.getStartTime()).format("yyyy-MM-dd HH:mm:ss"),
+                                          endtime     : new Date(result.getEndTime()).format("yyyy-MM-dd HH:mm:ss"),
+                                          executecount: result.getTestCount(),
+                                          successcount: result.getSuccessfulTestCount(),
+                                          failcount   : result.getFailedTestCount(),
+                                          skipcount   : result.getSkippedTestCount()
+                                  ],
                   )
                }
 
@@ -149,18 +150,19 @@ class AnalyticsPlugin implements Plugin<Project> {
 
                              project.rootProject.extensions.analytics.testOutputFileName as String,
                              project.rootProject.buildDir,
-                             project.extensions.analytics.getTestOutputRecord([
-                                     projectname: task.project.displayName,
-                                     projectdir : task.project.projectDir.path,
-                                     builddir   : task.project.buildDir.path,
-                                     buildfile  : task.project.buildFile.path,
-                                     classname  : className,
-                                     testname   : testName,
-                                     parentname : parentName,
-                                     processtype: type,
-                                     destination: eventDestination,
-                                     message    : eventMessage
-                             ]),
+                             project.rootProject.extensions.analytics.getBuildHeader() <<
+                                     [
+                                             projectname: task.project.displayName,
+                                             projectdir : task.project.projectDir.path,
+                                             builddir   : task.project.buildDir.path,
+                                             buildfile  : task.project.buildFile.path,
+                                             classname  : className,
+                                             testname   : testName,
+                                             parentname : parentName,
+                                             processtype: type,
+                                             destination: eventDestination,
+                                             message    : eventMessage
+                                     ],
                      )
 
                   }

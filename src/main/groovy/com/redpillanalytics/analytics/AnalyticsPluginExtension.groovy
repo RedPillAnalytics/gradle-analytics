@@ -2,10 +2,6 @@ package com.redpillanalytics.analytics
 
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import com.redpillanalytics.analytics.records.BuildRecord
-import com.redpillanalytics.analytics.records.TaskRecord
-import com.redpillanalytics.analytics.records.TestOutputRecord
-import com.redpillanalytics.analytics.records.TestRecord
 import com.redpillanalytics.common.CI
 
 import static java.util.UUID.randomUUID
@@ -131,45 +127,9 @@ class AnalyticsPluginExtension {
               organization: organization]
    }
 
-   def getBuildRecord(def record) {
-
-      def buildRecord = new BuildRecord(record << getBuildHeader())
-
-      log.debug "task record: ${buildRecord.dump()}"
-
-      return buildRecord
-   }
-
-   def getTaskRecord(def record) {
-
-      def taskRecord = new TaskRecord(record << getBuildHeader())
-
-      log.debug "task record: ${taskRecord.dump()}"
-
-      return taskRecord
-   }
-
-   def getTestRecord(def record) {
-
-      def testRecord = new TestRecord(record << getBuildHeader())
-
-      log.debug "task record: ${testRecord.dump()}"
-
-      return testRecord
-   }
-
-   def getTestOutputRecord(def record) {
-
-      def testRecord = new TestOutputRecord(record << getBuildHeader())
-
-      log.debug "task record: ${testRecord.dump()}"
-
-      return testRecord
-   }
-
    def writeAnalytics(String filename, File buildDir, def record) {
 
-      Gson gson = new GsonBuilder().serializeNulls().create()
+      Gson gson = new GsonBuilder().serializeNulls().setPrettyPrinting().create()
 
       def analyticsFile = getAnalyticsFile(filename, buildDir)
 
