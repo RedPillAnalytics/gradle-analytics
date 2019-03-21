@@ -39,7 +39,7 @@ class KafkaTask extends SinkTask {
       analyticsFiles.each { file ->
          log.debug "file: $file"
 
-         def topicName = getEntityName(file, '-')
+         def topicName = getEntityName(file, '_')
          log.debug "topic: $topicName"
 
          def response
