@@ -80,7 +80,7 @@ class KafkaJsonTest extends Specification {
    def "Execute :build task"() {
       given:
       taskName = 'build'
-      result = executeSingleTask(taskName, ['-Si'])
+      result = executeSingleTask(taskName, ['-Si',"-Panalytics.organization=Red Pill Analytics"])
 
       expect:
       result.task(":${taskName}").outcome.name() != 'FAILED'

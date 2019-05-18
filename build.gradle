@@ -8,17 +8,17 @@ plugins {
    id "com.github.ben-manes.versions" version "0.21.0"
    id "org.dvaske.gradle.git-build-info" version "0.9"
    id 'com.adarshr.test-logger' version '1.6.0'
-   id "com.redpillanalytics.gradle-analytics" version "1.1.23"
+   //id "com.redpillanalytics.gradle-analytics" version "1.2.3"
    id "com.avast.gradle.docker-compose" version "0.9.1"
 }
 
 // send analytics
-analytics {
-   organization = 'Red Pill Analytics'
-   sinks {
-      pubsub
-   }
-}
+//analytics {
+//   organization = 'Red Pill Analytics'
+//   sinks {
+//      pubsub
+//   }
+//}
 
 scmVersion {
 
@@ -69,9 +69,10 @@ dependencies {
 
    compile 'com.google.cloud:google-cloud-storage:+'
 
-   // git properties dependencies
+   // plugins
    compile "gradle.plugin.org.dvaske.gradle:git-build-info:0.9"
    compile "org.ajoberstar.grgit:grgit-gradle:3.0.0"
+   compile "gradle.plugin.com.redpillanalytics:gradle-plugin-template:0.1.1"
 
    testCompile 'org.spockframework:spock-core:1.2-groovy-2.5'
 }

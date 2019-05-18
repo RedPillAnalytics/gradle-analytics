@@ -1,0 +1,55 @@
+version: '1.0'
+steps:
+
+    build_image:
+      title: Build Image
+      type: build
+      image_name: gradle
+
+    release_plugin:
+      title: Release Plugin
+      image: ${{build_image}}
+      cmd:
+        - clean
+        - release
+        - -Prelease.disableChecks
+        - -Prelease.localOnly
+      when:
+        condition:
+          all:
+            validateTargetBranch: '"${{CF_PULL_REQUEST_TARGET}}" == "master"'
+            prActionClose: '"${{CF_PULL_REQUEST_ACTION}}" == "closed"'
+            prActionMerge: '"${{CF_PULL_REQUEST_MERGED}}" == "true"'
+    
+    build_plugin:
+      title: Build Plugin
+      image: ${{build_image}}
+      cmd:
+        - build
+        - copyBuildResources
+        - publishVersionDocs
+
+    unit_tests:
+      title: Parse Gradle Test Reports
+      image: codefresh/cf-docker-test-reporting
+      working_directory: '${{CF_VOLUME_PATH}}/${{CF_REPO_NAME}}/build/reports/tests/'
+      environment:
+        - REPORT_DIR=test
+        - REPORT_INDEX_FILE=index.html
+        - CLEAR_TEST_REPORT=true
+        - BUCKET_NAME=rpa-gradle-plugin-template-reports
+        - CF_STORAGE_INTEGRATION=google-rpa-devops
+
+    publish_plugin:
+      title: Publish Plugin
+      image: ${{build_image}}
+      cmd:
+        - publishPlugins
+        - publishLatestDocs
+        - githubRelease
+      when:
+        condition:
+          all:
+            validateTargetBranch: '"${{CF_PULL_REQUEST_TARGET}}" == "master"'
+            prActionClose: '"${{CF_PULL_REQUEST_ACTION}}" == "closed"'
+            prActionMerge: '"${{CF_PULL_REQUEST_MERGED}}" == "true"'

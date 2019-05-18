@@ -25,8 +25,7 @@ class AnalyticsPlugin implements Plugin<Project> {
       project.apply plugin: 'base'
 
       // apply plugin for git properties
-      project.apply plugin: "org.ajoberstar.grgit"
-      project.apply plugin: "org.dvaske.gradle.git-build-info"
+      project.apply plugin: "com.redpillanalytics.plugin-template"
 
       // apply the Gradle extension plugin and the context container
       applyExtension(project)
@@ -38,42 +37,8 @@ class AnalyticsPlugin implements Plugin<Project> {
 
       project.afterEvaluate {
 
-         // Go look for any -P properties that have "analytics." in them
-         // If so... update the extension value
-         project.ext.properties.each { key, value ->
-
-            //log.debug "extension: " + key + ' | ' + value
-
-            if (key =~ /analytics\./) {
-
-               def list = key.toString().split(/\./)
-
-               def extension = list[0]
-               def property = list[1]
-
-               if (extension == 'analytics' && project.analytics.hasProperty(property)) {
-
-                  log.debug "Setting configuration property for extension: $extension, property: $property, value: $value"
-
-                  if (project.extensions.getByName(extension)."$property" instanceof Boolean) {
-                     project.extensions.getByName(extension)."$property" = value.toBoolean()
-                  } else if (project.extensions.getByName(extension)."$property" instanceof Integer) {
-                     project.extensions.getByName(extension)."$property" = value.toInteger()
-                  } else {
-                     project.extensions.getByName(extension)."$property" = value
-                  }
-               }
-            }
-         }
-
-         def dependencyMatching = { configuration, regexp ->
-            return (project.configurations."$configuration".dependencies.find { it.name =~ regexp }) ?: false
-         }
-
+         project.extensions.template.setParameters(project, 'analytics')
          // create git extensions
-         project.ext.gitDescribeInfo = project.grgit?.describe(longDescr: true, tags: true)
-         project.ext.gitLastTag = (project.ext.gitDescribeInfo?.split('-')?.getAt(0)) ?: 'v0.1.0'
-         project.ext.gitLastVersion = project.ext.gitLastTag.replaceAll(/(^\w)/, '')
          // setup a few reusable parameters for task creation
          String taskName
 
@@ -286,7 +251,7 @@ class AnalyticsPlugin implements Plugin<Project> {
             }
 
             // use JDBC and built in JSON
-            if ((ag.getSink() == 'jdbc') && dependencyMatching('analytics', '.*jdbc.*')) {
+            if ((ag.getSink() == 'jdbc') && project.extensions.template.dependencyMatching('analytics', '.*jdbc.*')) {
 
                // Add analytics processing task
                project.task(taskName, type: JdbcTask) {
