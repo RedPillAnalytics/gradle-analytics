@@ -1,12 +1,24 @@
-def options = '-Si'
-def properties = "-Panalytics.buildId=${env.BUILD_TAG}"
-def gradle = "./gradlew ${options} ${properties}"
+def options = '-S'
+def properties = "-Panalytics.buildTag=${env.BUILD_TAG}"
+def gradle = "gradle ${options} ${properties}"
 
 pipeline {
-   agent { label 'java-compile' }
-
+  agent {
+    kubernetes {
+      defaultContainer 'gradle'
+      yamlFile 'pod-template.yaml'
+      slaveConnectTimeout 200
+    }
+  }
    environment {
-      GOOGLE_APPLICATION_CREDENTIALS = './gradle-analytics-build-user.json'
+      ORG_GRADLE_PROJECT_githubToken = credentials('github-redpillanalyticsbot-secret')
+		AWS = credentials("rpa-development-build-server-svc")
+		AWS_ACCESS_KEY_ID = "${env.AWS_USR}"
+		AWS_SECRET_ACCESS_KEY = "${env.AWS_PSW}"
+		AWS_REGION = 'us-east-1'
+		GRADLE_COMBINED = credentials("gradle-publish-key")
+		GRADLE_KEY = "${env.GRADLE_COMBINED_USR}"
+		GRADLE_SECRET = "${env.GRADLE_COMBINED_PSW}"
    }
 
    stages {
@@ -14,44 +26,31 @@ pipeline {
       stage('Release') {
          when { branch "master" }
          steps {
-            sh "$gradle ${options} clean release -Prelease.disableChecks -Prelease.localOnly"
+            sh "$gradle clean release -Prelease.disableChecks -Prelease.localOnly"
          }
       }
 
-      stage('Build') {
+      stage('Test') {
          steps {
-            sh "$gradle cleanTests build copyBuildResources cV"
-            junit testResults: "build/test-results/test/*.xml", allowEmptyResults: true, keepLongStdio: true
+            sh "$gradle cleanJunit cV runAllTests"
          }
-      }
-
-      stage('Integration') {
-          steps {
-              sh "$gradle composeUp"
-              sleep 5
-              sh "$gradle integrationStage --rerun-tasks"
-              junit testResults: "build/test-results/*Test/*.xml", allowEmptyResults: true, keepLongStdio: true
-          }
+         post {
+            always {
+               junit testResults: 'build/test-results/test/*.xml', allowEmptyResults: true
+            }
+         }
       }
 
       stage('Publish') {
          when { branch "master" }
          steps {
-            sh "$gradle ${options} publishPlugins githubRelease"
+            sh "$gradle publish -Pgradle.publish.key=${env.GRADLE_KEY} -Pgradle.publish.secret=${env.GRADLE_SECRET}"
+         }
+         post {
+            always {
+               archiveArtifacts artifacts: 'build/libs/*.jar', fingerprint: true, allowEmptyArchive: true
+            }
          }
       }
-      // Place for new Stage
-
-   } // end of Stages
-
-   post {
-      always {
-         archiveArtifacts artifacts: 'build/libs/*.jar', fingerprint: true
-         //sh "$gradle producer"
-      }
-      cleanup {
-        sh "$gradle composeDown"
-      }
    }
-
 }

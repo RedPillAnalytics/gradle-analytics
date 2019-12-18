@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+spec:
+  containers:
+  - name: jnlp
+    env:
+    - name: CONTAINER_ENV_VAR
+      value: jnlp
+  - name: gradle
+    image: gcr.io/rpa-devops/gradle
+    command: ['cat']
+    tty: true
+    env:
+    - name: GRADLE_USER_HOME
+      value: .gradle
