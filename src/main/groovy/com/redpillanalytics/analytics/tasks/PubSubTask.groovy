@@ -62,7 +62,6 @@ class PubSubTask extends SinkTask {
 
       ProjectTopicName topicName = ProjectTopicName.of(projectId, topicId)
 
-      log.info "Topic: ${topicName}"
       log.debug "Message body:\n $message"
 
       Publisher publisher = Publisher.newBuilder(topicName).build()

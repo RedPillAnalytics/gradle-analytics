@@ -129,7 +129,7 @@ class AnalyticsPluginExtension {
 
    def writeAnalytics(String filename, File buildDir, def record) {
 
-      Gson gson = new GsonBuilder().serializeNulls().setPrettyPrinting().create()
+      Gson gson = new GsonBuilder().serializeNulls().create()
 
       def analyticsFile = getAnalyticsFile(filename, buildDir)
 

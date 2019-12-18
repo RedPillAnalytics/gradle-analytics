@@ -8,7 +8,7 @@ spec:
       value: jnlp
   - name: gradle
     image: gcr.io/rpa-devops/gradle
-    command: ['cat']
+    command: ['dockerd --host=unix:///var/run/docker.sock --host=tcp://0.0.0.0:2375 --storage-driver=overlay']
     tty: true
     env:
     - name: GRADLE_USER_HOME
