@@ -22,7 +22,7 @@ class GradleUtils {
 
             if (extensionName == extension && project."$extension".hasProperty(property)) {
 
-               log.debug "Setting configuration property for extension: $extension, property: $property, value: $value"
+               log.warn "Setting configuration property for extension: $extension, property: $property, value: $value"
 
                if (project.extensions.getByName(extension)."$property" instanceof Boolean) {
 

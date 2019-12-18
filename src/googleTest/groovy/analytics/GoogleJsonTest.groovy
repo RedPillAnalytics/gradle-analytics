@@ -2,6 +2,7 @@ package analytics
 
 import groovy.util.logging.Slf4j
 import org.gradle.testkit.runner.GradleRunner
+import spock.lang.Ignore
 import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Title
@@ -40,7 +41,6 @@ class GoogleJsonTest extends Specification {
             |analytics {
             |  ignoreErrors = false
             |  sinks {
-            |     pubsub
             |     gs {
             |        prefix = 'rpa-gradle-analytics'
             |     }
@@ -51,7 +51,7 @@ class GoogleJsonTest extends Specification {
    }
 
    // helper method
-   def executeSingleTask(String taskName, List otherArgs, Boolean logOutput = true) {
+   def executeSingleTask(String taskName, List otherArgs = []) {
 
       otherArgs.add(0, taskName)
 
@@ -62,13 +62,8 @@ class GoogleJsonTest extends Specification {
               .withProjectDir(projectDir)
               .withArguments(otherArgs)
               .withPluginClasspath()
+              .forwardOutput()
               .build()
-
-      // log the results
-      if (logOutput) log.warn result.getOutput()
-
-      return result
-
    }
 
    def "Execute :tasks task"() {
@@ -89,6 +84,25 @@ class GoogleJsonTest extends Specification {
       result.task(":${taskName}").outcome.name() != 'FAILED'
    }
 
+   @Ignore
+   def "Execute :pubsubSink task"() {
+      given:
+      taskName = 'pubsubSink'
+      result = executeSingleTask(taskName, ['-Si'])
+
+      expect:
+      result.task(":${taskName}").outcome.name() != 'FAILED'
+   }
+
+   def "Execute :gsSink task"() {
+      given:
+      taskName = 'gsSink'
+      result = executeSingleTask(taskName, ['-Si'])
+
+      expect:
+      result.task(":${taskName}").outcome.name() != 'FAILED'
+   }
+
    def "Execute :producer task"() {
       given:
       taskName = 'producer'
@@ -97,5 +111,4 @@ class GoogleJsonTest extends Specification {
       expect:
       result.task(":${taskName}").outcome.name() != 'FAILED'
    }
-
 }

@@ -2,7 +2,6 @@ package com.redpillanalytics.analytics.tasks
 
 import com.amazonaws.services.s3.AmazonS3Client
 import com.amazonaws.services.s3.model.CreateBucketRequest
-import groovy.io.FileType
 import groovy.util.logging.Slf4j
 import org.gradle.api.tasks.TaskAction
 

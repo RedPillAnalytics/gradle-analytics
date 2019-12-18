@@ -1,23 +1,15 @@
 plugins {
-   id "com.gradle.plugin-publish" version "0.10.1"
-   id "pl.allegro.tech.build.axion-release" version "1.10.0"
-   id "com.github.breadmoirai.github-release" version "2.2.6"
    id 'groovy'
    id 'java-gradle-plugin'
-   id 'org.unbroken-dome.test-sets' version '2.1.1'
-   id "com.github.ben-manes.versions" version "0.21.0"
+   id "com.gradle.plugin-publish" version "0.10.1"
+   id "pl.allegro.tech.build.axion-release" version "1.10.2"
+   id "com.github.ben-manes.versions" version "0.27.0"
    id "org.dvaske.gradle.git-build-info" version "0.9"
-   id 'com.adarshr.test-logger' version '1.6.0'
-   id "com.redpillanalytics.gradle-analytics" version "1.1.23"
-   id "com.avast.gradle.docker-compose" version "0.9.1"
-}
-
-// send analytics
-analytics {
-   organization = 'Red Pill Analytics'
-   sinks {
-      pubsub
-   }
+   id "com.redpillanalytics.gradle-properties" version "0.1.4"
+   id "com.github.breadmoirai.github-release" version "2.2.10"
+   id 'org.unbroken-dome.test-sets' version '2.2.1'
+   id 'com.adarshr.test-logger' version '2.0.0'
+   id "com.avast.gradle.docker-compose" version "0.10.7"
 }
 
 scmVersion {
@@ -55,6 +47,8 @@ dependencies {
    compile localGroovy()
    compile 'org.slf4j:slf4j-simple:+'
 
+   compile "gradle.plugin.com.redpillanalytics:gradle-properties:0.1.4"
+
    compile 'com.google.code.gson:gson:+'
    compile 'org.eclipse.jgit:org.eclipse.jgit:+'
 
@@ -64,16 +58,18 @@ dependencies {
    compile 'com.google.cloud:google-cloud-pubsub:+'
 
    // Kafka
-   compile 'org.apache.kafka:kafka-clients:2.1.1'
-   compile 'org.apache.avro:avro:1.8.2'
+   compile 'org.apache.kafka:kafka-clients:+'
+   compile 'org.apache.avro:avro:+'
 
    compile 'com.google.cloud:google-cloud-storage:+'
 
-   // git properties dependencies
-   compile "gradle.plugin.org.dvaske.gradle:git-build-info:0.9"
-   compile "org.ajoberstar.grgit:grgit-gradle:3.0.0"
+   // plugins
+   compile "gradle.plugin.org.dvaske.gradle:git-build-info:+"
+   compile "org.ajoberstar.grgit:grgit-gradle:+"
 
    testCompile 'org.spockframework:spock-core:1.2-groovy-2.5'
+   testCompile "org.testcontainers:spock:1.12.3"
+   testCompile "org.testcontainers:kafka:1.12.3"
 }
 
 // Default artifact naming.
@@ -83,18 +79,6 @@ repositories {
    jcenter()
    maven {
       url "https://plugins.gradle.org/m2/"
-   }
-   maven {
-      url releaseUrl
-      authentication {
-         awsIm(AwsImAuthentication)
-      }
-   }
-   maven {
-      url snapshotUrl
-      authentication {
-         awsIm(AwsImAuthentication)
-      }
    }
    maven {
       url "http://packages.confluent.io/maven/"
@@ -126,88 +110,57 @@ pluginBundle {
    }
 }
 
+task cleanJunit(type: Delete) {
+   delete getTestResultsDir()
+}
+
+task cleanLibs(type: Delete) {
+   delete getLibsDir()
+}
+
 // Options for all tests
+task runAllTests {
+   description 'Run all defined tests.'
+   group 'verification'
+}
+
 tasks.withType(Test) {
+   tasks.runAllTests.dependsOn it
+   failFast true
    ignoreFailures true
    testLogging.showStandardStreams true
    systemProperty 'projectDir', temporaryDir
 }
 
-task downloadGCPCreds {
-   description 'Get GCP credentials JSON file.'
+def versionUrl = "${docsBucket}/${rootProject.name}/${version}"
+task publishVersionDocs(type: Exec) {
+   description 'Publish version Groovydocs to S3.'
+   group 'publishing'
+   executable 'aws'
+   args 's3', 'sync', groovydoc.destinationDir.getPath(), "s3://${versionUrl}"
    doLast {
-      exec {
-         executable 'aws'
-         args 's3', 'cp', "s3://rpa-build-resources/gradle-analytics-build-user.json", "."
-      }
-   }
-}
-
-ext.bucket = 's3://documentation.redpillanalytics.com'
-ext.bucketPath = 'gradle-analytics'
-ext.resourceBucket = 's3://rpa-build-resources'
-
-task publishVersionDocs {
-
-   description = 'Upload version Groovydocs to s3.'
-   group = 'documentation'
-
-   doLast {
-      exec {
-         executable 'aws'
-         args 's3', 'sync', groovydoc.destinationDir.getPath(), "${bucket}/${bucketPath}/${version}/"
-      }
+      logger.warn "\nVersion docs: https://s3.amazonaws.com/${versionUrl}/index.html"
    }
    dependsOn groovydoc
 }
 
-task publishLatestDocs {
-
-   description = 'Upload latest Groovydocs to s3.'
-   group = 'documentation'
-
+def latestUrl = "${docsBucket}/${rootProject.name}/latest"
+task publishLatestDocs(type: Exec) {
+   description 'Publish latest Groovydocs to S3.'
+   group 'publishing'
+   executable 'aws'
+   args 's3', 'sync', groovydoc.destinationDir.getPath(), "s3://${latestUrl}"
    doLast {
-      exec {
-         executable 'aws'
-         args 's3', 'sync', groovydoc.destinationDir.getPath(), "${bucket}/${bucketPath}/latest/"
-      }
+      logger.warn "\nLatest docs: https://s3.amazonaws.com/${latestUrl}/index.html"
    }
    dependsOn groovydoc
-   onlyIf { gitBranch == 'master' }
+}
+// create a publish task
+task publish {
+   description 'Custom publish task.'
+   group 'publishing'
+   dependsOn tasks.publishPlugins, tasks.publishVersionDocs, tasks.publishLatestDocs, tasks.githubRelease
 }
 
-task copyBuildResources {
-   description 'Copy build resource files from S3.'
-   group 'build'
-   doLast {
-      exec {
-         executable 'aws'
-         args 's3', 'cp', "${resourceBucket}/gradle-analytics-build-user.json", "."
-      }
-      exec {
-         executable 'aws'
-         args 's3', 'cp', "${resourceBucket}/gradle.properties", "."
-      }
-   }
-}
-
-task cleanTests {
-   description "Cleans the results of integration testing."
-   group "verification"
-   dependsOn cleanTest, cleanAmazonTest, cleanGoogleTest, cleanKafkaTest
-}
-
-task integrationStage {
-   group "stage"
-   description "Run all the tests for the Jenkins 'integration' phase."
-   dependsOn amazonTest, googleTest, kafkaTest
-}
-
-
-tasks.publishPlugins.dependsOn publishVersionDocs, publishLatestDocs
-
-// Only execute certain tasks if we are on the master branch
-//tasks.release.configure { onlyIf { gitBranch == 'master' } }
-//tasks.publishPlugins.configure { onlyIf { gitBranch == 'master' } }
-//tasks.githubRelease.configure { onlyIf { gitBranch == 'master' } }
+tasks.githubRelease.mustRunAfter tasks.publishPlugins
 

@@ -26,7 +26,6 @@ class ObjectStoreTask extends SinkTask {
     * <p>
     * @return The path of the file inside the Object Store.
     */
-   @Input
    String getFilePath(File file, File dir) {
       log.debug "Original file: ${file.absolutePath}"
       def fileName = "${Utils.getFileBase(file)}/$dir.name.${Utils.getFileExt(file)}"

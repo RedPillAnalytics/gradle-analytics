@@ -3,15 +3,15 @@ package com.redpillanalytics.analytics.tasks
 import com.redpillanalytics.common.Utils
 import groovy.util.logging.Slf4j
 import org.gradle.api.DefaultTask
+import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.options.Option
-import org.gradle.api.tasks.Input
-import org.gradle.api.tasks.InputDirectory
 
 @Slf4j
 @groovy.transform.InheritConstructors
-class SinkTask extends DefaultTask {
+class ProducerTask extends DefaultTask {
 
    /**
     * Configured using {@link com.redpillanalytics.analytics.containers.SinkContainer#prefix}

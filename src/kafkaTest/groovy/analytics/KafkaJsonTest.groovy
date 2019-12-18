@@ -2,11 +2,15 @@ package analytics
 
 import groovy.util.logging.Slf4j
 import org.gradle.testkit.runner.GradleRunner
+import org.testcontainers.containers.KafkaContainer
+import org.testcontainers.spock.Testcontainers
+import spock.lang.Ignore
 import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Title
 
 @Slf4j
+@Testcontainers
 @Title("Execute :publish task using --dry-run")
 class KafkaJsonTest extends Specification {
 
@@ -19,8 +23,9 @@ class KafkaJsonTest extends Specification {
 
    @Shared
    def result
+
    @Shared
-   def indexedResultOutput
+   KafkaContainer kafka = new KafkaContainer()
 
    // run the Gradle build
    // return regular output
@@ -40,7 +45,9 @@ class KafkaJsonTest extends Specification {
             |analytics {
             |   ignoreErrors = false
             |   sinks {
-            |      kafka
+            |      kafka {
+            |        servers = '${kafka.getBootstrapServers()}'
+            |      }
             |   }
             |}
             |""".stripMargin()
@@ -80,7 +87,7 @@ class KafkaJsonTest extends Specification {
    def "Execute :build task"() {
       given:
       taskName = 'build'
-      result = executeSingleTask(taskName, ['-Si'])
+      result = executeSingleTask(taskName, ['-Si',"-Panalytics.organization=Red Pill Analytics"])
 
       expect:
       result.task(":${taskName}").outcome.name() != 'FAILED'
