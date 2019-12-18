@@ -7,7 +7,7 @@ spec:
     - name: CONTAINER_ENV_VAR
       value: jnlp
   - name: docker
-    image: gcr.io/rpa-devops/dind
+    image: gcr.io/rpa-devops/jenkins-agent
     command:
       - sleep
     args:
