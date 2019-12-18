@@ -87,7 +87,7 @@ class GoogleJsonTest extends Specification {
    def "Execute :pubsubSink task"() {
       given:
       taskName = 'pubsubSink'
-      result = executeSingleTask(taskName, ['-Si'])
+      result = executeSingleTask(taskName, ['-Si','--no-daemon'])
 
       expect:
       result.task(":${taskName}").outcome.name() != 'FAILED'
@@ -105,7 +105,7 @@ class GoogleJsonTest extends Specification {
    def "Execute :producer task"() {
       given:
       taskName = 'producer'
-      result = executeSingleTask(taskName, ['-Si'])
+      result = executeSingleTask(taskName, ['-Si','--no-daemon'])
 
       expect:
       result.task(":${taskName}").outcome.name() != 'FAILED'

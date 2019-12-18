@@ -32,7 +32,7 @@ pipeline {
 
       stage('Test') {
          steps {
-            sh "$gradle cleanJunit cV runAllTests --no-daemon"
+            sh "$gradle cleanJunit cV runAllTests"
          }
          post {
             always {
