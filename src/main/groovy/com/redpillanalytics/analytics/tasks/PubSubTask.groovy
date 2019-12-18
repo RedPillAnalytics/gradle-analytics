@@ -62,10 +62,13 @@ class PubSubTask extends SinkTask {
 
       ProjectTopicName topicName = ProjectTopicName.of(projectId, topicId)
 
+      log.info "Topic: ${topicName}"
+      log.debug "Message body:\n $message"
+
       Publisher publisher = Publisher.newBuilder(topicName).build()
       ByteString data = ByteString.copyFromUtf8(message)
       PubsubMessage pubsubMessage = PubsubMessage.newBuilder().setData(data).build()
-      ApiFuture<String> messageIdFuture = publisher.publish(pubsubMessage)
+      def messageIdFuture = publisher.publish(pubsubMessage)
 
       publisher?.shutdown()
       return messageIdFuture
