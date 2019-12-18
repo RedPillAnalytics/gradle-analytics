@@ -2,6 +2,7 @@ package analytics
 
 import groovy.util.logging.Slf4j
 import org.gradle.testkit.runner.GradleRunner
+import spock.lang.Ignore
 import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Title
@@ -40,7 +41,6 @@ class GoogleJsonTest extends Specification {
             |analytics {
             |  ignoreErrors = false
             |  sinks {
-            |     pubsub
             |     gs {
             |        prefix = 'rpa-gradle-analytics'
             |     }
@@ -84,10 +84,11 @@ class GoogleJsonTest extends Specification {
       result.task(":${taskName}").outcome.name() != 'FAILED'
    }
 
+   @Ignore
    def "Execute :pubsubSink task"() {
       given:
       taskName = 'pubsubSink'
-      result = executeSingleTask(taskName, ['-Si','--no-daemon'])
+      result = executeSingleTask(taskName, ['-Si'])
 
       expect:
       result.task(":${taskName}").outcome.name() != 'FAILED'
@@ -105,7 +106,7 @@ class GoogleJsonTest extends Specification {
    def "Execute :producer task"() {
       given:
       taskName = 'producer'
-      result = executeSingleTask(taskName, ['-Si','--no-daemon'])
+      result = executeSingleTask(taskName, ['-Si'])
 
       expect:
       result.task(":${taskName}").outcome.name() != 'FAILED'
