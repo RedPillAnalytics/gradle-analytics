@@ -1,6 +1,6 @@
 def options = '-S'
 def properties = "-Panalytics.buildTag=${env.BUILD_TAG}"
-def gradle = "${options} ${properties}"
+def gradle = "./gradlew ${options} ${properties}"
 
 pipeline {
   agent {
