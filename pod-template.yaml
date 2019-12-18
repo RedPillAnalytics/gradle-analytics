@@ -6,7 +6,7 @@ spec:
     env:
     - name: CONTAINER_ENV_VAR
       value: jnlp
-  - name: docker
+  - name: gcr.io/$PROJECT_ID/dind
     image: docker:19.03.1
     command:
       - sleep
