@@ -1,11 +1,11 @@
 def options = '-S'
 def properties = "-Panalytics.buildTag=${env.BUILD_TAG}"
-def gradle = "gradle ${options} ${properties}"
+def gradle = "${options} ${properties}"
 
 pipeline {
   agent {
     kubernetes {
-      defaultContainer 'gradle'
+      defaultContainer 'docker'
       yamlFile 'pod-template.yaml'
       slaveConnectTimeout 200
     }

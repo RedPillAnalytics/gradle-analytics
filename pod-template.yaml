@@ -6,10 +6,19 @@ spec:
     env:
     - name: CONTAINER_ENV_VAR
       value: jnlp
-  - name: gradle
-    image: gcr.io/rpa-devops/gradle
-    command: ['dockerd --host=unix:///var/run/docker.sock --host=tcp://0.0.0.0:2375 --storage-driver=overlay']
-    tty: true
+  - name: docker
+    image: docker:19.03.1
+    command:
+      - sleep
+    args:
+      - 99d
     env:
-    - name: GRADLE_USER_HOME
-      value: .gradle
+      - name: DOCKER_HOST
+        value: tcp://localhost:2375
+  - name: docker-daemon
+    image: docker:19.03.1-dind
+    securityContext:
+      privileged: true
+    env:
+      - name: DOCKER_TLS_CERTDIR
+        value: ""
