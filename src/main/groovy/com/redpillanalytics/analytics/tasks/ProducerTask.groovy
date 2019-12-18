@@ -67,7 +67,6 @@ class ProducerTask extends DefaultTask {
     * @param joiner The specific character to use in the join operation when constructing the entity name
     * @return The entity name (i.e. topic name, stream name, etc.) to use with the particular Sink technology
     */
-   @Input
    String getEntityName(File file, String joiner='.') {
 
       def entityName = [prefix, Utils.getFileBase(file)].join(joiner)
@@ -92,7 +91,6 @@ class ProducerTask extends DefaultTask {
    /**
     * Provide generic logging upon the completion of a sink task.
     */
-   @InputFiles
    def logSink() {
       analyticsFiles.each{ file ->
          log.info "Analytics file $file processed."

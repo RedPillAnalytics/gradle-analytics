@@ -42,7 +42,7 @@ class AmazonJsonTest extends Specification {
             |  sinks {
             |     firehose
             |     s3 {
-            |           prefix = 'rpa-gradle-analytics'
+            |       prefix = 'rpa-gradle-analytics'
             |     }
             |  }
             |}
@@ -68,7 +68,6 @@ class AmazonJsonTest extends Specification {
       if (logOutput) log.warn result.getOutput()
 
       return result
-
    }
 
    def "Execute :tasks task"() {
