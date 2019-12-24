@@ -47,7 +47,7 @@ dependencies {
    compile localGroovy()
    compile 'org.slf4j:slf4j-simple:+'
 
-   compile "gradle.plugin.com.redpillanalytics:gradle-properties:0.1.4"
+   compile "gradle.plugin.com.redpillanalytics:gradle-properties:0.1.5"
 
    compile 'com.google.code.gson:gson:+'
    compile 'org.eclipse.jgit:org.eclipse.jgit:+'

@@ -1,14 +1,20 @@
 package com.redpillanalytics.analytics.containers
 
+import groovy.transform.InheritConstructors
 import groovy.util.logging.Slf4j
 
 /**
  * Created by stewartbryson on 11/19/16.
  */
 @Slf4j
+@InheritConstructors
 class SinkContainer extends AnalyticsContainer {
 
-   // naming
+   /**
+    * The name of the container entity.
+    */
+   String name
+
    String prefix, sink, suffix
 
    // RESTful URL for any Sink that has one
@@ -18,14 +24,9 @@ class SinkContainer extends AnalyticsContainer {
    String username, password, driverUrl, driverClass
 
    // Kafka properties
-   String name, servers, serializerKey, serializerValue, acks, registry
+   String servers, serializerKey, serializerValue, acks, registry
 
    Boolean ignoreErrors, formatSuffix=false
-
-   SinkContainer(String name) {
-
-      this.name = name
-   }
 
    def getDescription() {
 

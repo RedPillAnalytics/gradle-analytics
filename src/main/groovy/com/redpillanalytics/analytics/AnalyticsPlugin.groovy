@@ -283,8 +283,6 @@ class AnalyticsPlugin implements Plugin<Project> {
             if (project.tasks.findByName(taskName)) {
                project.tasks.producer.dependsOn project."${taskName}"
             }
-
-
          }
       }
 

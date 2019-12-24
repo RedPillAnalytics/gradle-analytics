@@ -4,9 +4,11 @@ import groovy.util.logging.Slf4j
 import org.gradle.testkit.runner.GradleRunner
 import spock.lang.Shared
 import spock.lang.Specification
+import spock.lang.Stepwise
 import spock.lang.Title
 
 @Slf4j
+@Stepwise
 @Title("Execute :publish task using --dry-run")
 class AmazonJsonTest extends Specification {
 

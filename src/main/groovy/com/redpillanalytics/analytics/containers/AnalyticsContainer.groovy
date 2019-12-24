@@ -8,6 +8,10 @@ class AnalyticsContainer {
    /**
     * The name of the container entity.
     */
+   AnalyticsContainer(String name) {
+
+      this.name = name
+   }
 
    // capture the debug status
    Boolean isDebugEnabled = log.isDebugEnabled()
