@@ -96,7 +96,7 @@ gradlePlugin {
 
 pluginBundle {
 
-   website = 'http://redpillanalytics.com/'
+   website = 'https://github.com/RedPillAnalytics/gradle-plugins/'
    vcsUrl = 'https://github.com/RedPillAnalytics/gradle-plugins/'
 
    plugins {
