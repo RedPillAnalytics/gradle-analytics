@@ -193,7 +193,7 @@ class AnalyticsPlugin implements Plugin<Project> {
                acks ks.getAcks() ?: 'all'
 
                // confluent schema registry
-               registry ks.getSchemaRegistry() ?: null
+               schemaRegistry ks.getSchemaRegistry() ?: null
             }
 
             project.producer.dependsOn ks.getTaskName()

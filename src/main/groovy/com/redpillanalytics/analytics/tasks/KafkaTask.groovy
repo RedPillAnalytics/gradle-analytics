@@ -6,14 +6,53 @@ import org.apache.kafka.clients.producer.ProducerRecord
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.TaskAction
+import org.gradle.api.tasks.options.Option
 
 // Annotation for a logger
 @Slf4j
 @groovy.transform.InheritConstructors
 class KafkaTask extends SinkTask {
 
+   /**
+    * Configured using {@link com.redpillanalytics.analytics.containers.KafkaContainer#bootstrapServers}
+    */
    @Input
-   String bootstrapServers, serializerKey, serializerValue, acks
+   @Option(option = "bootstrap-servers",
+           description = "The value for 'bootstrap.servers' in the KafkaProducer API.")
+   String bootstrapServers
+
+   /**
+    * Configured using {@link com.redpillanalytics.analytics.containers.KafkaContainer#serializerKey}
+    */
+   @Input
+   @Option(option = "serializer-key",
+           description = "The value for 'serializer.key' in the KafkaProducer API.")
+   String serializerKey
+
+   /**
+    * Configured using {@link com.redpillanalytics.analytics.containers.KafkaContainer#serializerValue}
+    */
+   @Input
+   @Option(option = "serializer-value",
+           description = "The value for 'serializer.value' in the KafkaProducer API.")
+   String serializerValue
+
+   /**
+    * Configured using {@link com.redpillanalytics.analytics.containers.KafkaContainer#acks}
+    */
+   @Input
+   @Option(option = "acks",
+           description = "The value for 'acks' in the KafkaProducer API.")
+   String acks
+
+   /**
+    * Configured using {@link com.redpillanalytics.analytics.containers.KafkaContainer#schemaRegistry}
+    */
+   @Input
+   @Optional
+   @Option(option = "schema-registry",
+           description = "The value for 'schema.registry.url' in the KafkaProducer API.")
+   String schemaRegistry
 
    @Input
    @Optional
@@ -32,7 +71,7 @@ class KafkaTask extends SinkTask {
       ]
 
       if (registry) {
-         properties['schema.registry.url'] = registry
+         properties['schema.registry.url'] = schemaRegistry
       }
       def producer = new KafkaProducer(properties)
 
