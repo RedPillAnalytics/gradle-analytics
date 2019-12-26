@@ -4,12 +4,13 @@ import groovy.util.logging.Slf4j
 import org.gradle.testkit.runner.GradleRunner
 import org.testcontainers.containers.KafkaContainer
 import org.testcontainers.spock.Testcontainers
-import spock.lang.Ignore
 import spock.lang.Shared
 import spock.lang.Specification
+import spock.lang.Stepwise
 import spock.lang.Title
 
 @Slf4j
+@Stepwise
 @Testcontainers
 @Title("Execute :publish task using --dry-run")
 class KafkaJsonTest extends Specification {
@@ -44,10 +45,10 @@ class KafkaJsonTest extends Specification {
             |
             |analytics {
             |   ignoreErrors = false
-            |   sinks {
-            |      kafka {
-            |        servers = '${kafka.getBootstrapServers()}'
-            |      }
+            |   kafka {
+            |     test {
+            |        bootstrapServers = '${kafka.getBootstrapServers()}'
+            |     }
             |   }
             |}
             |""".stripMargin()
@@ -58,7 +59,6 @@ class KafkaJsonTest extends Specification {
    def executeSingleTask(String taskName, List otherArgs, Boolean logOutput = true) {
 
       otherArgs.add(0, taskName)
-
       log.warn "runner arguments: ${otherArgs.toString()}"
 
       // execute the Gradle test build
@@ -72,7 +72,6 @@ class KafkaJsonTest extends Specification {
       if (logOutput) log.warn result.getOutput()
 
       return result
-
    }
 
    def "Execute :tasks task"() {
@@ -101,5 +100,4 @@ class KafkaJsonTest extends Specification {
       expect:
       result.task(":${taskName}").outcome.name() != 'FAILED'
    }
-
 }

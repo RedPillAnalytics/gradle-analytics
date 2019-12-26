@@ -1,6 +1,5 @@
 package com.redpillanalytics.analytics.containers
 
-import groovy.transform.InheritConstructors
 import groovy.util.logging.Slf4j
 
 /**
@@ -12,15 +11,21 @@ class SinkContainer {
    /**
     * The name of the container entity.
     */
-   String name
+   SinkContainer(String name) {
+      this.name = name
+   }
 
    /**
     * The name of the container entity.
     */
-   SinkContainer(String name) {
+   String name
 
-      this.name = name
-   }
+   /**
+    * The joiner used to construct sink locations, such as topics, buckets and tables.
+    *
+    * Default: '-'
+    */
+   String joiner
 
    // capture the debug status
    Boolean isDebugEnabled = log.isDebugEnabled()
@@ -31,7 +36,6 @@ class SinkContainer {
     * @return The container name.
     */
    def getDomainName() {
-
       return ((getClass() =~ /\w+$/)[0] - "Container")
    }
 
@@ -39,9 +43,7 @@ class SinkContainer {
     * Log a debug message with the name of the container object.
     */
    void logTaskName(String task) {
-
-      log.debug "${getDomainName()}: $name, TaskName: $task"
-
+      log.debug "${getDomainName()} TaskName: $task"
    }
 
    /**
@@ -49,14 +51,10 @@ class SinkContainer {
     *
     * @return The container name.
     */
-   def getTaskName(String baseTaskName) {
-
-      String taskName = name + baseTaskName.capitalize()
-
+   def getTaskName() {
+      String taskName = getDomainName().uncapitalize() + name.capitalize()
       logTaskName(taskName)
-
       return taskName
-
    }
 
    String prefix, sink, suffix
@@ -67,26 +65,19 @@ class SinkContainer {
    // JDBC connection information
    String username, password, driverUrl, driverClass
 
-   // Kafka properties
-   String servers, serializerKey, serializerValue, acks, registry
-
    Boolean ignoreErrors, formatSuffix = false
 
    def getDescription() {
-
       return "Process data files using the '${getSink()}' delivery sink and '${getPrefix()}' naming prefix."
    }
 
    def getSink() {
-
       def sink = this.sink ?: name
       log.debug "sink: ${sink}"
-      assert ['s3', 'firehose', 'pubsub', 'jdbc', 'gs', 'kafka'].contains(sink)
       return sink
    }
 
    def getPrefix() {
-
       return prefix ?: "gradle"
    }
 }

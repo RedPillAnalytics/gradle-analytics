@@ -1,5 +1,6 @@
 package com.redpillanalytics.analytics
 
+import com.redpillanalytics.analytics.containers.KafkaContainer
 import com.redpillanalytics.analytics.containers.SinkContainer
 import com.redpillanalytics.analytics.tasks.FirehoseTask
 import com.redpillanalytics.analytics.tasks.GSTask
@@ -175,115 +176,138 @@ class AnalyticsPlugin implements Plugin<Project> {
             }
          }
 
-         // configure analytic groups
-         project.analytics.sinks.all { ag ->
+         // configure Kafka sink
+         project.analytics.kafka.all { ks ->
 
-            taskName = ag.getTaskName('sink')
+            // Add analytics processing task
+            project.task(ks.getTaskName(), type: KafkaTask) {
+               group "analytics"
+               description ks.getDescription()
 
-            log.debug "analyticGroup name: ${ag.name}"
+               // add any custom prefix to sink names
+               prefix ks.getPrefix()
+               joiner
+               bootstrapServers = ks.getBootstrapServers() ?: 'localhost:9092'
+               serializerKey = ks.getSerializerKey() ?: "org.apache.kafka.common.serialization.StringSerializer"
+               serializerValue = ks.getSerializerValue() ?: "org.apache.kafka.common.serialization.StringSerializer"
+               acks ks.getAcks() ?: 'all'
 
-            // setup Kinesis Firehose functionality
-            if (ag.getSink() == 'firehose') {
-
-               // Add analytics processing task
-               project.task(taskName, type: FirehoseTask) {
-
-                  group 'analytics'
-                  description ag.getDescription()
-                  // add any custom prefix to sink names
-                  prefix ag.getPrefix()
-                  // handle the suffix
-                  suffix(ag.getFormatSuffix() ? project.extensions.analytics.format : null)
-               }
+               // confluent schema registry
+               registry ks.getSchemaRegistry() ?: null
             }
 
-            // use S3 API to upload files directly to S3
-            if (ag.getSink() == 's3') {
-
-               // Add analytics processing task
-               project.task(taskName, type: S3Task) {
-                  group "analytics"
-                  description ag.getDescription()
-                  // add any custom prefix to sink names
-                  prefix ag.getPrefix()
-               }
-            }
-
-            // use GS API to upload files directly to GS
-            if (ag.getSink() == 'gs') {
-
-               // Add analytics processing task
-               project.task(taskName, type: GSTask) {
-
-                  group "analytics"
-                  description ag.getDescription()
-                  // add any custom prefix to sink names
-                  prefix ag.getPrefix()
-               }
-            }
-
-            // Google PubSub
-            if (ag.getSink() == 'pubsub') {
-
-               // Add analytics processing task
-               project.task(taskName, type: PubSubTask) {
-
-                  group "analytics"
-                  description ag.getDescription()
-                  // add any custom prefix to sink names
-                  prefix ag.getPrefix()
-
-               }
-
-            }
-
-            // Apache Kafka
-            if (ag.getSink() == 'kafka') {
-
-               // Add analytics processing task
-               project.task(taskName, type: KafkaTask) {
-                  group "analytics"
-                  description ag.getDescription()
-
-                  // add any custom prefix to sink names
-                  prefix ag.getPrefix()
-                  servers = ag.getServers() ?: 'localhost:9092'
-                  serializerKey = ag.getSerializerKey() ?: "org.apache.kafka.common.serialization.StringSerializer"
-                  serializerValue = ag.getSerializerValue() ?: "org.apache.kafka.common.serialization.StringSerializer"
-                  acks ag.getAcks() ?: 'all'
-
-                  // confluent schema registry
-                  registry ag.getRegistry() ? ag.getRegistry() : null
-
-               }
-
-            }
-
-            // use JDBC and built in JSON
-            if ((ag.getSink() == 'jdbc') && project.extensions.pluginProps.dependencyMatching('analytics', '.*jdbc.*')) {
-
-               // Add analytics processing task
-               project.task(taskName, type: JdbcTask) {
-
-                  group "analytics"
-
-                  description ag.getDescription()
-
-                  // add any custom prefix to sink names
-                  prefix ag.getPrefix()
-
-                  // connection information
-                  username ag.username
-                  password ag.password
-                  driverUrl ag.driverUrl
-                  driverClass ag.driverClass
-               }
-            }
-
-            if (project.tasks.findByName(taskName)) {
-               project.tasks.producer.dependsOn project."${taskName}"
-            }
+            project.producer.dependsOn ks.getTaskName()
          }
+
+         // configure analytic groups
+//         project.analytics.sinks.all { ag ->
+//
+//            taskName = ag.getTaskName('sink')
+//
+//            log.debug "analyticGroup name: ${ag.name}"
+//
+//            // setup Kinesis Firehose functionality
+//            if (ag.getSink() == 'firehose') {
+//
+//               // Add analytics processing task
+//               project.task(taskName, type: FirehoseTask) {
+//
+//                  group 'analytics'
+//                  description ag.getDescription()
+//                  // add any custom prefix to sink names
+//                  prefix ag.getPrefix()
+//                  // handle the suffix
+//                  suffix(ag.getFormatSuffix() ? project.extensions.analytics.format : null)
+//               }
+//            }
+//
+//            // use S3 API to upload files directly to S3
+//            if (ag.getSink() == 's3') {
+//
+//               // Add analytics processing task
+//               project.task(taskName, type: S3Task) {
+//                  group "analytics"
+//                  description ag.getDescription()
+//                  // add any custom prefix to sink names
+//                  prefix ag.getPrefix()
+//               }
+//            }
+//
+//            // use GS API to upload files directly to GS
+//            if (ag.getSink() == 'gs') {
+//
+//               // Add analytics processing task
+//               project.task(taskName, type: GSTask) {
+//
+//                  group "analytics"
+//                  description ag.getDescription()
+//                  // add any custom prefix to sink names
+//                  prefix ag.getPrefix()
+//               }
+//            }
+//
+//            // Google PubSub
+//            if (ag.getSink() == 'pubsub') {
+//
+//               // Add analytics processing task
+//               project.task(taskName, type: PubSubTask) {
+//
+//                  group "analytics"
+//                  description ag.getDescription()
+//                  // add any custom prefix to sink names
+//                  prefix ag.getPrefix()
+//
+//               }
+//
+//            }
+//
+//            // Apache Kafka
+//            if (ag.getSink() == 'kafka') {
+//
+//               // Add analytics processing task
+//               project.task(taskName, type: KafkaTask) {
+//                  group "analytics"
+//                  description ag.getDescription()
+//
+//                  // add any custom prefix to sink names
+//                  prefix ag.getPrefix()
+//                  servers = ag.getServers() ?: 'localhost:9092'
+//                  serializerKey = ag.getSerializerKey() ?: "org.apache.kafka.common.serialization.StringSerializer"
+//                  serializerValue = ag.getSerializerValue() ?: "org.apache.kafka.common.serialization.StringSerializer"
+//                  acks ag.getAcks() ?: 'all'
+//
+//                  // confluent schema registry
+//                  registry ag.getRegistry() ? ag.getRegistry() : null
+//
+//               }
+//
+//            }
+//
+//            // use JDBC and built in JSON
+//            if ((ag.getSink() == 'jdbc') && project.extensions.pluginProps.dependencyMatching('analytics', '.*jdbc.*')) {
+//
+//               // Add analytics processing task
+//               project.task(taskName, type: JdbcTask) {
+//
+//                  group "analytics"
+//
+//                  description ag.getDescription()
+//
+//                  // add any custom prefix to sink names
+//                  prefix ag.getPrefix()
+//
+//                  // connection information
+//                  username ag.username
+//                  password ag.password
+//                  driverUrl ag.driverUrl
+//                  driverClass ag.driverClass
+//               }
+//            }
+//
+//            if (project.tasks.findByName(taskName)) {
+//               project.tasks.producer.dependsOn project."${taskName}"
+//            }
+//         }
       }
 
       // end of afterEvaluate
@@ -296,7 +320,8 @@ class AnalyticsPlugin implements Plugin<Project> {
          project.configure(project) {
             extensions.create('analytics', AnalyticsPluginExtension)
          }
-         project.analytics.extensions.sinks = project.container(SinkContainer)
+
+         project.analytics.extensions.kafka = project.container(KafkaContainer)
          project.gradle.addListener new AnalyticsListener()
 
       } else {

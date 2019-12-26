@@ -21,8 +21,6 @@ class AmazonJsonTest extends Specification {
 
    @Shared
    def result
-   @Shared
-   def indexedResultOutput
 
    // run the Gradle build
    // return regular output

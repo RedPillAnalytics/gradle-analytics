@@ -13,7 +13,7 @@ import org.gradle.api.tasks.TaskAction
 class KafkaTask extends SinkTask {
 
    @Input
-   String servers, serializerKey, serializerValue, acks
+   String bootstrapServers, serializerKey, serializerValue, acks
 
    @Input
    @Optional
@@ -23,7 +23,7 @@ class KafkaTask extends SinkTask {
    def kafkaTask() {
 
       def properties = [
-              "bootstrap.servers": servers,
+              "bootstrap.servers": bootstrapServers,
               // serializers
               "value.serializer" : serializerValue,
               "key.serializer"   : serializerKey,
@@ -39,7 +39,7 @@ class KafkaTask extends SinkTask {
       analyticsFiles.each { file ->
          log.debug "file: $file"
 
-         def topicName = getEntityName(file, '_')
+         def topicName = getEntityName(file, joiner ?: '_')
          log.debug "topic: $topicName"
 
          def response
