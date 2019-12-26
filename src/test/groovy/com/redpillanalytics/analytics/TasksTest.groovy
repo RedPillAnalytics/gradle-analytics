@@ -41,12 +41,11 @@ class TasksTest extends Specification {
                |plugins {
                |  id 'com.redpillanalytics.gradle-analytics'
                |}
-               |analytics.sinks {
-               |  s3
-               |  pubsub
-               |  kafka
-               |  firehose
-               |  gs
+               |analytics {
+               |  s3 {test}
+               |  kafka {test}
+               |  firehose {test}
+               |  gcs  {test}
                |}
                |""".stripMargin())
    }
@@ -79,7 +78,7 @@ class TasksTest extends Specification {
       result = executeSingleTask(taskName, ['-Si'])
 
       expect:
-      result.task(":${taskName}").outcome.name() != 'FAILED'
+      !result.tasks.collect { it.outcome }.contains('FAILURE')
       result.output.contains("$task")
 
       where:

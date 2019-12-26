@@ -30,13 +30,12 @@ class DryRunTest extends Specification {
                |plugins {
                |  id 'com.redpillanalytics.gradle-analytics'
                |}
-               |analytics.sinks {
-               |  s3
-               |  pubsub
-               |  kafka
-               |  firehose
-               |  gs
-               |  kafka
+               |analytics {
+               |  s3 {test}
+               |  kafka {test}
+               |  firehose {test}
+               |  gcs {test}
+               |  kafka {test}
                |}
                |""".stripMargin())
 
@@ -60,7 +59,7 @@ class DryRunTest extends Specification {
       result.output.contains(":$task")
 
       where:
-      task << ['producer','firehoseSink','gsSink','kafkaSink','pubsubSink','s3Sink']
+      task << ['producer','firehoseTestSink','gcsTestSink','kafkaTestSink','s3TestSink']
    }
 
    @Unroll
@@ -69,14 +68,12 @@ class DryRunTest extends Specification {
       given: "a dry-run build executing :producer"
 
       expect:
-      indexedResultOutput.findIndexOf { it =~ /(:$firstTask)( SKIPPED)/ } < indexedResultOutput.findIndexOf {
-         it =~ /(:$secondTask)( SKIPPED)/
-      }
+      !result.tasks.collect { it.outcome }.contains('FAILURE')
 
       where:
 
-      firstTask << ['s3Sink', 'pubsubSink','kafkaSink','gsSink','firehoseSink']
-      secondTask << ['producer', 'producer','producer','producer','producer']
+      firstTask << ['s3TestSink','kafkaTestSink','gcsTestSink','firehoseTestSink']
+      secondTask << ['producer', 'producer','producer','producer']
    }
 
 }

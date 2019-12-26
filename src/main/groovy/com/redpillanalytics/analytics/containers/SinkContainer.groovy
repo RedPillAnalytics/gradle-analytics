@@ -1,48 +1,79 @@
 package com.redpillanalytics.analytics.containers
 
-import groovy.transform.InheritConstructors
 import groovy.util.logging.Slf4j
 
 /**
  * Created by stewartbryson on 11/19/16.
  */
 @Slf4j
-@InheritConstructors
-class SinkContainer extends AnalyticsContainer {
+class SinkContainer {
+
+   /**
+    * The name of the container entity.
+    */
+   SinkContainer(String name) {
+      this.name = name
+   }
 
    /**
     * The name of the container entity.
     */
    String name
 
-   String prefix, sink, suffix
+   /**
+    * The prefix used to construct sink targets, such as topics, buckets and tables.
+    */
+   String prefix
 
-   // RESTful URL for any Sink that has one
-   String restUrl
+   /**
+    * The suffix used to construct sink targets, such as topics, buckets and tables.
+    */
+   String suffix
 
-   // JDBC connection information
-   String username, password, driverUrl, driverClass
+   /**
+    * The joiner used to construct sink targets, such as topics, buckets and tables.
+    *
+    * Default: '-'
+    */
+   String joiner
 
-   // Kafka properties
-   String servers, serializerKey, serializerValue, acks, registry
+   // capture the debug status
+   Boolean isDebugEnabled = log.isDebugEnabled()
 
-   Boolean ignoreErrors, formatSuffix=false
+   Boolean ignoreErrors, formatSuffix = false
 
-   def getDescription() {
-
-      return "Process data files using the '${getSink()}' delivery sink and '${getPrefix()}' naming prefix."
+   /**
+    * Returns the container name.
+    *
+    * @return The container name.
+    */
+   def getContainerType() {
+      return ((getClass() =~ /\w+$/)[0] - "Container")
    }
 
-   def getSink() {
+   /**
+    * Log a debug message with the name of the container object.
+    */
+   void logTaskName(String task) {
+      log.debug "${getContainerType()} TaskName: $task"
+   }
 
-      def sink = this.sink ?: name
-      log.debug "sink: ${sink}"
-      assert ['s3', 'firehose', 'pubsub', 'jdbc', 'gs', 'kafka'].contains(sink)
-      return sink
+   /**
+    * Returns the container name.
+    *
+    * @return The container name.
+    */
+   def getTaskName() {
+      String taskName = getContainerType().uncapitalize() + name.capitalize() + "Sink"
+      logTaskName(taskName)
+      return taskName
+   }
+
+   def getDescription() {
+      return "Process data files using the '${getName()}' delivery sink and '${getPrefix()}' naming prefix."
    }
 
    def getPrefix() {
-
       return prefix ?: "gradle"
    }
 }

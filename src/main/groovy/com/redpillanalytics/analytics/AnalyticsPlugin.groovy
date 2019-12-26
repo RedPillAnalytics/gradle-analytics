@@ -1,11 +1,12 @@
 package com.redpillanalytics.analytics
 
-import com.redpillanalytics.analytics.containers.SinkContainer
+import com.redpillanalytics.analytics.containers.FirehoseContainer
+import com.redpillanalytics.analytics.containers.GcsContainer
+import com.redpillanalytics.analytics.containers.KafkaContainer
+import com.redpillanalytics.analytics.containers.S3Container
 import com.redpillanalytics.analytics.tasks.FirehoseTask
-import com.redpillanalytics.analytics.tasks.GSTask
-import com.redpillanalytics.analytics.tasks.JdbcTask
+import com.redpillanalytics.analytics.tasks.GcsTask
 import com.redpillanalytics.analytics.tasks.KafkaTask
-import com.redpillanalytics.analytics.tasks.PubSubTask
 import com.redpillanalytics.analytics.tasks.S3Task
 import groovy.util.logging.Slf4j
 import org.gradle.api.GradleException
@@ -175,134 +176,96 @@ class AnalyticsPlugin implements Plugin<Project> {
             }
          }
 
-         // configure analytic groups
-         project.analytics.sinks.all { ag ->
+         // configure Kafka sink
+         project.analytics.kafka.all { sink ->
 
-            taskName = ag.getTaskName('sink')
+            // Add analytics processing task
+            project.task(sink.getTaskName(), type: KafkaTask) {
+               group "analytics"
+               description sink.getDescription()
 
-            log.debug "analyticGroup name: ${ag.name}"
+               // add standard properties
+               prefix sink.getPrefix()
+               joiner sink.getJoiner()
+               suffix(sink.getFormatSuffix() ? project.extensions.analytics.format : null)
 
-            // setup Kinesis Firehose functionality
-            if (ag.getSink() == 'firehose') {
+               // custom Kafka properties
+               bootstrapServers = sink.getBootstrapServers() ?: 'localhost:9092'
+               serializerKey = sink.getSerializerKey() ?: "org.apache.kafka.common.serialization.StringSerializer"
+               serializerValue = sink.getSerializerValue() ?: "org.apache.kafka.common.serialization.StringSerializer"
+               acks sink.getAcks() ?: 'all'
 
-               // Add analytics processing task
-               project.task(taskName, type: FirehoseTask) {
-
-                  group 'analytics'
-                  description ag.getDescription()
-                  // add any custom prefix to sink names
-                  prefix ag.getPrefix()
-                  // handle the suffix
-                  suffix(ag.getFormatSuffix() ? project.extensions.analytics.format : null)
-               }
+               // confluent schema registry
+               schemaRegistry sink.getSchemaRegistry() ?: null
             }
+            project.producer.dependsOn sink.getTaskName()
+         }
 
-            // use S3 API to upload files directly to S3
-            if (ag.getSink() == 's3') {
+         // configure Firehose sink
+         project.analytics.firehose.all { sink ->
 
-               // Add analytics processing task
-               project.task(taskName, type: S3Task) {
-                  group "analytics"
-                  description ag.getDescription()
-                  // add any custom prefix to sink names
-                  prefix ag.getPrefix()
-               }
+            // Add analytics processing task
+            project.task(sink.getTaskName(), type: FirehoseTask) {
+               group 'analytics'
+               description sink.getDescription()
+               // add any custom prefix to sink names
+               prefix sink.getPrefix()
+               joiner sink.getJoiner()
+               // handle the suffix
+               suffix(sink.getFormatSuffix() ? project.extensions.analytics.format : null)
             }
+            project.producer.dependsOn sink.getTaskName()
+         }
 
-            // use GS API to upload files directly to GS
-            if (ag.getSink() == 'gs') {
+         // configure Firehose sink
+         project.analytics.s3.all { sink ->
 
-               // Add analytics processing task
-               project.task(taskName, type: GSTask) {
-
-                  group "analytics"
-                  description ag.getDescription()
-                  // add any custom prefix to sink names
-                  prefix ag.getPrefix()
-               }
+            // Add analytics processing task
+            project.task(sink.getTaskName(), type: S3Task) {
+               group 'analytics'
+               description sink.getDescription()
+               // add any custom prefix to sink names
+               prefix sink.getPrefix()
+               joiner sink.getJoiner()
+               suffix(sink.getFormatSuffix() ? project.extensions.analytics.format : null)
             }
+            project.producer.dependsOn sink.getTaskName()
+         }
 
-            // Google PubSub
-            if (ag.getSink() == 'pubsub') {
+         // configure Firehose sink
+         project.analytics.gcs.all { sink ->
 
-               // Add analytics processing task
-               project.task(taskName, type: PubSubTask) {
-
-                  group "analytics"
-                  description ag.getDescription()
-                  // add any custom prefix to sink names
-                  prefix ag.getPrefix()
-
-               }
-
+            // Add analytics processing task
+            project.task(sink.getTaskName(), type: GcsTask) {
+               group 'analytics'
+               description sink.getDescription()
+               // add any custom prefix to sink names
+               prefix sink.getPrefix()
+               joiner sink.getJoiner()
+               suffix(sink.getFormatSuffix() ? project.extensions.analytics.format : null)
             }
-
-            // Apache Kafka
-            if (ag.getSink() == 'kafka') {
-
-               // Add analytics processing task
-               project.task(taskName, type: KafkaTask) {
-                  group "analytics"
-                  description ag.getDescription()
-
-                  // add any custom prefix to sink names
-                  prefix ag.getPrefix()
-                  servers = ag.getServers() ?: 'localhost:9092'
-                  serializerKey = ag.getSerializerKey() ?: "org.apache.kafka.common.serialization.StringSerializer"
-                  serializerValue = ag.getSerializerValue() ?: "org.apache.kafka.common.serialization.StringSerializer"
-                  acks ag.getAcks() ?: 'all'
-
-                  // confluent schema registry
-                  registry ag.getRegistry() ? ag.getRegistry() : null
-
-               }
-
-            }
-
-            // use JDBC and built in JSON
-            if ((ag.getSink() == 'jdbc') && project.extensions.pluginProps.dependencyMatching('analytics', '.*jdbc.*')) {
-
-               // Add analytics processing task
-               project.task(taskName, type: JdbcTask) {
-
-                  group "analytics"
-
-                  description ag.getDescription()
-
-                  // add any custom prefix to sink names
-                  prefix ag.getPrefix()
-
-                  // connection information
-                  username ag.username
-                  password ag.password
-                  driverUrl ag.driverUrl
-                  driverClass ag.driverClass
-               }
-            }
-
-            if (project.tasks.findByName(taskName)) {
-               project.tasks.producer.dependsOn project."${taskName}"
-            }
+            project.producer.dependsOn sink.getTaskName()
          }
       }
-
       // end of afterEvaluate
    }
 
    void applyExtension(Project project) {
 
       if (project == project.rootProject) {
-
          project.configure(project) {
             extensions.create('analytics', AnalyticsPluginExtension)
          }
-         project.analytics.extensions.sinks = project.container(SinkContainer)
+         project.analytics.extensions.kafka = project.container(KafkaContainer)
+         project.analytics.extensions.firehose = project.container(FirehoseContainer)
+         project.analytics.extensions.s3 = project.container(S3Container)
+         project.analytics.extensions.gcs = project.container(GcsContainer)
          project.gradle.addListener new AnalyticsListener()
 
       } else {
          throw new GradleException("Gradle Analytics may only be applied to the root project.")
       }
-
    }
+
 }
 

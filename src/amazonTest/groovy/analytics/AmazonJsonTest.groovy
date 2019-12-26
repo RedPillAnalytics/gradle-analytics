@@ -21,8 +21,6 @@ class AmazonJsonTest extends Specification {
 
    @Shared
    def result
-   @Shared
-   def indexedResultOutput
 
    // run the Gradle build
    // return regular output
@@ -36,14 +34,16 @@ class AmazonJsonTest extends Specification {
 
       buildFile = new File(projectDir, 'build.gradle').write("""
             |plugins {
-            |    id 'com.redpillanalytics.gradle-analytics'
+            |  id 'com.redpillanalytics.gradle-analytics'
             |}
             |
             |analytics {
             |  ignoreErrors = false
-            |  sinks {
-            |     firehose
-            |     s3 {
+            |  firehose {
+            |     test
+            |  }
+            |  s3 {
+            |     test {
             |       prefix = 'rpa-gradle-analytics'
             |     }
             |  }
@@ -78,7 +78,7 @@ class AmazonJsonTest extends Specification {
       result = executeSingleTask(taskName, ['-Si'])
 
       expect:
-      result.task(":${taskName}").outcome.name() != 'FAILED'
+      !result.tasks.collect { it.outcome }.contains('FAILURE')
    }
 
    def "Execute :build task"() {
@@ -87,7 +87,7 @@ class AmazonJsonTest extends Specification {
       result = executeSingleTask(taskName, ['-Si'])
 
       expect:
-      result.task(":${taskName}").outcome.name() != 'FAILED'
+      !result.tasks.collect { it.outcome }.contains('FAILURE')
    }
 
    def "Execute :producer task"() {
@@ -96,7 +96,7 @@ class AmazonJsonTest extends Specification {
       result = executeSingleTask(taskName, ['-Si'])
 
       expect:
-      result.task(":${taskName}").outcome.name() != 'FAILED'
+      !result.tasks.collect { it.outcome }.contains('FAILURE')
    }
 
 }

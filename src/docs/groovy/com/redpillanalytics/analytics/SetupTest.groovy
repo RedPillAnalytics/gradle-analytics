@@ -1,8 +1,9 @@
-package analytics
+package com.redpillanalytics.analytics
 
 import groovy.util.logging.Slf4j
 import org.gradle.testkit.runner.GradleRunner
-import spock.lang.Ignore
+import org.testcontainers.containers.KafkaContainer
+import org.testcontainers.spock.Testcontainers
 import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Stepwise
@@ -10,18 +11,22 @@ import spock.lang.Title
 
 @Slf4j
 @Stepwise
+@Testcontainers
 @Title("Execute :publish task using --dry-run")
-class GoogleJsonTest extends Specification {
+class SetupTest extends Specification {
 
    @Shared
    File projectDir, buildDir, buildFile, settingsFile
    @Shared
    AntBuilder ant = new AntBuilder()
    @Shared
-   String projectName = 'json-test', taskName
+   String projectName = 'setup-test', taskName
 
    @Shared
    def result
+
+   @Shared
+   KafkaContainer kafka = new KafkaContainer()
 
    // run the Gradle build
    // return regular output
@@ -34,20 +39,31 @@ class GoogleJsonTest extends Specification {
       settingsFile = new File(projectDir, 'settings.gradle').write("""rootProject.name = '$projectName'""")
 
       buildFile = new File(projectDir, 'build.gradle').write("""
-            |plugins {
-            |    id 'com.redpillanalytics.gradle-analytics'
-            |}
-            |
-            |analytics {
-            |  ignoreErrors = false
-            |  gcs {
-            |     test {
-            |        prefix = 'rpa-gradle-analytics'
-            |     }
-            |  }
-            |}
-            |""".stripMargin()
-      )
+               |plugins {
+               |   id 'com.redpillanalytics.gradle-analytics'
+               |}
+               |
+               |analytics {
+               |   ignoreErrors = false
+               |   kafka {
+               |      prod {
+               |         bootstrapServers = '${kafka.getBootstrapServers()}'
+               |         schemaRegistry = 'http://192.168.1.35:8081'
+               |         acks = 'all'
+               |      }
+               |   }
+               |   s3 {
+               |      dev {
+               |         prefix = 'rpa-gradle'
+               |      }
+               |   }
+               |   gcs {
+               |      prod {
+               |         prefix = 'rpa-gradle'
+               |      }     
+               |   }
+               |}
+               |""".stripMargin())
    }
 
    // helper method
@@ -84,20 +100,10 @@ class GoogleJsonTest extends Specification {
       !result.tasks.collect { it.outcome }.contains('FAILURE')
    }
 
-   @Ignore
-   def "Execute :pubsubTestSink task"() {
+   def "Execute :producer dryrun task"() {
       given:
-      taskName = 'pubsubTestSink'
-      result = executeSingleTask(taskName, ['-Si'])
-
-      expect:
-      !result.tasks.collect { it.outcome }.contains('FAILURE')
-   }
-
-   def "Execute :gcsTestSink task"() {
-      given:
-      taskName = 'gcsTestSink'
-      result = executeSingleTask(taskName, ['-Si'])
+      taskName = 'producer'
+      result = executeSingleTask(taskName, ['-Sm'])
 
       expect:
       !result.tasks.collect { it.outcome }.contains('FAILURE')
@@ -106,7 +112,7 @@ class GoogleJsonTest extends Specification {
    def "Execute :producer task"() {
       given:
       taskName = 'producer'
-      result = executeSingleTask(taskName, ['-Si'])
+      result = executeSingleTask(taskName, ['-S'])
 
       expect:
       !result.tasks.collect { it.outcome }.contains('FAILURE')
