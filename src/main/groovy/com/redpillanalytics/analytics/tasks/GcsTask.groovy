@@ -12,7 +12,7 @@ import org.gradle.api.tasks.TaskAction
 
 @Slf4j
 @groovy.transform.InheritConstructors
-class GSTask extends ObjectStoreTask {
+class GcsTask extends ObjectStoreTask {
 
    /**
     * The Gradle Custom Task @TaskAction.

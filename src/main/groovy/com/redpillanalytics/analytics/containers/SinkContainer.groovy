@@ -57,7 +57,7 @@ class SinkContainer {
     * @return The container name.
     */
    def getTaskName() {
-      String taskName = getContainerType().uncapitalize() + name.capitalize()
+      String taskName = getContainerType().uncapitalize() + name.capitalize() + "Sink"
       logTaskName(taskName)
       return taskName
    }

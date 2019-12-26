@@ -5,9 +5,11 @@ import org.gradle.testkit.runner.GradleRunner
 import spock.lang.Ignore
 import spock.lang.Shared
 import spock.lang.Specification
+import spock.lang.Stepwise
 import spock.lang.Title
 
 @Slf4j
+@Stepwise
 @Title("Execute :publish task using --dry-run")
 class GoogleJsonTest extends Specification {
 
@@ -40,8 +42,8 @@ class GoogleJsonTest extends Specification {
             |
             |analytics {
             |  ignoreErrors = false
-            |  sinks {
-            |     gs {
+            |  gcs {
+            |     test {
             |        prefix = 'rpa-gradle-analytics'
             |     }
             |  }
@@ -85,18 +87,18 @@ class GoogleJsonTest extends Specification {
    }
 
    @Ignore
-   def "Execute :pubsubSink task"() {
+   def "Execute :pubsubTestSink task"() {
       given:
-      taskName = 'pubsubSink'
+      taskName = 'pubsubTestSink'
       result = executeSingleTask(taskName, ['-Si'])
 
       expect:
       result.task(":${taskName}").outcome.name() != 'FAILED'
    }
 
-   def "Execute :gsSink task"() {
+   def "Execute :gcsTestSink task"() {
       given:
-      taskName = 'gsSink'
+      taskName = 'gcsTestSink'
       result = executeSingleTask(taskName, ['-Si'])
 
       expect:

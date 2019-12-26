@@ -1,14 +1,12 @@
 package com.redpillanalytics.analytics
 
 import com.redpillanalytics.analytics.containers.FirehoseContainer
+import com.redpillanalytics.analytics.containers.GcsContainer
 import com.redpillanalytics.analytics.containers.KafkaContainer
 import com.redpillanalytics.analytics.containers.S3Container
-import com.redpillanalytics.analytics.containers.SinkContainer
 import com.redpillanalytics.analytics.tasks.FirehoseTask
-import com.redpillanalytics.analytics.tasks.GSTask
-import com.redpillanalytics.analytics.tasks.JdbcTask
+import com.redpillanalytics.analytics.tasks.GcsTask
 import com.redpillanalytics.analytics.tasks.KafkaTask
-import com.redpillanalytics.analytics.tasks.PubSubTask
 import com.redpillanalytics.analytics.tasks.S3Task
 import groovy.util.logging.Slf4j
 import org.gradle.api.GradleException
@@ -234,22 +232,23 @@ class AnalyticsPlugin implements Plugin<Project> {
             project.producer.dependsOn sink.getTaskName()
          }
 
+         // configure Firehose sink
+         project.analytics.gcs.all { sink ->
+
+            // Add analytics processing task
+            project.task(sink.getTaskName(), type: GcsTask) {
+               group 'analytics'
+               description sink.getDescription()
+               // add any custom prefix to sink names
+               prefix sink.getPrefix()
+               joiner sink.getJoiner()
+               suffix(sink.getFormatSuffix() ? project.extensions.analytics.format : null)
+            }
+            project.producer.dependsOn sink.getTaskName()
+         }
+
          // configure analytic groups
 //         project.analytics.sinks.all { ag ->
-//
-//
-//
-//            // use S3 API to upload files directly to S3
-//            if (ag.getSink() == 's3') {
-//
-//               // Add analytics processing task
-//               project.task(taskName, type: S3Task) {
-//                  group "analytics"
-//                  description ag.getDescription()
-//                  // add any custom prefix to sink names
-//                  prefix ag.getPrefix()
-//               }
-//            }
 //
 //            // use GS API to upload files directly to GS
 //            if (ag.getSink() == 'gs') {
@@ -278,7 +277,6 @@ class AnalyticsPlugin implements Plugin<Project> {
 //               }
 //
 //            }
-//
 //
 //            // use JDBC and built in JSON
 //            if ((ag.getSink() == 'jdbc') && project.extensions.pluginProps.dependencyMatching('analytics', '.*jdbc.*')) {
@@ -315,6 +313,7 @@ class AnalyticsPlugin implements Plugin<Project> {
          project.analytics.extensions.kafka = project.container(KafkaContainer)
          project.analytics.extensions.firehose = project.container(FirehoseContainer)
          project.analytics.extensions.s3 = project.container(S3Container)
+         project.analytics.extensions.gcs = project.container(GcsContainer)
          project.gradle.addListener new AnalyticsListener()
 
       } else {
