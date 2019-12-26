@@ -78,7 +78,7 @@ class TasksTest extends Specification {
       result = executeSingleTask(taskName, ['-Si'])
 
       expect:
-      result.task(":${taskName}").outcome.name() != 'FAILED'
+      !result.tasks.collect { it.outcome }.contains('FAILURE')
       result.output.contains("$task")
 
       where:

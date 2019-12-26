@@ -27,6 +27,7 @@ allprojects {
 }
 
 testSets {
+   docs
    amazonTest
    googleTest
    kafkaTest

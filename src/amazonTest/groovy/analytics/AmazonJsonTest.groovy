@@ -78,7 +78,7 @@ class AmazonJsonTest extends Specification {
       result = executeSingleTask(taskName, ['-Si'])
 
       expect:
-      result.task(":${taskName}").outcome.name() != 'FAILED'
+      !result.tasks.collect { it.outcome }.contains('FAILURE')
    }
 
    def "Execute :build task"() {
@@ -87,7 +87,7 @@ class AmazonJsonTest extends Specification {
       result = executeSingleTask(taskName, ['-Si'])
 
       expect:
-      result.task(":${taskName}").outcome.name() != 'FAILED'
+      !result.tasks.collect { it.outcome }.contains('FAILURE')
    }
 
    def "Execute :producer task"() {
@@ -96,7 +96,7 @@ class AmazonJsonTest extends Specification {
       result = executeSingleTask(taskName, ['-Si'])
 
       expect:
-      result.task(":${taskName}").outcome.name() != 'FAILED'
+      !result.tasks.collect { it.outcome }.contains('FAILURE')
    }
 
 }

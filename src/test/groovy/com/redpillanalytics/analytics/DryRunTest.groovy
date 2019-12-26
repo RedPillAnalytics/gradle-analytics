@@ -68,9 +68,7 @@ class DryRunTest extends Specification {
       given: "a dry-run build executing :producer"
 
       expect:
-      indexedResultOutput.findIndexOf { it =~ /(:$firstTask)( SKIPPED)/ } < indexedResultOutput.findIndexOf {
-         it =~ /(:$secondTask)( SKIPPED)/
-      }
+      !result.tasks.collect { it.outcome }.contains('FAILURE')
 
       where:
 

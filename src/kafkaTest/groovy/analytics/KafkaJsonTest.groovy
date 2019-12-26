@@ -80,7 +80,7 @@ class KafkaJsonTest extends Specification {
       result = executeSingleTask(taskName, ['-Si'])
 
       expect:
-      result.task(":${taskName}").outcome.name() != 'FAILED'
+      !result.tasks.collect { it.outcome }.contains('FAILURE')
    }
 
    def "Execute :build task"() {
@@ -89,7 +89,7 @@ class KafkaJsonTest extends Specification {
       result = executeSingleTask(taskName, ['-Si',"-Panalytics.organization=Red Pill Analytics"])
 
       expect:
-      result.task(":${taskName}").outcome.name() != 'FAILED'
+      !result.tasks.collect { it.outcome }.contains('FAILURE')
    }
 
    def "Execute :producer task"() {
@@ -98,6 +98,6 @@ class KafkaJsonTest extends Specification {
       result = executeSingleTask(taskName, ['-Si'])
 
       expect:
-      result.task(":${taskName}").outcome.name() != 'FAILED'
+      !result.tasks.collect { it.outcome }.contains('FAILURE')
    }
 }
