@@ -34,14 +34,16 @@ class AmazonJsonTest extends Specification {
 
       buildFile = new File(projectDir, 'build.gradle').write("""
             |plugins {
-            |    id 'com.redpillanalytics.gradle-analytics'
+            |  id 'com.redpillanalytics.gradle-analytics'
             |}
             |
             |analytics {
             |  ignoreErrors = false
-            |  sinks {
-            |     firehose
-            |     s3 {
+            |  firehose {
+            |     test
+            |  }
+            |  s3 {
+            |     test {
             |       prefix = 'rpa-gradle-analytics'
             |     }
             |  }
