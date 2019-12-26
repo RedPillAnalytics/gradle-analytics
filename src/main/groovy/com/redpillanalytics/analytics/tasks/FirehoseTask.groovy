@@ -18,7 +18,7 @@ class FirehoseTask extends SinkTask {
       def kinesis = new Kinesis(project.extensions.analytics.ignoreErrors.toBoolean())
 
       analyticsFiles.each { file ->
-         kinesis.sendRecord(getEntityName(file), file)
+         kinesis.sendRecord(getEntityName(file, joiner ?: '.'), file)
       }
 
       logSink()

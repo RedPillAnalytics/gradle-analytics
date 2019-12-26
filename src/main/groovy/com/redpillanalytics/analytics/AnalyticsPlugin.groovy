@@ -186,7 +186,7 @@ class AnalyticsPlugin implements Plugin<Project> {
 
                // add any custom prefix to sink names
                prefix ks.getPrefix()
-               joiner
+               joiner ks.getJoiner()
                bootstrapServers = ks.getBootstrapServers() ?: 'localhost:9092'
                serializerKey = ks.getSerializerKey() ?: "org.apache.kafka.common.serialization.StringSerializer"
                serializerValue = ks.getSerializerValue() ?: "org.apache.kafka.common.serialization.StringSerializer"
@@ -199,27 +199,28 @@ class AnalyticsPlugin implements Plugin<Project> {
             project.producer.dependsOn ks.getTaskName()
          }
 
+         // configure Firehose sink
+         project.analytics.firehose.all { sink ->
+
+            // Add analytics processing task
+            project.task(sink.getTaskName(), type: FirehoseTask) {
+
+               group 'analytics'
+               description sink.getDescription()
+               // add any custom prefix to sink names
+               prefix sink.getPrefix()
+               joiner sink.getJoiner()
+               // handle the suffix
+               suffix(sink.getFormatSuffix() ? project.extensions.analytics.format : null)
+            }
+
+            project.producer.dependsOn sink.getTaskName()
+         }
+
          // configure analytic groups
 //         project.analytics.sinks.all { ag ->
 //
-//            taskName = ag.getTaskName('sink')
 //
-//            log.debug "analyticGroup name: ${ag.name}"
-//
-//            // setup Kinesis Firehose functionality
-//            if (ag.getSink() == 'firehose') {
-//
-//               // Add analytics processing task
-//               project.task(taskName, type: FirehoseTask) {
-//
-//                  group 'analytics'
-//                  description ag.getDescription()
-//                  // add any custom prefix to sink names
-//                  prefix ag.getPrefix()
-//                  // handle the suffix
-//                  suffix(ag.getFormatSuffix() ? project.extensions.analytics.format : null)
-//               }
-//            }
 //
 //            // use S3 API to upload files directly to S3
 //            if (ag.getSink() == 's3') {
@@ -261,27 +262,6 @@ class AnalyticsPlugin implements Plugin<Project> {
 //
 //            }
 //
-//            // Apache Kafka
-//            if (ag.getSink() == 'kafka') {
-//
-//               // Add analytics processing task
-//               project.task(taskName, type: KafkaTask) {
-//                  group "analytics"
-//                  description ag.getDescription()
-//
-//                  // add any custom prefix to sink names
-//                  prefix ag.getPrefix()
-//                  servers = ag.getServers() ?: 'localhost:9092'
-//                  serializerKey = ag.getSerializerKey() ?: "org.apache.kafka.common.serialization.StringSerializer"
-//                  serializerValue = ag.getSerializerValue() ?: "org.apache.kafka.common.serialization.StringSerializer"
-//                  acks ag.getAcks() ?: 'all'
-//
-//                  // confluent schema registry
-//                  registry ag.getRegistry() ? ag.getRegistry() : null
-//
-//               }
-//
-//            }
 //
 //            // use JDBC and built in JSON
 //            if ((ag.getSink() == 'jdbc') && project.extensions.pluginProps.dependencyMatching('analytics', '.*jdbc.*')) {
@@ -303,10 +283,6 @@ class AnalyticsPlugin implements Plugin<Project> {
 //                  driverClass ag.driverClass
 //               }
 //            }
-//
-//            if (project.tasks.findByName(taskName)) {
-//               project.tasks.producer.dependsOn project."${taskName}"
-//            }
 //         }
       }
 
@@ -322,6 +298,7 @@ class AnalyticsPlugin implements Plugin<Project> {
          }
 
          project.analytics.extensions.kafka = project.container(KafkaContainer)
+         project.analytics.extensions.firehose = project.container(SinkContainer)
          project.gradle.addListener new AnalyticsListener()
 
       } else {
@@ -329,5 +306,6 @@ class AnalyticsPlugin implements Plugin<Project> {
       }
 
    }
+
 }
 
