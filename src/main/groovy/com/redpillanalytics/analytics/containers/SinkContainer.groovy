@@ -21,7 +21,12 @@ class SinkContainer {
    String name
 
    /**
-    * The joiner used to construct sink locations, such as topics, buckets and tables.
+    * The prefix used to construct sink targets, such as topics, buckets and tables.
+    */
+   String prefix
+
+   /**
+    * The joiner used to construct sink targets, such as topics, buckets and tables.
     *
     * Default: '-'
     */
@@ -35,7 +40,7 @@ class SinkContainer {
     *
     * @return The container name.
     */
-   def getDomainName() {
+   def getContainerType() {
       return ((getClass() =~ /\w+$/)[0] - "Container")
    }
 
@@ -43,7 +48,7 @@ class SinkContainer {
     * Log a debug message with the name of the container object.
     */
    void logTaskName(String task) {
-      log.debug "${getDomainName()} TaskName: $task"
+      log.debug "${getContainerType()} TaskName: $task"
    }
 
    /**
@@ -52,29 +57,20 @@ class SinkContainer {
     * @return The container name.
     */
    def getTaskName() {
-      String taskName = getDomainName().uncapitalize() + name.capitalize()
+      String taskName = getContainerType().uncapitalize() + name.capitalize()
       logTaskName(taskName)
       return taskName
    }
 
-   String prefix, sink, suffix
+   String suffix
 
-   // RESTful URL for any Sink that has one
-   String restUrl
+   Boolean ignoreErrors, formatSuffix = false
 
    // JDBC connection information
    String username, password, driverUrl, driverClass
 
-   Boolean ignoreErrors, formatSuffix = false
-
    def getDescription() {
-      return "Process data files using the '${getSink()}' delivery sink and '${getPrefix()}' naming prefix."
-   }
-
-   def getSink() {
-      def sink = this.sink ?: name
-      log.debug "sink: ${sink}"
-      return sink
+      return "Process data files using the '${getName()}' delivery sink and '${getPrefix()}' naming prefix."
    }
 
    def getPrefix() {

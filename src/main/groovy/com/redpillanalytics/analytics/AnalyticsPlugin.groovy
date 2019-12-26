@@ -1,6 +1,8 @@
 package com.redpillanalytics.analytics
 
+import com.redpillanalytics.analytics.containers.FirehoseContainer
 import com.redpillanalytics.analytics.containers.KafkaContainer
+import com.redpillanalytics.analytics.containers.S3Container
 import com.redpillanalytics.analytics.containers.SinkContainer
 import com.redpillanalytics.analytics.tasks.FirehoseTask
 import com.redpillanalytics.analytics.tasks.GSTask
@@ -177,26 +179,28 @@ class AnalyticsPlugin implements Plugin<Project> {
          }
 
          // configure Kafka sink
-         project.analytics.kafka.all { ks ->
+         project.analytics.kafka.all { sink ->
 
             // Add analytics processing task
-            project.task(ks.getTaskName(), type: KafkaTask) {
+            project.task(sink.getTaskName(), type: KafkaTask) {
                group "analytics"
-               description ks.getDescription()
+               description sink.getDescription()
 
-               // add any custom prefix to sink names
-               prefix ks.getPrefix()
-               joiner ks.getJoiner()
-               bootstrapServers = ks.getBootstrapServers() ?: 'localhost:9092'
-               serializerKey = ks.getSerializerKey() ?: "org.apache.kafka.common.serialization.StringSerializer"
-               serializerValue = ks.getSerializerValue() ?: "org.apache.kafka.common.serialization.StringSerializer"
-               acks ks.getAcks() ?: 'all'
+               // add standard properties
+               prefix sink.getPrefix()
+               joiner sink.getJoiner()
+               suffix(sink.getFormatSuffix() ? project.extensions.analytics.format : null)
+
+               // custom Kafka properties
+               bootstrapServers = sink.getBootstrapServers() ?: 'localhost:9092'
+               serializerKey = sink.getSerializerKey() ?: "org.apache.kafka.common.serialization.StringSerializer"
+               serializerValue = sink.getSerializerValue() ?: "org.apache.kafka.common.serialization.StringSerializer"
+               acks sink.getAcks() ?: 'all'
 
                // confluent schema registry
-               schemaRegistry ks.getSchemaRegistry() ?: null
+               schemaRegistry sink.getSchemaRegistry() ?: null
             }
-
-            project.producer.dependsOn ks.getTaskName()
+            project.producer.dependsOn sink.getTaskName()
          }
 
          // configure Firehose sink
@@ -204,7 +208,6 @@ class AnalyticsPlugin implements Plugin<Project> {
 
             // Add analytics processing task
             project.task(sink.getTaskName(), type: FirehoseTask) {
-
                group 'analytics'
                description sink.getDescription()
                // add any custom prefix to sink names
@@ -213,7 +216,21 @@ class AnalyticsPlugin implements Plugin<Project> {
                // handle the suffix
                suffix(sink.getFormatSuffix() ? project.extensions.analytics.format : null)
             }
+            project.producer.dependsOn sink.getTaskName()
+         }
 
+         // configure Firehose sink
+         project.analytics.s3.all { sink ->
+
+            // Add analytics processing task
+            project.task(sink.getTaskName(), type: S3Task) {
+               group 'analytics'
+               description sink.getDescription()
+               // add any custom prefix to sink names
+               prefix sink.getPrefix()
+               joiner sink.getJoiner()
+               suffix(sink.getFormatSuffix() ? project.extensions.analytics.format : null)
+            }
             project.producer.dependsOn sink.getTaskName()
          }
 
@@ -292,19 +309,17 @@ class AnalyticsPlugin implements Plugin<Project> {
    void applyExtension(Project project) {
 
       if (project == project.rootProject) {
-
          project.configure(project) {
             extensions.create('analytics', AnalyticsPluginExtension)
          }
-
          project.analytics.extensions.kafka = project.container(KafkaContainer)
-         project.analytics.extensions.firehose = project.container(SinkContainer)
+         project.analytics.extensions.firehose = project.container(FirehoseContainer)
+         project.analytics.extensions.s3 = project.container(S3Container)
          project.gradle.addListener new AnalyticsListener()
 
       } else {
          throw new GradleException("Gradle Analytics may only be applied to the root project.")
       }
-
    }
 
 }
