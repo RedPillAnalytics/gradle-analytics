@@ -246,61 +246,7 @@ class AnalyticsPlugin implements Plugin<Project> {
             }
             project.producer.dependsOn sink.getTaskName()
          }
-
-         // configure analytic groups
-//         project.analytics.sinks.all { ag ->
-//
-//            // use GS API to upload files directly to GS
-//            if (ag.getSink() == 'gs') {
-//
-//               // Add analytics processing task
-//               project.task(taskName, type: GSTask) {
-//
-//                  group "analytics"
-//                  description ag.getDescription()
-//                  // add any custom prefix to sink names
-//                  prefix ag.getPrefix()
-//               }
-//            }
-//
-//            // Google PubSub
-//            if (ag.getSink() == 'pubsub') {
-//
-//               // Add analytics processing task
-//               project.task(taskName, type: PubSubTask) {
-//
-//                  group "analytics"
-//                  description ag.getDescription()
-//                  // add any custom prefix to sink names
-//                  prefix ag.getPrefix()
-//
-//               }
-//
-//            }
-//
-//            // use JDBC and built in JSON
-//            if ((ag.getSink() == 'jdbc') && project.extensions.pluginProps.dependencyMatching('analytics', '.*jdbc.*')) {
-//
-//               // Add analytics processing task
-//               project.task(taskName, type: JdbcTask) {
-//
-//                  group "analytics"
-//
-//                  description ag.getDescription()
-//
-//                  // add any custom prefix to sink names
-//                  prefix ag.getPrefix()
-//
-//                  // connection information
-//                  username ag.username
-//                  password ag.password
-//                  driverUrl ag.driverUrl
-//                  driverClass ag.driverClass
-//               }
-//            }
-//         }
       }
-
       // end of afterEvaluate
    }
 

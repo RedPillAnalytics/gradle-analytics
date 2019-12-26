@@ -26,6 +26,11 @@ class SinkContainer {
    String prefix
 
    /**
+    * The suffix used to construct sink targets, such as topics, buckets and tables.
+    */
+   String suffix
+
+   /**
     * The joiner used to construct sink targets, such as topics, buckets and tables.
     *
     * Default: '-'
@@ -34,6 +39,8 @@ class SinkContainer {
 
    // capture the debug status
    Boolean isDebugEnabled = log.isDebugEnabled()
+
+   Boolean ignoreErrors, formatSuffix = false
 
    /**
     * Returns the container name.
@@ -61,13 +68,6 @@ class SinkContainer {
       logTaskName(taskName)
       return taskName
    }
-
-   String suffix
-
-   Boolean ignoreErrors, formatSuffix = false
-
-   // JDBC connection information
-   String username, password, driverUrl, driverClass
 
    def getDescription() {
       return "Process data files using the '${getName()}' delivery sink and '${getPrefix()}' naming prefix."
