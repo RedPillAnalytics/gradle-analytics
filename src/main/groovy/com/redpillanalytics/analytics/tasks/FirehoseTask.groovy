@@ -9,6 +9,7 @@ import com.amazonaws.services.kinesisfirehose.model.PutRecordBatchRequest
 import com.amazonaws.services.kinesisfirehose.model.PutRecordRequest
 import com.amazonaws.services.kinesisfirehose.model.Record
 import groovy.util.logging.Slf4j
+import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
 
 import java.nio.ByteBuffer
@@ -17,8 +18,13 @@ import java.nio.ByteBuffer
 @Slf4j
 class FirehoseTask extends SinkTask {
 
+   @Internal
    def firehose = new AmazonKinesisFirehoseClient()
+
+   @Internal
    def recordList = []
+
+   @Internal
    def recordBatchRequest = new PutRecordBatchRequest()
 
    def sendRecord(String stream, String data) {

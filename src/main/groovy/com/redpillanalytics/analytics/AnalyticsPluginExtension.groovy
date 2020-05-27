@@ -1,5 +1,6 @@
 package com.redpillanalytics.analytics
 
+import be.vbgn.gradle.cidetect.CiInformation
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.redpillanalytics.common.CI
@@ -9,6 +10,8 @@ import groovy.util.logging.Slf4j
 
 @Slf4j
 class AnalyticsPluginExtension {
+
+   CiInformation ci = CiInformation.detect()
 
    /**
     * The organization name for Gradle Analytics.
@@ -29,9 +32,9 @@ class AnalyticsPluginExtension {
    /**
     * A unique ID for each CI Server build, which might encompass multiple Gradle executions.
     * <p>
-    * The default value is the build tag from known CI servers, and if none are detected, then it uses {@link #buildId}.
+    * The default value is the build tag from known CI servers, and if none are detected, then it uses a timestamp.
     */
-   String buildTag = CI.getBuildTag()
+   String buildTag = ci.buildNumber ?: new Date().format('yyyy-MM-dd-HHmmssSS')
    /**
     * The format to use when writing the output data.
     * <p>

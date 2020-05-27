@@ -25,12 +25,13 @@ class AnalyticsPlugin implements Plugin<Project> {
       // apply Gradle built-in plugins
       project.apply plugin: 'base'
 
-      // apply plugin for git properties
+      // manages using project properties in plugins
       project.apply plugin: "com.redpillanalytics.gradle-properties"
 
       // apply plugin for git properties
       project.apply plugin: "org.ajoberstar.grgit"
       project.apply plugin: "org.dvaske.gradle.git-build-info"
+      project.apply plugin: "be.vbgn.ci-detect"
 
       // create git extensions
       project.ext.gitDescribeInfo = project.grgit?.describe(longDescr: true, tags: true)
