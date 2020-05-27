@@ -1,5 +1,5 @@
 def options = '-S'
-def gradle = "./gradlew
+def gradle = "./gradlew"
 
 pipeline {
   agent {
