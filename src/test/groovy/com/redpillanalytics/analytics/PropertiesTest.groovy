@@ -49,9 +49,9 @@ class PropertiesTest extends Specification {
       given: "executing Gradle :properties"
 
       expect:
-      result.output.contains("$property")
+      result.output.contains("$property:")
 
       where:
-      property << ['gitDescribeInfo', 'gitLastTag', 'gitLastVersion', 'gitBranch']
+      property << ['gitDescribeInfo', 'gitLastTag', 'gitLastVersion', 'gitBranch', 'ci']
    }
 }

@@ -9,6 +9,7 @@ import com.google.protobuf.ByteString
 import com.google.pubsub.v1.ProjectTopicName
 import com.google.pubsub.v1.PubsubMessage
 import groovy.util.logging.Slf4j
+import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
 
 // Annotation for a logger
@@ -21,6 +22,7 @@ class PubSubTask extends SinkTask {
     *
     * @return The Google Cloud projectId.
     */
+   @Internal
    def getProjectId() {
       def projectId = ServiceOptions.getDefaultProjectId()
       log.debug "project ID: ${projectId}"
