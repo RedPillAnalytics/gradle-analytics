@@ -59,21 +59,17 @@ class SinkContainer {
    }
 
    /**
-    * Returns the container name.
+    * Returns the task name.
     *
-    * @return The container name.
+    * @return The task name.
     */
    def getTaskName() {
-      String taskName = getContainerType().uncapitalize() + name.capitalize() + "Sink"
+      String taskName = getContainerType().toString().uncapitalize() + name.capitalize() + "Sink"
       logTaskName(taskName)
       return taskName
    }
 
    def getDescription() {
       return "Process data files using the '${getName()}' delivery sink and '${getPrefix()}' naming prefix."
-   }
-
-   def getPrefix() {
-      return prefix ?: "gradle"
    }
 }

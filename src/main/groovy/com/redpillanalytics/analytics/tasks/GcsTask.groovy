@@ -6,6 +6,8 @@ import com.google.cloud.storage.BucketInfo
 import com.google.cloud.storage.Storage
 import com.google.cloud.storage.StorageException
 import com.google.cloud.storage.StorageOptions
+import org.gradle.api.tasks.Internal
+
 import static java.nio.charset.StandardCharsets.UTF_8
 import groovy.util.logging.Slf4j
 import org.gradle.api.tasks.TaskAction
@@ -15,14 +17,15 @@ import org.gradle.api.tasks.TaskAction
 class GcsTask extends ObjectStoreTask {
 
    /**
-    * The Gradle Custom Task @TaskAction.
+    * Google Cloud storage client used to upload files.
     */
-   @TaskAction
-   def gsTask() {
+   @Internal
+   Storage storage = StorageOptions.getDefaultInstance().getService()
 
-      Storage storage = StorageOptions.getDefaultInstance().getService()
-
-      // first create the bucket
+   /**
+    * Create GCS bucket.
+    */
+   def createBucket(String bucketName) {
       log.info "Creating bucket: ${bucketName}"
       try {
          storage.create(BucketInfo.of(bucketName))
@@ -52,19 +55,34 @@ class GcsTask extends ObjectStoreTask {
             throw e
          }
       }
+   }
 
-      analyticsFiles.each { file ->
-         try {
-            BlobId blobId = BlobId.of(bucketName, "${getFilePath(file, file.parentFile)}")
-            BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType("text/plain").build()
-            storage.create(blobInfo, file.text.getBytes(UTF_8))
-         } catch (Exception e) {
-            if (ignoreErrors) {
-               project.logger.info e.toString()
-            } else {
-               throw e
-            }
+   /**
+    * Upload file to a GCS bucket.
+    */
+   def uploadFile(String bucketName, File file, String name) {
+      try {
+         BlobId blobId = BlobId.of(bucketName, name)
+         BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType("text/plain").build()
+         storage.create(blobInfo, file.text.getBytes(UTF_8))
+      } catch (Exception e) {
+         if (ignoreErrors) {
+            project.logger.info e.toString()
+         } else {
+            throw e
          }
+      }
+   }
+
+   /**
+    * The Gradle Custom Task @TaskAction.
+    */
+   @TaskAction
+   def taskAction() {
+      createBucket(bucketName)
+
+      analyticsFiles.each {file ->
+         uploadFile(bucketName, file, "${getBucketPath(file)}")
       }
       logSink()
    }

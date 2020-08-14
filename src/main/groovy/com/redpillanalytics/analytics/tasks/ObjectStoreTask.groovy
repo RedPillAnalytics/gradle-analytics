@@ -1,35 +1,33 @@
 package com.redpillanalytics.analytics.tasks
 
-import com.redpillanalytics.common.Utils
 import groovy.util.logging.Slf4j
+import org.apache.commons.io.FilenameUtils
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Optional
+import org.gradle.api.tasks.options.Option
 
 @Slf4j
 @groovy.transform.InheritConstructors
 class ObjectStoreTask extends SinkTask {
 
    /**
-    * Returns the name of the bucket to use in the Object Store.
-    * <p>
-    * @return The name of the bucket in the Object Store.
+    * The Object Store bucket to use. Translates to the particular cloud service provider.
     */
    @Input
-   @Optional
-   String getBucketName() {
-      log.debug "Name of bucket: $prefix"
-      return prefix
-   }
+   @Option(option = "bucket",
+           description = "The Object Store bucket to use. Translates to the particular cloud service provider."
+   )
+   String bucketName
 
    /**
     * Returns the path of the file inside the bucket to use in the Object Store.
     * <p>
     * @return The path of the file inside the Object Store.
     */
-   String getFilePath(File file, File dir) {
-      log.debug "Original file: ${file.absolutePath}"
-      def fileName = "${Utils.getFileBase(file)}/$dir.name.${Utils.getFileExt(file)}"
-      log.debug "Name of file: $fileName"
+   String getBucketPath(File file) {
+      log.debug "File: ${file.absolutePath}"
+      def fileName = "${FilenameUtils.getBaseName(file.name)}/${file.parentFile.name}.${FilenameUtils.getExtension(file.name)}"
+      log.debug "Bucket path: $fileName"
       return fileName
    }
 }

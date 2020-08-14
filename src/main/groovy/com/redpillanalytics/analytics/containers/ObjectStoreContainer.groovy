@@ -8,4 +8,9 @@ import groovy.util.logging.Slf4j
  */
 @Slf4j
 @InheritConstructors
-class GcsContainer extends ObjectStoreContainer {}
+class ObjectStoreContainer extends SinkContainer {
+    /**
+     * The Object Store bucket to use. Translates to the particular cloud service provider.
+     */
+    String bucketName
+}

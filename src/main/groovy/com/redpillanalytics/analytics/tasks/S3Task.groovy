@@ -20,7 +20,7 @@ class S3Task extends ObjectStoreTask {
          project.logger.debug "bucket: ${prefix}"
 
          try {
-            String object = getFilePath(file, file.parentFile)
+            String object = getBucketPath(file)
             def result = client.putObject(getBucketName(), object, file)
             log.info "Key '$object' uploaded to bucket '${getBucketName()}'."
             log.debug result.toString()
