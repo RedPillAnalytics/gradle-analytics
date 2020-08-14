@@ -6,7 +6,6 @@ import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.options.Option
 
 @Slf4j
-@groovy.transform.InheritConstructors
 class ObjectStoreTask extends SinkTask {
 
    /**

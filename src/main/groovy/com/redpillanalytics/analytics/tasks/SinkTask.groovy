@@ -10,7 +10,6 @@ import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputDirectory
 
 @Slf4j
-@groovy.transform.InheritConstructors
 class SinkTask extends DefaultTask {
 
    /**

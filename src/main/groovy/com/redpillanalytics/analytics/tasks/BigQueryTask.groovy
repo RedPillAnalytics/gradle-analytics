@@ -17,7 +17,6 @@ import com.google.cloud.bigquery.BigQueryOptions
 import org.gradle.api.tasks.options.Option
 
 @Slf4j
-@groovy.transform.InheritConstructors
 class BigQueryTask extends GcsTask {
 
     /**

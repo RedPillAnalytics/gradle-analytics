@@ -10,7 +10,6 @@ import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.options.Option
 
 @Slf4j
-@groovy.transform.InheritConstructors
 class ProducerTask extends DefaultTask {
 
    /**

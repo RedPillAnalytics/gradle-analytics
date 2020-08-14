@@ -13,7 +13,6 @@ import groovy.util.logging.Slf4j
 import org.gradle.api.tasks.TaskAction
 
 @Slf4j
-@groovy.transform.InheritConstructors
 class GcsTask extends ObjectStoreTask {
 
    /**

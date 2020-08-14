@@ -13,7 +13,6 @@ import org.gradle.api.tasks.TaskAction
 
 // Annotation for a logger
 @Slf4j
-@groovy.transform.InheritConstructors
 class JdbcTask extends SinkTask {
 
    @Input

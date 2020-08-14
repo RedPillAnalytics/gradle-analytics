@@ -1,6 +1,5 @@
 package com.redpillanalytics.analytics.tasks
 
-import com.google.api.core.ApiFuture
 import com.google.api.gax.rpc.AlreadyExistsException
 import com.google.cloud.ServiceOptions
 import com.google.cloud.pubsub.v1.Publisher
@@ -14,7 +13,6 @@ import org.gradle.api.tasks.TaskAction
 
 // Annotation for a logger
 @Slf4j
-@groovy.transform.InheritConstructors
 class PubSubTask extends SinkTask {
 
    /**

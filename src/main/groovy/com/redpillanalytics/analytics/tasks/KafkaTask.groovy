@@ -10,7 +10,6 @@ import org.gradle.api.tasks.options.Option
 
 // Annotation for a logger
 @Slf4j
-@groovy.transform.InheritConstructors
 class KafkaTask extends SinkTask {
 
    /**
