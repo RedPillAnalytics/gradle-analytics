@@ -1,7 +1,7 @@
 package com.redpillanalytics.analytics.tasks
 
-import com.redpillanalytics.common.Utils
 import groovy.util.logging.Slf4j
+import org.apache.commons.io.FilenameUtils
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.Optional
@@ -17,6 +17,7 @@ class SinkTask extends DefaultTask {
     * Configured using {@link com.redpillanalytics.analytics.containers.SinkContainer#prefix}
     */
    @Input
+   @Optional
    @Option(option = "prefix",
            description = "A prefix to use when creating or producing to Sink entities.")
    String prefix
@@ -70,8 +71,10 @@ class SinkTask extends DefaultTask {
     * @return The entity name (i.e. topic name, stream name, etc.) to use with the particular Sink technology
     */
    String getEntityName(File file, String joiner='-') {
-      def entityName = [prefix, Utils.getFileBase(file)].join(joiner)
-      if (suffix) {[entityName, suffix].join(getJoiner())}
+      def entityName = FilenameUtils.getBaseName(file.name)
+      log.debug "Filebase: $entityName, prefix: $prefix, suffix: $suffix"
+      if (prefix) {entityName = [prefix, entityName].join(joiner)}
+      if (suffix) {entityName = [entityName, suffix].join(joiner)}
       log.debug "Sink entity: $entityName"
       return entityName
    }

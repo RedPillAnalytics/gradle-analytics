@@ -21,7 +21,7 @@ class SinkContainer {
    String name
 
    /**
-    * The prefix used to construct sink targets, such as topics, buckets and tables.
+    * The prefix used to construct sink targets, such as topics, object store paths, and tables.
     */
    String prefix
 
@@ -35,7 +35,7 @@ class SinkContainer {
     *
     * Default: '-'
     */
-   String joiner
+   String joiner = '-'
 
    // capture the debug status
    Boolean isDebugEnabled = log.isDebugEnabled()

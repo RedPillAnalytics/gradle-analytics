@@ -185,12 +185,12 @@ class AnalyticsPlugin implements Plugin<Project> {
                 // Add analytics processing task
                 project.task(sink.getTaskName(), type: KafkaTask) {
                     group "analytics"
-                    description sink.getDescription()
+                    description sink.description
 
                     // add standard properties
-                    prefix sink.getPrefix()
-                    joiner sink.getJoiner()
-                    suffix(sink.getFormatSuffix() ? project.extensions.analytics.format : null)
+                    prefix sink.prefix
+                    joiner sink.joiner
+                    suffix sink.suffix
 
                     // custom Kafka properties
                     bootstrapServers = sink.getBootstrapServers() ?: 'localhost:9092'
@@ -210,12 +210,10 @@ class AnalyticsPlugin implements Plugin<Project> {
                 // Add analytics processing task
                 project.task(sink.getTaskName(), type: FirehoseTask) {
                     group 'analytics'
-                    description sink.getDescription()
-                    // add any custom prefix to sink names
-                    prefix sink.getPrefix()
-                    joiner sink.getJoiner()
-                    // handle the suffix
-                    suffix(sink.getFormatSuffix() ? project.extensions.analytics.format : null)
+                    description sink.description
+                    prefix sink.prefix
+                    joiner sink.joiner
+                    suffix sink.suffix
                 }
                 project.producer.dependsOn sink.getTaskName()
             }
@@ -226,11 +224,11 @@ class AnalyticsPlugin implements Plugin<Project> {
                 // Add analytics processing task
                 project.task(sink.getTaskName(), type: S3Task) {
                     group 'analytics'
-                    description sink.getDescription()
-                    // add any custom prefix to sink names
-                    prefix sink.getPrefix()
-                    joiner sink.getJoiner()
-                    suffix(sink.getFormatSuffix() ? project.extensions.analytics.format : null)
+                    description sink.description
+                    bucket sink.bucket
+                    prefix sink.prefix
+                    joiner sink.joiner
+                    suffix sink.suffix
                 }
                 project.producer.dependsOn sink.getTaskName()
             }
@@ -241,11 +239,11 @@ class AnalyticsPlugin implements Plugin<Project> {
                 // Add analytics processing task
                 project.task(sink.getTaskName(), type: GcsTask) {
                     group 'analytics'
-                    description sink.getDescription()
-                    // add any custom prefix to sink names
-                    prefix sink.getPrefix()
-                    joiner sink.getJoiner()
-                    suffix(sink.getFormatSuffix() ? project.extensions.analytics.format : null)
+                    description sink.description
+                    bucket sink.bucket
+                    prefix sink.prefix
+                    joiner sink.joiner
+                    suffix sink.suffix
                 }
                 project.producer.dependsOn sink.getTaskName()
             }
@@ -255,10 +253,11 @@ class AnalyticsPlugin implements Plugin<Project> {
                 project.task(sink.taskName, type: BigQueryTask) {
                     group 'analytics'
                     description sink.description
+                    bucket sink.bucket
                     prefix sink.prefix
                     joiner sink.joiner
-                    suffix sink.formatSuffix ?: null
-                    datasetName sink.datasetName
+                    suffix sink.suffix
+                    dataset sink.dataset
                 }
                 project.producer.dependsOn sink.taskName
             }

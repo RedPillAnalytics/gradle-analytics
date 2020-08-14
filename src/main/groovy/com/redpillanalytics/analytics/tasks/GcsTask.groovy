@@ -25,15 +25,15 @@ class GcsTask extends ObjectStoreTask {
    /**
     * Create GCS bucket.
     */
-   def createBucket(String bucketName) {
-      log.info "Creating bucket: ${bucketName}"
+   def createBucket(String name) {
+      log.info "Creating bucket: ${name}"
       try {
-         storage.create(BucketInfo.of(bucketName))
+         storage.create(BucketInfo.of(name))
       }
       catch (StorageException se) {
 
          if (se.reason == 'conflict') {
-            log.info "Bucket ${prefix} already exists."
+            log.info "Bucket ${bucket} already exists."
          } else {
             if (ignoreErrors) {
                log.debug "Exception logged"
@@ -60,9 +60,9 @@ class GcsTask extends ObjectStoreTask {
    /**
     * Upload file to a GCS bucket.
     */
-   def uploadFile(String bucketName, File file, String name) {
+   def uploadFile(String bucket, File file, String name) {
       try {
-         BlobId blobId = BlobId.of(bucketName, name)
+         BlobId blobId = BlobId.of(bucket, name)
          BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType("text/plain").build()
          storage.create(blobInfo, file.text.getBytes(UTF_8))
       } catch (Exception e) {
@@ -79,10 +79,10 @@ class GcsTask extends ObjectStoreTask {
     */
    @TaskAction
    def taskAction() {
-      createBucket(bucketName)
+      createBucket(bucket)
 
       analyticsFiles.each {file ->
-         uploadFile(bucketName, file, "${getBucketPath(file)}")
+         uploadFile(bucket, file, "${getBucketPath(file)}")
       }
       logSink()
    }

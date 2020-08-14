@@ -2,7 +2,6 @@ package com.redpillanalytics.analytics.tasks
 
 import com.google.cloud.bigquery.BigQueryException
 import com.google.cloud.bigquery.Dataset
-import com.google.cloud.bigquery.DatasetId
 import com.google.cloud.bigquery.DatasetInfo
 import com.google.cloud.bigquery.FormatOptions
 import com.google.cloud.bigquery.Job
@@ -28,7 +27,7 @@ class BigQueryTask extends GcsTask {
     @Option(option = "dataset",
             description = "The BigQuery dataset name to use."
     )
-    String datasetName
+    String dataset
 
 
     /**
@@ -44,15 +43,15 @@ class BigQueryTask extends GcsTask {
     /**
      * Create a BigQuery dataset.
      */
-    def createDataset(String datasetName) {
+    def createDataset(String name) {
         try {
-            DatasetInfo datasetInfo = DatasetInfo.newBuilder(datasetName).build()
+            DatasetInfo datasetInfo = DatasetInfo.newBuilder(name).build()
             Dataset dataset = bigquery.create(datasetInfo)
             String newDatasetName = dataset.getDatasetId().getDataset()
-            log.info newDatasetName + "$newDatasetName created successfully"
+            log.info "Dataset '$newDatasetName' created successfully"
         } catch (BigQueryException e) {
             if (e.message.contains('Already Exists: Dataset')) {
-                log.warn "Datset '${datasetName}' already exists."
+                log.warn "Datset '${name}' already exists."
             } else {
                 throw e
             }
@@ -64,7 +63,7 @@ class BigQueryTask extends GcsTask {
      */
     def loadTable(String table, String uri) {
 
-        TableId tableId = TableId.of(datasetName, table)
+        TableId tableId = TableId.of(dataset, table)
         log.debug "TableId: ${tableId}"
 
         LoadJobConfiguration configuration =
@@ -87,10 +86,11 @@ class BigQueryTask extends GcsTask {
      */
     @TaskAction
     def taskAction() {
-        createDataset(datasetName)
+        createDataset(dataset)
+        createBucket(bucket)
         analyticsFiles.each { file ->
-            uploadFile(bucketName, file, "${datasetName}/${file.name}")
-            loadTable(getEntityName(file, joiner), "gs://${bucketName}/${datasetName}/${file.name}")
+            uploadFile(bucket, file, "${dataset}/${file.name}")
+            loadTable(getEntityName(file, joiner), "gs://${bucket}/${dataset}/${file.name}")
         }
         logSink()
     }

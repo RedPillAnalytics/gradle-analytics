@@ -8,4 +8,4 @@ import groovy.util.logging.Slf4j
  */
 @Slf4j
 @InheritConstructors
-class S3Container extends SinkContainer {}
+class S3Container extends ObjectStoreContainer {}

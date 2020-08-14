@@ -12,5 +12,5 @@ class ObjectStoreContainer extends SinkContainer {
     /**
      * The Object Store bucket to use. Translates to the particular cloud service provider.
      */
-    String bucketName
+    String bucket
 }

@@ -13,16 +13,16 @@ class S3Task extends ObjectStoreTask {
       def client = new AmazonS3Client()
 
       // first create the bucket
-      log.info "Creating bucket: ${getBucketName()}"
-      client.createBucket(new CreateBucketRequest(bucketName))
+      log.info "Creating bucket: ${bucket}"
+      client.createBucket(new CreateBucketRequest(bucket))
 
       analyticsFiles.each { file ->
-         project.logger.debug "bucket: ${prefix}"
+         project.logger.debug "bucket: ${bucket}"
 
          try {
             String object = getBucketPath(file)
-            def result = client.putObject(getBucketName(), object, file)
-            log.info "Key '$object' uploaded to bucket '${getBucketName()}'."
+            def result = client.putObject(getBucket(), object, file)
+            log.info "Key '$object' uploaded to bucket '${bucket}'."
             log.debug result.toString()
          } catch (Exception e) {
             if (project.analytics.ignoreErrors.toBoolean()) {

@@ -42,7 +42,13 @@ class GoogleJsonTest extends Specification {
             |  ignoreErrors = false
             |  gcs {
             |     test {
-            |        prefix = 'rpa-gradle-analytics'
+            |        bucket = 'rpa-gradle-analytics'
+            |     }
+            |  }
+            |  bq {
+            |     test {
+            |        bucket = 'rpa-gradle-analytics-bq'
+            |        dataset = 'gradle_analytics_test'
             |     }
             |  }
             |}
@@ -97,6 +103,15 @@ class GoogleJsonTest extends Specification {
    def "Execute :gcsTestSink task"() {
       given:
       taskName = 'gcsTestSink'
+      result = executeSingleTask(taskName, ['-Si'])
+
+      expect:
+      !result.tasks.collect { it.outcome }.contains('FAILURE')
+   }
+
+   def "Execute :bqTestSink task"() {
+      given:
+      taskName = 'bqTestSink'
       result = executeSingleTask(taskName, ['-Si'])
 
       expect:

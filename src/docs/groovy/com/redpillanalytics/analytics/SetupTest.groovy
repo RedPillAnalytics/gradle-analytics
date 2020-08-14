@@ -54,12 +54,12 @@ class SetupTest extends Specification {
                |   }
                |   s3 {
                |      dev {
-               |         prefix = 'rpa-gradle'
+               |         bucket = 'rpa-gradle'
                |      }
                |   }
                |   gcs {
                |      prod {
-               |         prefix = 'rpa-gradle'
+               |         bucket = 'rpa-gradle'
                |      }     
                |   }
                |}

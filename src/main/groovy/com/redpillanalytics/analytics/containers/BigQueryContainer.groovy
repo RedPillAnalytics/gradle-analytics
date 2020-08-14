@@ -8,7 +8,7 @@ import groovy.util.logging.Slf4j
  */
 @Slf4j
 @InheritConstructors
-class BigQueryContainer extends SinkContainer {
+class BigQueryContainer extends ObjectStoreContainer {
     /**
      * Returns the task name.
      *
@@ -23,7 +23,7 @@ class BigQueryContainer extends SinkContainer {
     /**
      * The BigQuery dataset to use.
      */
-    String datasetName = 'gradle_analytics'
+    String dataset = 'gradle_analytics'
 
     /**
      * The joiner used to construct sink targets, such as topics, buckets and tables.

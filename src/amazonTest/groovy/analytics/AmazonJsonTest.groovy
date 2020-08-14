@@ -40,11 +40,13 @@ class AmazonJsonTest extends Specification {
             |analytics {
             |  ignoreErrors = false
             |  firehose {
-            |     test
+            |     test {
+            |       prefix = 'gradle'
+            |     }
             |  }
             |  s3 {
             |     test {
-            |       prefix = 'rpa-gradle-analytics'
+            |       bucket = 'rpa-gradle-analytics'
             |     }
             |  }
             |}
