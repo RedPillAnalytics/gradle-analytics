@@ -90,16 +90,6 @@ class GoogleJsonTest extends Specification {
       !result.tasks.collect { it.outcome }.contains('FAILURE')
    }
 
-   @Ignore
-   def "Execute :pubsubTestSink task"() {
-      given:
-      taskName = 'pubsubTestSink'
-      result = executeSingleTask(taskName, ['-Si'])
-
-      expect:
-      !result.tasks.collect { it.outcome }.contains('FAILURE')
-   }
-
    def "Execute :gcsTestSink task"() {
       given:
       taskName = 'gcsTestSink'

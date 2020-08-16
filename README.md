@@ -1,9 +1,11 @@
 # Introduction
-Gradle Analytics generates JSON data files about Gradle activity in the `build/analytics` directory (by default). Custom pipelines can be built for processing these data files, but Gradle Analytics provides capabilities to write the data from these generated files to a few known target locations, called *sinks*.
+Gradle Analytics generates JSON-delimited data files about Gradle activity in the `build/analytics` directory (by default). Custom pipelines can be built for processing these data files, but Gradle Analytics provides capabilities to write the data from these generated files to a few known target locations, called *sinks*.
 
-In most cases, Gradle Analytics tries to create destination buckets, datasets, etc. An exception is Kinesis Firehose, as the setup is complicated.
+In most cases, Gradle Analytics tries to create destination buckets, datasets, etc. An exception is Kinesis Firehose, which involves several custom steps during the configuration.
 
 Read the [API docs](https://s3.amazonaws.com/documentation.redpillanalytics.com/gradle-analytics/latest/index.html).
+
+Configuration of supported sinks is covered [here](https://s3.amazonaws.com/documentation.redpillanalytics.com/gradle-analytics/latest/com/redpillanalytics/analytics/containers/package-summary.html).
 
 # Setup
 
@@ -27,14 +29,21 @@ analytics {
       }     
    }
 
+   // Write to Amazon Kinesis Firehose
+   firehose {
+      test {
+        prefix = 'gradle'
+      }
+   }
+
    // write to a Kafka cluster
    kafka {
       prod {
-         bootstrapServers = 'localhost:9092'
-         schemaRegistry = 'http://192.168.1.35:8081'
+         bootstrapServers = 'PLAINTEXT://localhost:32857'
          acks = 'all'
       }
    }
+
    // write to an S3 bucket
    s3 {
       dev {
@@ -44,6 +53,7 @@ analytics {
         suffix = 'dev'
       }
    }
+
    // write to a Google Cloud Storage bucket
    gcs {
       prod {
@@ -65,7 +75,8 @@ Tasks runnable from root project
 
 Analytics tasks
 ---------------
-bqProdSink - Process data files using the 'prod' delivery sink. Each generated analytics file is written to a corresponding BigQuery table based on 'dataset', 'suffix' and 'prefix' values.
+bqTestSink - Process data files using the 'test' delivery sink. Each generated analytics file is written to a corresponding BigQuery table based on 'dataset', 'suffix' and 'prefix' values.
+firehoseTestSink - Process data files using the 'test' delivery sink. Each generated analytics file is written to a corresponding Kinesis stream based on 'suffix' and 'prefix' values.
 gcsProdSink - Process data files using the 'prod' delivery sink. Each generated analytics file is written to a corresponding GCS path based on 'suffix' and 'prefix' values.
 kafkaProdSink - Process data files using the 'prod' delivery sink. Each generated analytics file is written to a corresponding Kafka topic based on 'suffix' and 'prefix' values.
 producer - Analytics workflow task for producing data to all configured sinks.
@@ -75,19 +86,32 @@ s3DevSink - Process data files using the 'dev' delivery sink. Each generated ana
 ```shell script
 -> gradle producer
 
+> Configure project :
+
+> Task :bqTestSink
+Datset 'gradle_analytics' already exists.
+2 analytics files processed.
+
+> Task :firehoseTestSink
+3 analytics files processed.
+
 > Task :gcsProdSink
-26 analytics files processed.
+3 analytics files processed.
 
 > Task :kafkaProdSink
-26 analytics files processed.
+3 analytics files processed.
 
 > Task :s3DevSink
-26 analytics files processed.
+3 analytics files processed.
 
 > Task :producer
 
-BUILD SUCCESSFUL in 16s
-4 actionable tasks: 4 executed
+BUILD SUCCESSFUL in 18s
+6 actionable tasks: 6 executed
+BUILD SUCCESSFUL in 33s
 ```
 
 # Better Documentation Coming Soon
+I will provide better, more comprehensive documentation soon.
+This includes Gradle Analytics support for generating custom JSON files for custom Gradle Plugins.
+An example is the [Gradle Confluent](https://github.com/RedPillAnalytics/gradle-confluent) plugin which generates a custom JSON file containing every KSQL statement executed by the plugin.

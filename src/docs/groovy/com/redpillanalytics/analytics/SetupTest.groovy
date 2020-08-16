@@ -60,6 +60,13 @@ class SetupTest extends Specification {
                |      }     
                |   }
                |
+               |   // Write to Amazon Kinesis Firehose
+               |   firehose {
+               |      test {
+               |        prefix = 'gradle'
+               |      }
+               |   }
+               |
                |   // write to a Kafka cluster
                |   kafka {
                |      prod {
@@ -67,6 +74,7 @@ class SetupTest extends Specification {
                |         acks = 'all'
                |      }
                |   }
+               |
                |   // write to an S3 bucket
                |   s3 {
                |      dev {
@@ -76,6 +84,7 @@ class SetupTest extends Specification {
                |        suffix = 'dev'
                |      }
                |   }
+               |
                |   // write to a Google Cloud Storage bucket
                |   gcs {
                |      prod {
@@ -119,7 +128,7 @@ class SetupTest extends Specification {
    def "Execute :build task"() {
       given:
       taskName = 'build'
-      result = executeSingleTask(taskName, ['-Si'])
+      result = executeSingleTask(taskName, ['-S'])
 
       expect:
       !result.tasks.collect { it.outcome }.contains('FAILURE')
