@@ -185,7 +185,7 @@ class AnalyticsPlugin implements Plugin<Project> {
                 // Add analytics processing task
                 project.task(sink.getTaskName(), type: KafkaTask) {
                     group "analytics"
-                    description sink.description
+                    description sink.description + " Each generated analytics file is written to a corresponding Kafka topic based on 'suffix' and 'prefix' values."
 
                     // add standard properties
                     prefix sink.prefix
@@ -210,7 +210,7 @@ class AnalyticsPlugin implements Plugin<Project> {
                 // Add analytics processing task
                 project.task(sink.getTaskName(), type: FirehoseTask) {
                     group 'analytics'
-                    description sink.description
+                    description sink.description + " Each generated analytics file is written to a corresponding Kinesis stream based on 'suffix' and 'prefix' values."
                     prefix sink.prefix
                     joiner sink.joiner
                     suffix sink.suffix
@@ -224,7 +224,7 @@ class AnalyticsPlugin implements Plugin<Project> {
                 // Add analytics processing task
                 project.task(sink.getTaskName(), type: S3Task) {
                     group 'analytics'
-                    description sink.description
+                    description sink.description + " Each generated analytics file is written to a corresponding S3 path based on 'suffix' and 'prefix' values."
                     bucket sink.bucket
                     prefix sink.prefix
                     joiner sink.joiner
@@ -239,7 +239,7 @@ class AnalyticsPlugin implements Plugin<Project> {
                 // Add analytics processing task
                 project.task(sink.getTaskName(), type: GcsTask) {
                     group 'analytics'
-                    description sink.description
+                    description sink.description + " Each generated analytics file is written to a corresponding GCS path based on 'suffix' and 'prefix' values."
                     bucket sink.bucket
                     prefix sink.prefix
                     joiner sink.joiner
@@ -252,7 +252,7 @@ class AnalyticsPlugin implements Plugin<Project> {
             project.analytics.bq.all { sink ->
                 project.task(sink.taskName, type: BigQueryTask) {
                     group 'analytics'
-                    description sink.description
+                    description sink.description + " Each generated analytics file is written to a corresponding BigQuery table based on 'dataset', 'suffix' and 'prefix' values."
                     bucket sink.bucket
                     prefix sink.prefix
                     joiner sink.joiner

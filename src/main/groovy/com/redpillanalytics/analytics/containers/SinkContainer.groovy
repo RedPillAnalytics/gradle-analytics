@@ -21,17 +21,17 @@ class SinkContainer {
    String name
 
    /**
-    * The prefix used to construct sink targets, such as topics, object store paths, and tables.
+    * The prefix used to construct sink targets such as topics, object store paths, and tables.
     */
    String prefix
 
    /**
-    * The suffix used to construct sink targets, such as topics, buckets and tables.
+    * The suffix used to construct sink targets such as topics, object store paths, and tables.
     */
    String suffix
 
    /**
-    * The joiner used to construct sink targets, such as topics, buckets and tables.
+    * The joiner used to construct sink targets such as topics, object store paths, and tables.
     *
     * Default: '-'
     */
@@ -70,6 +70,6 @@ class SinkContainer {
    }
 
    def getDescription() {
-      return "Process data files using the '${getName()}' delivery sink and '${getPrefix()}' naming prefix."
+      return "Process data files using the '${name}' delivery sink."
    }
 }
