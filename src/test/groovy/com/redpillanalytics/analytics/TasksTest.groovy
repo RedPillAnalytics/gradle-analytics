@@ -46,6 +46,7 @@ class TasksTest extends Specification {
                |  kafka {test}
                |  firehose {test}
                |  gcs  {test}
+               |  bq {test}
                |}
                |""".stripMargin())
    }

@@ -6,31 +6,33 @@ import com.google.cloud.storage.BucketInfo
 import com.google.cloud.storage.Storage
 import com.google.cloud.storage.StorageException
 import com.google.cloud.storage.StorageOptions
+import org.gradle.api.tasks.Internal
+
 import static java.nio.charset.StandardCharsets.UTF_8
 import groovy.util.logging.Slf4j
 import org.gradle.api.tasks.TaskAction
 
 @Slf4j
-@groovy.transform.InheritConstructors
 class GcsTask extends ObjectStoreTask {
 
    /**
-    * The Gradle Custom Task @TaskAction.
+    * Google Cloud storage client used to upload files.
     */
-   @TaskAction
-   def gsTask() {
+   @Internal
+   Storage storage = StorageOptions.getDefaultInstance().getService()
 
-      Storage storage = StorageOptions.getDefaultInstance().getService()
-
-      // first create the bucket
-      log.info "Creating bucket: ${bucketName}"
+   /**
+    * Create GCS bucket.
+    */
+   def createBucket(String name) {
+      log.info "Creating bucket: ${name}"
       try {
-         storage.create(BucketInfo.of(bucketName))
+         storage.create(BucketInfo.of(name))
       }
       catch (StorageException se) {
 
          if (se.reason == 'conflict') {
-            log.info "Bucket ${prefix} already exists."
+            log.info "Bucket ${bucket} already exists."
          } else {
             if (ignoreErrors) {
                log.debug "Exception logged"
@@ -52,19 +54,34 @@ class GcsTask extends ObjectStoreTask {
             throw e
          }
       }
+   }
 
-      analyticsFiles.each { file ->
-         try {
-            BlobId blobId = BlobId.of(bucketName, "${getFilePath(file, file.parentFile)}")
-            BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType("text/plain").build()
-            storage.create(blobInfo, file.text.getBytes(UTF_8))
-         } catch (Exception e) {
-            if (ignoreErrors) {
-               project.logger.info e.toString()
-            } else {
-               throw e
-            }
+   /**
+    * Upload file to a GCS bucket.
+    */
+   def uploadFile(String bucket, File file, String name) {
+      try {
+         BlobId blobId = BlobId.of(bucket, name)
+         BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType("text/plain").build()
+         storage.create(blobInfo, file.text.getBytes(UTF_8))
+      } catch (Exception e) {
+         if (ignoreErrors) {
+            project.logger.info e.toString()
+         } else {
+            throw e
          }
+      }
+   }
+
+   /**
+    * The Gradle Custom Task @TaskAction.
+    */
+   @TaskAction
+   def taskAction() {
+      createBucket(bucket)
+
+      analyticsFiles.each {file ->
+         uploadFile(bucket, file, "${getBucketPath(file)}")
       }
       logSink()
    }

@@ -8,4 +8,11 @@ import groovy.util.logging.Slf4j
  */
 @Slf4j
 @InheritConstructors
-class FirehoseContainer extends SinkContainer {}
+class FirehoseContainer extends SinkContainer {
+    /**
+     * The joiner used to construct Firehose stream names.
+     *
+     * Default: '.'
+     */
+    String joiner = '.'
+}

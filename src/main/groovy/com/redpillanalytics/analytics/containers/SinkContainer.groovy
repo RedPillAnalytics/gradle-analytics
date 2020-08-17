@@ -21,21 +21,21 @@ class SinkContainer {
    String name
 
    /**
-    * The prefix used to construct sink targets, such as topics, buckets and tables.
+    * The prefix used to construct sink targets such as topics, object store paths, and tables.
     */
    String prefix
 
    /**
-    * The suffix used to construct sink targets, such as topics, buckets and tables.
+    * The suffix used to construct sink targets such as topics, object store paths, and tables.
     */
    String suffix
 
    /**
-    * The joiner used to construct sink targets, such as topics, buckets and tables.
+    * The joiner used to construct sink targets such as topics, object store paths, and tables.
     *
     * Default: '-'
     */
-   String joiner
+   String joiner = '-'
 
    // capture the debug status
    Boolean isDebugEnabled = log.isDebugEnabled()
@@ -59,21 +59,17 @@ class SinkContainer {
    }
 
    /**
-    * Returns the container name.
+    * Returns the task name.
     *
-    * @return The container name.
+    * @return The task name.
     */
    def getTaskName() {
-      String taskName = getContainerType().uncapitalize() + name.capitalize() + "Sink"
+      String taskName = getContainerType().toString().uncapitalize() + name.capitalize() + "Sink"
       logTaskName(taskName)
       return taskName
    }
 
    def getDescription() {
-      return "Process data files using the '${getName()}' delivery sink and '${getPrefix()}' naming prefix."
-   }
-
-   def getPrefix() {
-      return prefix ?: "gradle"
+      return "Process data files using the '${name}' delivery sink."
    }
 }

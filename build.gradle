@@ -3,13 +3,13 @@ plugins {
    id 'java-gradle-plugin'
    id "com.gradle.plugin-publish" version "0.12.0"
    id "pl.allegro.tech.build.axion-release" version "1.11.0"
-   id "com.github.ben-manes.versions" version "0.28.0"
+   id "com.github.ben-manes.versions" version "0.29.0"
    id "org.dvaske.gradle.git-build-info" version "0.9"
    id "com.redpillanalytics.gradle-properties" version "0.1.9"
    id "com.github.breadmoirai.github-release" version "2.2.12"
    id 'org.unbroken-dome.test-sets' version '3.0.1'
-   id 'com.adarshr.test-logger' version '2.0.0'
-   id "com.avast.gradle.docker-compose" version "0.12.1"
+   id 'com.adarshr.test-logger' version '2.1.0'
+   id "com.avast.gradle.docker-compose" version "0.13.0"
    id "be.vbgn.ci-detect" version "0.3.0"
 }
 
@@ -45,34 +45,37 @@ githubRelease {
 
 dependencies {
 
-   compile gradleApi()
-   compile localGroovy()
-   compile 'org.slf4j:slf4j-simple:+'
+   implementation gradleApi()
+   implementation 'org.codehaus.groovy:groovy-all:3.0.5'
+   implementation 'org.slf4j:slf4j-simple:+'
 
-   compile "gradle.plugin.com.redpillanalytics:gradle-properties:0.1.9"
+   implementation "gradle.plugin.com.redpillanalytics:gradle-properties:0.1.9"
 
-   compile 'com.google.code.gson:gson:+'
-   compile 'org.eclipse.jgit:org.eclipse.jgit:+'
+   implementation 'com.google.code.gson:gson:+'
+   implementation 'org.eclipse.jgit:org.eclipse.jgit:+'
+   implementation 'org.netbeans.external:org-apache-commons-io:+'
 
-   compile 'com.amazonaws:aws-java-sdk-kinesis:+'
-   compile 'com.amazonaws:aws-java-sdk-s3:+'
+   // AWS
+   implementation 'com.amazonaws:aws-java-sdk-kinesis:+'
+   implementation 'com.amazonaws:aws-java-sdk-s3:+'
 
-   compile 'com.google.cloud:google-cloud-pubsub:+'
+   // GCP
+   implementation 'com.google.cloud:google-cloud-pubsub:+'
+   implementation 'com.google.cloud:google-cloud-bigquery:+'
+   implementation 'com.google.cloud:google-cloud-storage:+'
 
    // Kafka
-   compile 'org.apache.kafka:kafka-clients:+'
-   compile 'org.apache.avro:avro:+'
-
-   compile 'com.google.cloud:google-cloud-storage:+'
+   implementation 'org.apache.kafka:kafka-clients:+'
+   implementation 'org.apache.avro:avro:+'
 
    // plugins
-   compile "be.vbgn.gradle:ci-detect-plugin:0.3.0"
-   compile "gradle.plugin.org.dvaske.gradle:git-build-info:+"
-   compile "org.ajoberstar.grgit:grgit-gradle:+"
+   implementation "be.vbgn.gradle:ci-detect-plugin:0.3.0"
+   implementation "gradle.plugin.org.dvaske.gradle:git-build-info:+"
+   implementation "org.ajoberstar.grgit:grgit-gradle:+"
 
-   testCompile 'org.spockframework:spock-core:1.3-RC1-groovy-2.5'
-   testCompile "org.testcontainers:spock:1.14.2"
-   testCompile "org.testcontainers:kafka:1.14.2"
+   testImplementation 'org.spockframework:spock-core:1.3-groovy-2.5'
+   testImplementation "org.testcontainers:spock:1.14.3"
+   testImplementation "org.testcontainers:kafka:1.14.3"
 }
 
 // Default artifact naming.

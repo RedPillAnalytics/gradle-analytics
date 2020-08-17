@@ -38,32 +38,66 @@ class SetupTest extends Specification {
 
       settingsFile = new File(projectDir, 'settings.gradle').write("""rootProject.name = '$projectName'""")
 
-      buildFile = new File(projectDir, 'build.gradle').write("""
+      buildFile = new File(projectDir, 'build.gradle')
+
+      buildFile.write("""
                |plugins {
                |   id 'com.redpillanalytics.gradle-analytics'
                |}
                |
                |analytics {
                |   ignoreErrors = false
+               |
+               |   // write to Google BigQuery
+               |   bq {
+               |      // can configure multiple locations or "environments"
+               |      // used in generating the task name
+               |      test {
+               |         // Files are first staged in a GCS bucket
+               |         bucket = 'rpa-gradle'
+               |         // then they are loaded to a BigQuery dataset
+               |         dataset = 'gradle_analytics'
+               |      }     
+               |   }
+               |
+               |   // Write to Amazon Kinesis Firehose
+               |   firehose {
+               |      test {
+               |        prefix = 'gradle'
+               |      }
+               |   }
+               |
+               |   // write to a Kafka cluster
                |   kafka {
                |      prod {
                |         bootstrapServers = '${kafka.getBootstrapServers()}'
-               |         schemaRegistry = 'http://192.168.1.35:8081'
                |         acks = 'all'
                |      }
                |   }
+               |
+               |   // write to an S3 bucket
                |   s3 {
                |      dev {
-               |         prefix = 'rpa-gradle'
+               |         // the bucket name to write to
+               |         bucket = 'rpa-gradle'
+               |        // a suffix to add to the end of the default entity names
+               |        suffix = 'dev'
                |      }
                |   }
+               |
+               |   // write to a Google Cloud Storage bucket
                |   gcs {
                |      prod {
-               |         prefix = 'rpa-gradle'
+               |         // the bucket name to write to
+               |         bucket = 'rpa-gradle'
+               |         // a prefix to add to the beginning of the default entity names
+               |         prefix = 'prod'
                |      }     
                |   }
                |}
                |""".stripMargin())
+
+      log.warn buildFile.text
    }
 
    // helper method
@@ -82,10 +116,10 @@ class SetupTest extends Specification {
               .build()
    }
 
-   def "Execute :tasks task"() {
+   def "Execute :tasks task --group analytics"() {
       given:
       taskName = 'tasks'
-      result = executeSingleTask(taskName, ['-Si'])
+      result = executeSingleTask(taskName, ['--group', 'analytics', '-S'])
 
       expect:
       !result.tasks.collect { it.outcome }.contains('FAILURE')
@@ -94,7 +128,7 @@ class SetupTest extends Specification {
    def "Execute :build task"() {
       given:
       taskName = 'build'
-      result = executeSingleTask(taskName, ['-Si'])
+      result = executeSingleTask(taskName, ['-S'])
 
       expect:
       !result.tasks.collect { it.outcome }.contains('FAILURE')
