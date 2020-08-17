@@ -7,6 +7,12 @@ Read the [API docs](https://s3.amazonaws.com/documentation.redpillanalytics.com/
 
 Configuration of supported sinks is covered [here](https://s3.amazonaws.com/documentation.redpillanalytics.com/gradle-analytics/latest/com/redpillanalytics/analytics/containers/package-summary.html).
 
+# Analytics Files
+Gradle Analytics generates files for builds, tasks, tests, and can be extended in custom plugins to generate additional activity. 
+An example is the [Gradle Confluent](https://github.com/RedPillAnalytics/gradle-confluent) plugin which generates a custom JSON file containing every KSQL statement executed by the plugin.
+It automatically generates a unique ID for each build, called the *buildid*, and generates a *buildtag* for each CI/CD build so that multiple builds from the same CI/CD workflow can be analyzed together.
+It uses the [CI Detect Plugin](https://github.com/vierbergenlars/ci-detect-gradle-plugin) to automatically generate the *buildtag*, but is overridden using the Gradle property `analytics.buildTag`, usually with a `-Panalytics.buildTag` in the CD/CD configuration file.
+
 # Setup
 
 ```groovy
@@ -114,4 +120,3 @@ BUILD SUCCESSFUL in 33s
 # Better Documentation Coming Soon
 I will provide better, more comprehensive documentation soon.
 This includes Gradle Analytics support for generating custom JSON files for custom Gradle Plugins.
-An example is the [Gradle Confluent](https://github.com/RedPillAnalytics/gradle-confluent) plugin which generates a custom JSON file containing every KSQL statement executed by the plugin.
