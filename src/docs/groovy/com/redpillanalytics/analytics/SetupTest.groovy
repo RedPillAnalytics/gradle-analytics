@@ -63,6 +63,8 @@ class SetupTest extends Specification {
                |   // Write to Amazon Kinesis Firehose
                |   firehose {
                |      test {
+               |        // prefix for naming sinks, such as streams. 
+               |        // This would send to a stream named 'gradle.build' for the 'build' analytics file.
                |        prefix = 'gradle'
                |      }
                |   }
