@@ -7,6 +7,8 @@ Read the [API docs](https://s3.amazonaws.com/documentation.redpillanalytics.com/
 
 Configuration of supported sinks is covered [here](https://s3.amazonaws.com/documentation.redpillanalytics.com/gradle-analytics/latest/com/redpillanalytics/analytics/containers/package-summary.html).
 
+This plugin is published to the [Gradle Plugin portal](https://plugins.gradle.org/plugin/com.redpillanalytics.gradle-analytics).
+
 # Analytics Files
 Gradle Analytics generates files for builds, tasks, tests, and can be extended in custom plugins to generate additional activity. 
 An example is the [Gradle Confluent](https://github.com/RedPillAnalytics/gradle-confluent) plugin which generates a custom JSON file containing every KSQL statement executed by the plugin.
@@ -17,7 +19,7 @@ It uses the [CI Detect Plugin](https://github.com/vierbergenlars/ci-detect-gradl
 
 ```groovy
 plugins {
-   id 'com.redpillanalytics.gradle-analytics'
+   id 'com.redpillanalytics.gradle-analytics' version '<current-version>'
 }
 
 analytics {
@@ -38,6 +40,8 @@ analytics {
    // Write to Amazon Kinesis Firehose
    firehose {
       test {
+        // prefix for naming sinks, such as streams. 
+        // For instance: 'gradle.build' for the 'build' analytics file.
         prefix = 'gradle'
       }
    }
