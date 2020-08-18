@@ -96,6 +96,7 @@ gradlePlugin {
       gradleAnalytics {
          id = "com.redpillanalytics.${rootProject.name}"
          implementationClass = 'com.redpillanalytics.analytics.AnalyticsPlugin'
+         description = "A plugin for publishing data from Gradle builds to a variety of data sinks."
       }
    }
 }
@@ -109,7 +110,6 @@ pluginBundle {
       gradleAnalytics {
          id = "com.redpillanalytics.${rootProject.name}"
          displayName = rootProject.name
-         description = "A plugin for publishing data from Gradle builds to a variety of data sinks."
          tags = ['analytics', 'data-sinks', 'kafka', 'bigquery']
          version = project.version
       }
