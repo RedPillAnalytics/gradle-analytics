@@ -1,7 +1,7 @@
 # Introduction
 Gradle Analytics generates JSON-delimited data files about Gradle activity in the `build/analytics` directory (by default). Custom pipelines can be built for processing these data files, but Gradle Analytics provides capabilities to write the data from these generated files to a few known target locations, called *sinks*.
 
-In most cases, Gradle Analytics tries to create destination buckets, datasets, etc. An exception is Kinesis Firehose, which involves several custom steps during the configuration.
+In most cases, Gradle Analytics tries to create destination buckets, topics, datasets, etc. An exception is Kinesis Firehose, which involves several custom steps during the configuration.
 
 Read the [API docs](https://s3.amazonaws.com/documentation.redpillanalytics.com/gradle-analytics/latest/index.html).
 
@@ -10,10 +10,13 @@ Configuration of supported sinks is covered [here](https://s3.amazonaws.com/docu
 This plugin is published to the [Gradle Plugin portal](https://plugins.gradle.org/plugin/com.redpillanalytics.gradle-analytics).
 
 # Analytics Files
-Gradle Analytics generates files for builds, tasks, tests, and can be extended in custom plugins to generate additional activity. 
-An example is the [Gradle Confluent](https://github.com/RedPillAnalytics/gradle-confluent) plugin which generates a custom JSON file containing every KSQL statement executed by the plugin.
-It automatically generates a unique ID for each build, called the *buildid*, and generates a *buildtag* for each CI/CD build so that multiple builds from the same CI/CD workflow can be analyzed together.
+Gradle Analytics automatically generates files for builds, tasks, and tests.
+It generates a unique ID for each build, called the *buildid*, and generates a *buildtag* for each CI/CD build/job/pipeline so that multiple *buildid*'s from the same CI/CD workflow can be grouped together.
 It uses the [CI Detect Plugin](https://github.com/vierbergenlars/ci-detect-gradle-plugin) to automatically generate the *buildtag*, but is overridden using the Gradle property `analytics.buildTag`, usually with a `-Panalytics.buildTag` in the CD/CD configuration file.
+
+
+Gradle Analytics can be extended in custom plugins to generate additional activity. 
+An example is the [Gradle Confluent](https://github.com/RedPillAnalytics/gradle-confluent) plugin which generates a custom JSON file containing every KSQL statement executed by the plugin.
 
 # Setup
 
