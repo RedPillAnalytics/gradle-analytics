@@ -88,8 +88,8 @@ class BigQueryTask extends GcsTask {
         createDataset(dataset)
         createBucket(bucket)
         analyticsFiles.each { file ->
-            uploadFile(bucket, file, "${dataset}/${file.name}")
-            loadTable(getEntityName(file, joiner), "gs://${bucket}/${dataset}/${file.name}")
+            uploadFile(bucket, file, "${getBucketPath(file)}")
+            loadTable(getEntityName(file, joiner), "gs://${bucket}/${getBucketPath(file)}")
         }
         logSink()
     }
