@@ -3,7 +3,6 @@ package com.redpillanalytics.analytics.tasks
 import com.google.cloud.storage.BlobId
 import com.google.cloud.storage.BlobInfo
 import com.google.cloud.storage.BucketInfo
-import com.google.cloud.storage.Storage
 import com.google.cloud.storage.StorageException
 import com.google.cloud.storage.StorageOptions
 import org.gradle.api.tasks.Internal
@@ -15,11 +14,17 @@ import org.gradle.api.tasks.TaskAction
 @Slf4j
 class GcsTask extends ObjectStoreTask {
 
+
+
    /**
     * Google Cloud storage client used to upload files.
+    *
+    * @return GCS Storage object.
     */
    @Internal
-   Storage storage = StorageOptions.getDefaultInstance().getService()
+   def getStorage() {
+      return StorageOptions.getDefaultInstance().getService()
+   }
 
    /**
     * Create GCS bucket.
