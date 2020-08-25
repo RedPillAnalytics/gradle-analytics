@@ -11,6 +11,7 @@ plugins {
    id 'com.adarshr.test-logger' version '2.1.0'
    id "com.avast.gradle.docker-compose" version "0.13.0"
    id "be.vbgn.ci-detect" version "0.3.0"
+   id "com.redpillanalytics.gradle-analytics" version "1.3.7"
 }
 
 scmVersion {
@@ -25,6 +26,17 @@ scmVersion {
 //set Gradle version to SCM Version
 allprojects {
    project.version = scmVersion.version
+}
+
+// send analytics
+analytics {
+   organization = 'Red Pill Analytics'
+   bq {
+      devops {
+         bucket = 'rpa-gradle-analytics'
+         dataset = 'gradle_analytics'
+      }
+   }
 }
 
 testSets {
