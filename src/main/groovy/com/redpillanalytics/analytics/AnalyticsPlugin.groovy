@@ -45,7 +45,7 @@ class AnalyticsPlugin implements Plugin<Project> {
 
         // add CI Detect properties
         log.debug "CI properties: ${project.extensions.ci.properties}"
-        project.extensions.analytics.buildTag = (project.extensions.ci.reference ?: new Date().format('yyyy-MM-dd-HHmmssSS')).toString()
+        project.extensions.analytics.buildTag = ("${project.extensions.ci.reference}-${project.extensions.ci.buildNumber}" ?: new Date().format('yyyy-MM-dd-HHmmssSS')).toString()
 
         // create configurations
         project.configurations {
