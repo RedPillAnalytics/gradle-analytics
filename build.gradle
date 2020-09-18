@@ -59,7 +59,7 @@ githubRelease {
 dependencies {
 
    implementation gradleApi()
-   implementation 'org.codehaus.groovy:groovy-all:3.0.5'
+   implementation localGroovy()
    implementation 'org.slf4j:slf4j-simple:+'
 
    implementation "gradle.plugin.com.redpillanalytics:gradle-properties:0.1.9"

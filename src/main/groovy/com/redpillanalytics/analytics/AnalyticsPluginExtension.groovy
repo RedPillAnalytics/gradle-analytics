@@ -121,9 +121,9 @@ class AnalyticsPluginExtension {
    }
 
    def getBuildHeader() {
-      return [buildid     : buildId,
-              buildTag    : buildTag,
-              organization: organization]
+      return [buildid     : buildId.toString(),
+              buildTag    : buildTag.toString(),
+              organization: organization.toString()]
    }
 
    def writeAnalytics(String filename, File buildDir, def record) {

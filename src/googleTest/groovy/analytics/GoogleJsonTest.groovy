@@ -41,12 +41,12 @@ class GoogleJsonTest extends Specification {
             |  ignoreErrors = false
             |  gcs {
             |     test {
-            |        bucket = 'rpa-gradle-analytics'
+            |        bucket = 'rpa-gradle-analytics-test'
             |     }
             |  }
             |  bq {
             |     test {
-            |        bucket = 'rpa-gradle-analytics-bq'
+            |        bucket = 'rpa-gradle-analytics-bq-test'
             |        dataset = 'gradle_analytics_test'
             |     }
             |  }
