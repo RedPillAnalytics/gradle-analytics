@@ -34,7 +34,7 @@ class AnalyticsPluginExtension {
     * <p>
     * The default value is the build tag from known CI servers, and if none are detected, then it uses a timestamp.
     */
-   String buildTag = (ci.buildNumber ?: new Date().format('yyyy-MM-dd-HHmmssSS')).toString()
+   String buildTag
    /**
     * The format to use when writing the output data.
     * <p>
