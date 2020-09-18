@@ -46,12 +46,12 @@ pipeline {
             sh "$gradle publish -Pgradle.publish.key=${env.GRADLE_KEY} -Pgradle.publish.secret=${env.GRADLE_SECRET}"
          }
       }
+   }
 
-      post {
-         always {
-            archiveArtifacts artifacts: 'build/libs/*.jar', fingerprint: true, allowEmptyArchive: true
-            //sh "$gradle producer"
-         }
+   post {
+      always {
+         archiveArtifacts artifacts: 'build/libs/*.jar', fingerprint: true, allowEmptyArchive: true
+         //sh "$gradle producer"
       }
    }
 }
