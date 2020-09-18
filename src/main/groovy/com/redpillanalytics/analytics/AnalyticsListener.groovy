@@ -23,17 +23,12 @@ class AnalyticsListener implements TaskExecutionListener, BuildListener, Project
    long buildEndTime
 
    void beforeExecute(Task task) {
-
       taskStartTime = System.currentTimeMillis()
    }
 
    void afterExecute(Task task, TaskState taskState) {
-
       taskEndTime = System.currentTimeMillis()
-
       def ms = (taskEndTime - taskStartTime)
-
-      // construct the Task Map
 
       // write tests to the analytics file
       task.project.rootProject.extensions.analytics.writeAnalytics(
@@ -67,11 +62,9 @@ class AnalyticsListener implements TaskExecutionListener, BuildListener, Project
    void buildFinished(BuildResult result) {
 
       buildEndTime = System.currentTimeMillis()
-
       def ms = (buildEndTime - buildStartTime)
 
       result.gradle.rootProject.extensions.analytics.writeAnalytics(
-
               result.gradle.rootProject.extensions.analytics.buildsFileName as String,
               result.gradle.rootProject.buildDir,
               result.gradle.rootProject.extensions.analytics.getBuildHeader() <<
@@ -104,7 +97,6 @@ class AnalyticsListener implements TaskExecutionListener, BuildListener, Project
    void afterEvaluate(Project project, ProjectState state) {
 
       if (project == project.rootProject) {
-
          buildStartTime = System.currentTimeMillis()
       }
    }

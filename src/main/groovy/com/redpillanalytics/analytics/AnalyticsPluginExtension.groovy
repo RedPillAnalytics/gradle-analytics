@@ -1,6 +1,5 @@
 package com.redpillanalytics.analytics
 
-import be.vbgn.gradle.cidetect.CiInformation
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.redpillanalytics.common.CI
@@ -10,8 +9,6 @@ import groovy.util.logging.Slf4j
 
 @Slf4j
 class AnalyticsPluginExtension {
-
-   CiInformation ci = CiInformation.detect()
 
    /**
     * The organization name for Gradle Analytics.
@@ -34,7 +31,7 @@ class AnalyticsPluginExtension {
     * <p>
     * The default value is the build tag from known CI servers, and if none are detected, then it uses a timestamp.
     */
-   String buildTag = ci.buildNumber ?: new Date().format('yyyy-MM-dd-HHmmssSS')
+   String buildTag
    /**
     * The format to use when writing the output data.
     * <p>
@@ -98,7 +95,6 @@ class AnalyticsPluginExtension {
     * @return The directory where JSON data files are generated
     */
    File getAnalyticsBaseDir(File buildDir) {
-
       return new File(buildDir, "${dataDirName}")
    }
 
@@ -111,12 +107,10 @@ class AnalyticsPluginExtension {
     * @return The directory where JSON data files are generated
     */
    File getAnalyticsDir(File buildDir) {
-
       return new File(getAnalyticsBaseDir(buildDir), buildId)
    }
 
    File getAnalyticsFile(String filename, File buildDir) {
-
       File file = new File(getAnalyticsDir(buildDir),filename)
       log.debug "analytics file: $file"
 
@@ -124,22 +118,17 @@ class AnalyticsPluginExtension {
    }
 
    def getBuildHeader() {
-
-      return [buildid     : buildId,
-              buildTag    : buildTag,
-              organization: organization]
+      return [buildid     : buildId.toString(),
+              buildTag    : buildTag.toString(),
+              organization: organization.toString()]
    }
 
    def writeAnalytics(String filename, File buildDir, def record) {
-
       Gson gson = new GsonBuilder().serializeNulls().create()
-
       def analyticsFile = getAnalyticsFile(filename, buildDir)
-
       analyticsFile.parentFile.mkdirs()
 
       if (format.equalsIgnoreCase('json')) {
-
          analyticsFile.append(gson.toJson(record) + '\n')
       }
    }

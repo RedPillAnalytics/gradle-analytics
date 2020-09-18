@@ -43,6 +43,10 @@ class AnalyticsPlugin implements Plugin<Project> {
         // apply the Gradle extension plugin and the context container
         applyExtension(project)
 
+        // add CI Detect properties
+        log.debug "CI properties: ${project.extensions.ci.properties}"
+        project.extensions.analytics.buildTag = ("${project.extensions.ci.reference}-${project.extensions.ci.buildNumber}" ?: new Date().format('yyyy-MM-dd-HHmmssSS')).toString()
+
         // create configurations
         project.configurations {
             analytics
