@@ -1,6 +1,5 @@
 package com.redpillanalytics.analytics
 
-import be.vbgn.gradle.cidetect.CiInformation
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.redpillanalytics.common.CI
@@ -10,8 +9,6 @@ import groovy.util.logging.Slf4j
 
 @Slf4j
 class AnalyticsPluginExtension {
-
-   CiInformation ci = CiInformation.detect()
 
    /**
     * The organization name for Gradle Analytics.

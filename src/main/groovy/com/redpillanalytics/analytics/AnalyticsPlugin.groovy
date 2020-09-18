@@ -1,6 +1,5 @@
 package com.redpillanalytics.analytics
 
-import be.vbgn.gradle.cidetect.CiInformation
 import com.redpillanalytics.analytics.containers.BigQueryContainer
 import com.redpillanalytics.analytics.containers.FirehoseContainer
 import com.redpillanalytics.analytics.containers.GcsContainer
@@ -45,9 +44,8 @@ class AnalyticsPlugin implements Plugin<Project> {
         applyExtension(project)
 
         // add CI Detect properties
-        log.warn "CI properties: ${project.extensions.ci.properties}"
-        project.extensions.analytics.buildTag = (project.extensions.ci.buildNumber ?: new Date().format('yyyy-MM-dd-HHmmssSS')).toString()
-
+        log.debug "CI properties: ${project.extensions.ci.properties}"
+        project.extensions.analytics.buildTag = (project.extensions.ci.reference ?: new Date().format('yyyy-MM-dd-HHmmssSS')).toString()
 
         // create configurations
         project.configurations {
