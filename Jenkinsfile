@@ -51,7 +51,7 @@ pipeline {
    post {
       always {
          archiveArtifacts artifacts: 'build/libs/*.jar', fingerprint: true, allowEmptyArchive: true
-         //sh "$gradle producer"
+         sh "$gradle producer"
       }
    }
 }
