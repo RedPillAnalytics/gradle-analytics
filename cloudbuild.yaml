@@ -1,0 +1,98 @@
+substitutions:
+  _ARTIFACT_BUCKET: gs://rpa-devops-artifacts
+  _DOC_BUCKET: documentation.redpillanalytics.com
+  _DOC_PATH: ${_DOC_BUCKET}/${_PROJECT}
+  _DOC_REMOTE: s3://${_DOC_PATH}
+  _DOC_LOCAL: build/docs/groovydoc/
+  _DOC_BASE_URL: https://s3.amazonaws.com/${_DOC_PATH}
+  _CACHE_BUCKET: gs://rpa-devops-build-cache
+  _ARTIFACT_LOCATION: ${_ARTIFACT_BUCKET}/${_PROJECT}
+  _STATUS_FILE: build-status.txt
+  # Get repository URL
+  _REPO_URL: $(body.repository.html_url)
+steps:
+  - name: gcr.io/rpa-devops/project-version
+    id: version
+    args:
+      - $_REPO_URL
+      - $BRANCH_NAME
+    waitFor: [ '-' ]
+  - name: 'gcr.io/$PROJECT_ID/restore_cache'
+    id: restore-cache
+    args:
+      - '--bucket=$_CACHE_BUCKET'
+      - '--key=${REPO_NAME}-$( checksum build.gradle )'
+    waitFor: [ '-' ]
+  - name: gcr.io/google.com/cloudsdktool/cloud-sdk
+    id: test
+    entrypoint: bash
+    args:
+      - '-cx'
+      - |
+        ./gradlew build runAllTests buildDashboard -S
+  - name: 'gcr.io/$PROJECT_ID/save_cache'
+    id: save-cache
+    args:
+      - '--bucket=$_CACHE_BUCKET'
+      - '--key=${REPO_NAME}-$( checksum build.gradle )'
+      - '--path=.gradle/'
+    waitFor:
+      - test
+  - name: gcr.io/google.com/cloudsdktool/cloud-sdk
+    id: publish
+    entrypoint: bash
+    args:
+      - '-cx'
+      - |
+        if [ $BRANCH_NAME == "master" ]
+        then
+          ./gradlew publish -Pgradle.publish.key=$${GRADLE_KEY} -Pgradle.publish.secret=$${GRADLE_SECRET}
+        fi
+    waitFor:
+      - test
+  - name: amazon/aws-cli
+    id: publish-docs
+    entrypoint: bash
+    args:
+      - '-cx'
+      - |
+        if [ $BRANCH_NAME == "master" ]
+        then
+          aws s3 sync ${_DOC_LOCAL} ${_DOC_REMOTE}/`<stepvars/version`/ \
+          && aws s3 sync ${_DOC_LOCAL} ${_DOC_REMOTE}/latest \
+          && echo "Version API documentation located at: ${_DOC_BASE_URL}/`<stepvars/version`/overview-summary.html" \
+          && echo "Latest API documentation located at: ${_DOC_BASE_URL}/latest/overview-summary.html"
+        fi
+    waitFor:
+      - publish
+timeout: 3600s
+options:
+  substitution_option: 'ALLOW_LOOSE'
+  dynamic_substitutions: true
+  env:
+    - GRADLE_USER_HOME=.gradle
+    - GRADLE_OPTS="-Dorg.gradle.daemon=false"
+    - ORG_GRADLE_PROJECT_analytics_buildTag=$BUILD_ID
+  secretEnv:
+    - GITHUB_TOKEN
+    - AWS_ACCESS_KEY_ID
+    - AWS_SECRET_ACCESS_KEY
+    - GRADLE_KEY
+    - GRADLE_SECRET
+artifacts:
+  objects:
+    location: ${_ARTIFACT_LOCATION}
+    paths:
+      - build/libs/*.jar
+availableSecrets:
+  secretManager:
+    - versionName: projects/737919165778/secrets/GITHUB_TOKEN/versions/latest
+      env: GITHUB_TOKEN
+    - versionName: projects/737919165778/secrets/AWS_ACCESS_KEY_ID/versions/latest
+      env: AWS_ACCESS_KEY_ID
+    - versionName: projects/737919165778/secrets/AWS_SECRET_ACCESS_KEY/versions/latest
+      env: AWS_SECRET_ACCESS_KEY
+    - versionName: projects/737919165778/secrets/GRADLE_KEY/versions/latest
+      env: GRADLE_KEY
+    - versionName: projects/737919165778/secrets/GRADLE_SECRET/versions/latest
+      env: GRADLE_SECRET
