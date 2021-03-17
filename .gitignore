@@ -30,3 +30,7 @@ gradle-app.setting
 .gradletasknamecache
 .vscode
 gradle-analytics-build-user.json
+
+# Misc
+*.hprof
+
