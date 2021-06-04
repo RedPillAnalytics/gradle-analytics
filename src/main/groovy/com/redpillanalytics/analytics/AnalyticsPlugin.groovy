@@ -62,7 +62,7 @@ class AnalyticsPlugin implements Plugin<Project> {
             project.task('cleanDist', type: Delete) {
                 group "Distribution"
                 description "Delete the Distributions directory."
-                delete project.distsDir
+                delete project.distsDirectory
             }
 
             // Task configuration based on Test task type

@@ -34,3 +34,4 @@ gradle-analytics-build-user.json
 # Misc
 *.hprof
 
+/version.txt
