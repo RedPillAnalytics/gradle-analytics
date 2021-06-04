@@ -13,10 +13,6 @@ plugins {
    id "com.avast.gradle.docker-compose" version "0.14.3"
 }
 
-test {
-   useJUnitPlatform()
-}
-
 testSets {
    docs
    amazonTest
@@ -128,6 +124,7 @@ tasks.withType(Test) {
    tasks.runAllTests.dependsOn it
    failFast true
    systemProperty 'projectDir', temporaryDir
+   useJUnitPlatform()
 }
 
 task publish {
