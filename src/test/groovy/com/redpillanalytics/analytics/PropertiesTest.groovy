@@ -25,7 +25,7 @@ class PropertiesTest extends Specification {
    // run the Gradle build
    // return regular output
    def setupSpec() {
-
+      testProjectDir.create()
       buildFile = testProjectDir.newFile('build.gradle')
       buildFile << """
             plugins {
