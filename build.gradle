@@ -33,7 +33,7 @@ dependencies {
    implementation gradleApi()
    implementation 'org.codehaus.groovy:groovy:3.0.8'
 
-   implementation "gradle.plugin.com.redpillanalytics:gradle-properties:0.1.11"
+   implementation "gradle.plugin.com.redpillanalytics:gradle-properties:1.0.0"
 
    implementation 'com.google.code.gson:gson:2.8.7'
    implementation 'org.eclipse.jgit:org.eclipse.jgit:5.11.1.202105131744-r'
