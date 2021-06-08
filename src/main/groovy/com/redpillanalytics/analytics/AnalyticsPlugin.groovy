@@ -48,9 +48,7 @@ class AnalyticsPlugin implements Plugin<Project> {
         project.extensions.analytics.buildTag = ("${project.extensions.ci.reference}-${project.extensions.ci.buildNumber}" ?: new Date().format('yyyy-MM-dd-HHmmssSS')).toString()
 
         // create configurations
-        project.configurations {
-            analytics
-        }
+        project.configurations.create('analytics')
 
         project.afterEvaluate {
 
