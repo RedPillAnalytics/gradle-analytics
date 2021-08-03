@@ -6,11 +6,11 @@ plugins {
    id "de.epitschke.gradle-file-versioning" version "1.1.0"
    id "com.github.ben-manes.versions" version "0.39.0"
    id "org.dvaske.gradle.git-build-info" version "0.9"
-   id "com.redpillanalytics.gradle-properties" version "0.1.11"
+   id "com.redpillanalytics.gradle-properties" version "1.0.2"
    id "com.github.breadmoirai.github-release" version "2.2.12"
    id 'org.unbroken-dome.test-sets' version '4.0.0'
    id 'com.adarshr.test-logger' version '3.0.0'
-   id "com.avast.gradle.docker-compose" version "0.14.3"
+   id "com.avast.gradle.docker-compose" version "0.14.9"
 }
 
 testSets {
@@ -33,20 +33,20 @@ dependencies {
    implementation gradleApi()
    implementation 'org.codehaus.groovy:groovy:3.0.8'
 
-   implementation "gradle.plugin.com.redpillanalytics:gradle-properties:1.0.0"
+   implementation "gradle.plugin.com.redpillanalytics:gradle-properties:1.0.2"
 
    implementation 'com.google.code.gson:gson:2.8.7'
-   implementation 'org.eclipse.jgit:org.eclipse.jgit:5.11.1.202105131744-r'
+   implementation 'org.eclipse.jgit:org.eclipse.jgit:5.12.0.202106070339-r'
    implementation 'org.netbeans.external:org-apache-commons-io:RELEASE113'
 
    // AWS
-   implementation 'com.amazonaws:aws-java-sdk-kinesis:1.11.1034'
-   implementation 'com.amazonaws:aws-java-sdk-s3:1.11.1034'
+   implementation 'com.amazonaws:aws-java-sdk-kinesis:1.12.38'
+   implementation 'com.amazonaws:aws-java-sdk-s3:1.12.38'
 
    // GCP
-   implementation 'com.google.cloud:google-cloud-pubsub:1.113.0'
-   implementation 'com.google.cloud:google-cloud-bigquery:1.132.0'
-   implementation 'com.google.cloud:google-cloud-storage:1.115.0'
+   implementation 'com.google.cloud:google-cloud-pubsub:1.113.5'
+   implementation 'com.google.cloud:google-cloud-bigquery:1.137.1'
+   implementation 'com.google.cloud:google-cloud-storage:1.118.0'
 
    // Kafka
    implementation 'org.apache.kafka:kafka-clients:2.7.0'
@@ -58,8 +58,8 @@ dependencies {
    implementation "org.ajoberstar.grgit:grgit-gradle:4.1.0"
 
    testImplementation 'org.spockframework:spock-core:2.0-groovy-3.0'
-   testImplementation "org.testcontainers:spock:1.15.3"
-   testImplementation "org.testcontainers:kafka:1.15.3"
+   testImplementation "org.testcontainers:spock:1.16.0"
+   testImplementation "org.testcontainers:kafka:1.16.0"
 }
 
 // Default artifact naming.
