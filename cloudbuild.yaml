@@ -5,7 +5,6 @@ substitutions:
   _DOC_REMOTE: s3://${_DOC_PATH}
   _DOC_LOCAL: build/docs/groovydoc/
   _DOC_BASE_URL: https://s3.amazonaws.com/${_DOC_PATH}
-  _CACHE_BUCKET: gs://rpa-devops-build-cache
   _ARTIFACT_LOCATION: ${_ARTIFACT_BUCKET}/${_PROJECT}
   _STATUS_FILE: build-status.txt
   # Get repository URL
@@ -17,12 +16,6 @@ steps:
       - $_REPO_URL
       - $BRANCH_NAME
     waitFor: [ '-' ]
-  - name: 'gcr.io/$PROJECT_ID/restore_cache'
-    id: restore-cache
-    args:
-      - '--bucket=$_CACHE_BUCKET'
-      - '--key=${REPO_NAME}-$( checksum build.gradle )'
-    waitFor: [ '-' ]
   - name: gcr.io/google.com/cloudsdktool/cloud-sdk
     id: test
     entrypoint: bash
@@ -30,14 +23,6 @@ steps:
       - '-cx'
       - |
         ./gradlew build runAllTests buildDashboard -S
-  - name: 'gcr.io/$PROJECT_ID/save_cache'
-    id: save-cache
-    args:
-      - '--bucket=$_CACHE_BUCKET'
-      - '--key=${REPO_NAME}-$( checksum build.gradle )'
-      - '--path=.gradle/'
-    waitFor:
-      - test
   - name: gcr.io/google.com/cloudsdktool/cloud-sdk
     id: publish
     entrypoint: bash
