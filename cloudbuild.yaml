@@ -58,6 +58,7 @@ options:
     - GRADLE_USER_HOME=.gradle
     - GRADLE_OPTS="-Dorg.gradle.daemon=false"
     - ORG_GRADLE_PROJECT_analytics_buildTag=$BUILD_ID
+    - CI=true
   secretEnv:
     - GITHUB_TOKEN
     - AWS_ACCESS_KEY_ID

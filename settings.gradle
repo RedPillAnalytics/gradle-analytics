@@ -5,7 +5,7 @@ plugins {
 boolean isCiServer = System.getenv().containsKey("CI")
 buildCache {
    remote(com.ridedott.gradle.buildcache.GCSBuildCache) {
-      bucket = "rpa-etl-gradle-build-cache"
+      bucket = "rpa-gradle-build-cache"
       push = isCiServer
    }
 }
