@@ -10,6 +10,8 @@ substitutions:
   # Get repository URL
   _REPO_URL: $(body.repository.html_url)
 steps:
+  - name: gcr.io/cloud-builders/git
+    args: ['fetch', '--unshallow']
   - name: gcr.io/rpa-devops/project-version
     id: version
     args:
