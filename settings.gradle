@@ -1,15 +1,3 @@
-plugins {
-   id "com.ridedott.gradle-gcs-build-cache" version "1.0.1"
-}
-
-boolean isCiServer = System.getenv().containsKey("CI")
-buildCache {
-   remote(com.ridedott.gradle.buildcache.GCSBuildCache) {
-      bucket = "rpa-gradle-build-cache"
-      push = isCiServer
-   }
-}
-
 rootProject.name = 'gradle-analytics'
 if (file("../gradle-properties").exists()) {
    includeBuild('../gradle-properties')
