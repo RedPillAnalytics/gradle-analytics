@@ -35,3 +35,4 @@ gradle-analytics-build-user.json
 *.hprof
 
 /version.txt
+/.java-version
